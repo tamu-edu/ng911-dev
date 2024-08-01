@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.1.0.1
+  Date:      2024.07.24 
+
+-->
+<scenario name="SIP_MESSAGE_from_OSP_incorrect_1">
+  <send>
+    <![CDATA[
+
+      MESSAGE urn:service:sos SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      Max-Forwards: 69
+      From: SENDER <sip:SENDER@[local_ip]:[local_port]>;tag=[call_number]
+      To: test_incorrect
+      Call-ID: [call_id]
+      CSeq: 1 MESSAGE
+      Content-Type: text/plain
+      Content-Length: [len]
+
+      SIP MESSAGE from Test System
+
+    ]]>
+  </send>
+</scenario>

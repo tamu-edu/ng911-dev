@@ -1,0 +1,9 @@
+TP id           : CF_LAB_GLOBAL
+Version         : 010.3d.1.0.1
+Date            : 2024.07.24
+
+def value SIP_TLS_PORT { '5061' }
+def value SIP_UDP_PORT { '5060' }
+def value SIP_TCP_PORT { '5060' }
+def value SIP_SCTP_PORT { '5060' }
+def value SIP_MESSAGE_TIMEOUT { '15s'}

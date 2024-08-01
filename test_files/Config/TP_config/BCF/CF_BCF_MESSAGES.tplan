@@ -1,0 +1,76 @@
+TP id           : CF_BCF_MESSAGES
+Version         : 010.3d.1.0.1
+Date            : 2024.07.24
+
+#include '../Lab/CF_LAB_GLOBAL'
+#include '../Lab/CF_LAB_OBCF'
+#include '../Lab/CF_LAB_OSP'
+#include '../CF_MAIN_SIP'
+
+def value STANDARD_OSP_TO_O-BCF_911_SIP_INVITE {
+	'Via: SIP/2.0/TLS LAB_OBCF_IPv4_ADDRESS:SIP_TLS_PORT'
+	'To: URN_SERVICE_SOS'
+	'From: "SENDER" <sips:sender@LAB_OSP_IPv4_ADDRESS>'
+	'Call-ID: GENERATED_CALL_ID'
+	'Contact: "SENDER" <sips:sender@LAB_OSP_IPv4_ADDRESS:SIP_TLS_PORT; transport=tls>'
+	'Cseq: 1 INVITE'
+}
+
+def value HIGH_PRIORITY_OSP_TO_O-BCF_911_SIP_INVITE {
+	'Via: SIP/2.0/TLS LAB_OBCF_IPv4_ADDRESS:SIP_TLS_PORT'
+	'To: URN_SERVICE_SOS'
+	'From: "SENDER" <sips:sender@LAB_OSP_IPv4_ADDRESS>'
+	'Call-ID: GENERATED_CALL_ID'
+	'Contact: "SENDER" <sips:sender@LAB_OSP_IPv4_ADDRESS:SIP_TLS_PORT; transport=tls>'
+	'Cseq: 1 INVITE'
+	'Resource-Priority: esnet.2'
+}
+
+def value STANDARD_OSP_TO_O-BCF_911_SIP_INVITE_UDP {
+	'Via: SIP/2.0/UDP LAB_OBCF_IPv4_ADDRESS:SIP_UDP_PORT'
+	'To: URN_SERVICE_SOS'
+	'From: "SENDER" <sip:sender@LAB_OSP_IPv4_ADDRESS>'
+	'Call-ID: GENERATED_CALL_ID'
+	'Contact: "SENDER" <sip:sender@LAB_OSP_IPv4_ADDRESS:SIP_UDP_PORT; transport=udp>'
+	'Cseq: 1 INVITE'
+}
+
+def value STANDARD_OSP_TO_O-BCF_911_SIP_INVITE_TCP {
+	'Via: SIP/2.0/TCP LAB_OBCF_IPv4_ADDRESS:SIP_TCP_PORT'
+	'To: URN_SERVICE_SOS'
+	'From: "SENDER" <sip:sender@LAB_OSP_IPv4_ADDRESS>'
+	'Call-ID: GENERATED_CALL_ID'
+	'Contact: "SENDER" <sip:sender@LAB_OSP_IPv4_ADDRESS:SIP_TCP_PORT; transport=tcp>'
+	'Cseq: 1 INVITE'
+}
+
+def value STANDARD_OSP_TO_O-BCF_911_SIP_INVITE_SCTP {
+	'Via: SIP/2.0/SCTP LAB_OBCF_IPv4_ADDRESS:SIP_SCTP_PORT'
+	'To: URN_SERVICE_SOS'
+	'From: "SENDER" <sip:sender@LAB_OSP_IPv4_ADDRESS>'
+	'Call-ID: GENERATED_CALL_ID'
+	'Contact: "SENDER" <sip:sender@LAB_OSP_IPv4_ADDRESS:SIP_SCTP_PORT; transport=sctp>'
+	'Cseq: 1 INVITE'
+}
+
+def value HTTP_URL_BCF_TO_OSP_DISCREPANCY_REPORT { 'http://LAB_OSP_DOMAIN' }
+
+def value HTTP_POST_BCF_TO_OSP_DISCREPANCY_REPORT_INCORRECT_911_SIP_INVITE_1 {
+	'POST / HTTP/1.1
+	Host: LAB_OBCF_DOMAIN
+	Content-Type: application/json
+	Content-Length: 18
+	{
+		"resolutionUri": "http://LAB_OSP_DOMAIN/Resolutions",
+		"reportType": "OriginatingService",
+		"discrepancyReportSubmittalTimeStamp": "TIMESTAMP",
+		"discrepancyReportId": "REPORT_ID",
+		"reportingAgencyName": "LAB_OSP_DOMAIN",
+		"reportingContactJcard": "LAB_OSP_JCARD",
+		"problemService": "OriginatingService",
+		"problemSeverity": "Moderate",
+		"problemComments": "INCORRECT_911_SIP_INVITE_1",
+		"problem": "BadSIP"
+		"callHeader": "To: <test_incorrect>"
+	}'
+}

@@ -1,0 +1,33 @@
+TP id           : TP_BCF_003
+summary         : 'Resource Priority'
+Version         : 010.3d.1.0.6
+Date            : 2024.07.24
+Author          : "Sebastian Wadolowski (Waverley Software)"
+RQ ref          : 'BCF_3'
+RQ ref          : 'BCF_5'
+RQ ref          : 'BCF_6'
+TD ref          : TD_BCF_001
+config ref      : TP_BCF
+
+with {
+    Sender is configured to send from IF_OSP_OBCF to IF_OBCF_OSP
+    and Receiver is configured to receive from IF_OBCF_ESRP on IF_ESRP_OBCF
+    and DUT is configured with 'default configuration'
+    and IF_OBCF_OSP is connected to IF_OSP_OBCF
+    and IF_OBCF_ESRP is connected to IF_ESRP_OBCF
+    and DUT is in 'normal operating state'
+    and Sender is in 'no active calls state'
+    and DUT is in 'no active calls state'
+    and Receiver is in 'no active calls state'
+    and '911_SIP_INVITE_*_RESOURCE_PRIORITY' from CF_BCF_003 as OSP_TO_OBCF_SIP_INVITE
+}
+
+ensure that {
+    when {
+        DUT receives OSP_TO_OBCF_SIP_INVITE
+    }
+    then {
+        DUT sends SIP_INVITE to Receiver within SIP_MESSAGE_TIMEOUT
+        and SIP_INVITE contains SIP_HEADER_RESOURCE_PRIORITY_DEFAULT
+    }
+}
