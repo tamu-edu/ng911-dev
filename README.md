@@ -1,8 +1,12 @@
-# Next Generation 9-1-1 -- Development
+# Next Generation 9-1-1
 
-Repository Name:	ng911-dev
+Repository Name:	ng911-exp
 
-Link to bookmark:	https://github.com/tamu-edu/ng911-dev
+**Revision: NENA-STA-010.3d-2021**
+
+**Release: 1**
+
+Link to bookmark:	https://github.com/tamu-edu/ng911-exp
 
 This repository is managed by the Texas A&M University (TAMU) Internet2 Technology Evaluation Center (ITEC).
 
