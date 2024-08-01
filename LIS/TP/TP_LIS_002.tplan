@@ -1,0 +1,36 @@
+TP id           : TP_LIS_002
+summary         : 'Location dereferencing using SIP Presence Event Package'
+Version         : 010.3d.1.0.1
+Date            : 2024.07.25
+Author          : "Sebastian Wadolowski (Waverley Software)"
+RQ ref          : 'LIS_7'
+TD ref          : TD_LIS_001
+config ref      : TP_LIS
+
+with {
+    Sender is configured to send and receive from IUT on IF_TS_LIS
+    and IUT is configured to send and receive from Sender on IF_LIS_TS
+    and IF_TS_LIS is connected to IF_LIS_TS
+    and IUT is configured with 'default configuration'
+    and IUT is in 'normal operating state'
+    and SIP_LOCATION_URI is 'sip:9769+357yc6s64ceyoiuy5ax3o@lis.example.com'
+    and SIP_SUBSRIBE_PRESENCE_EVENT contains SIP_LOCATION_URI
+
+
+    and HELD_LOCATION_REQUEST is configured with LOCATION_URI is '/357yc6s64ceyoiuy5ax3o'
+    and with LIS_FQDN is 'lis.example.com'
+    and with PORT is '443'
+}
+
+ensure that {
+    when {
+        Sender sends SIP_SUBSRIBE_PRESENCE_EVENT to IUT
+        and IUT sends SIP_200_OK
+    }
+    then {
+        IUT sends SIP_NOTIFY to Sender
+        and SIP_NOTIFY contains 'Content-Type: application/pidf+xml'
+        and SIP_NOTIFY contains PIDF-LO_XML_BODY
+        and contains LOCATION_RESPONSE
+    }
+}

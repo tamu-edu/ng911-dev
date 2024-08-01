@@ -1,0 +1,8 @@
+TP id           : CF_LAB_OSP
+Version         : 010.3d.1.0.1
+Date            : 2024.07.24
+
+def value LAB_OSP_IPv4_ADDRESS {'192.168.1.2'},
+def value LAB_OSP_IPv6_ADDRESS {'2001:db8:85a3:8d3:1319:8a2e:370:7348'},
+def value LAB_OSP_DOMAIN {'osp.lab.test'}
+def value LAB_OSP_JCARD {''}

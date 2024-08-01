@@ -1,0 +1,44 @@
+TSS         : LIS
+Title       : "LIS Test Purposes"
+Version     : 010.3d.1.0.2
+Date        : 2024.07.25
+Author      : "Sebastian Wadolowski (Waverley Software)"
+
+#include 'Location_request' -- HTTP_HELD message
+#include 'SIP_SUBSCRIBE_from_LIS.xml'
+
+ -- Cross references 
+xref LIS_Requirements_v240615 -- requirements identification document
+xref RFC5491 -- PIDF-LO
+xref RFC5139 -- PIDF-LO
+
+-- Entities
+def entity Sender is TEST_SYSTEM
+def entity Receiver is LIS
+
+-- IUT
+def entity IUT is LIS
+
+-- IUT interfaces
+def entity IF_LIS_TS -- interface with Test System
+
+-- TEST_SYSTEM interfaces
+def entity IF_TS_LIS -- interface with LIS
+
+-- Messages
+def event HTTP_MESSAGE
+def event HELD_LOCATION_REQUEST is 'Location_request'
+def event PIDF-LO_XML_BODY
+def event SIP_NOTIFY
+def event SIP_SUBSCRIBE_PRESENCE_EVENT is from 'SIP_SUBSCRIBE_from_LIS.xml'
+def event SIP_200_OK
+
+-- Conditions
+def condition connected
+def condition configured
+
+-- Values
+def value IF_LIS_TS_IP_ADDRESS
+def value LOCATION_URI
+def value LIS_HELD_URL_LOCATION_DEREFERENCE 'http://IF_LIS_TS_IP_ADDRESS/LOCATION_URI'
+def value LOCATION_RESPONSE

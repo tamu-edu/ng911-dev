@@ -1,0 +1,68 @@
+TSS         : BCF
+Title       : "BCF Test Purposes"
+Version     : 010.3d.1.0.6
+Date        : 2024.07.24
+Author      : "Sebastian Wadolowski (Waverley Software)"
+
+#include '../../Config/Lab/CF_LAB_GLOBAL'
+#include '../../Config/Lab/CF_LAB_OBCF'
+#include '../../Config/Lab/CF_LAB_OSP'
+#include '../../Config/BCF/CF_BCF_MESSAGES'
+
+ -- Cross references 
+xref O-BCF_Requirements_v240425 -- requirements identification document
+
+-- Entities
+def entity Sender
+def entity Receiver
+def entity SAL -- Service/Agency Locator
+
+-- DUT
+def entity DUT is OBCF -- Originating BCF
+
+-- DUT interfaces
+def entity IF_OBCF_OSP 
+def entity IF_OBCF_ESRP
+def entity IF_OBCF_BCF
+
+-- OESRP interfaces
+def entity IF_OESRP_OBCF 
+def entity IF_OESRP_ECRF
+
+-- BCF interfaces
+def entity IF_BCF_OBCF 
+def entity IF_BCF_ESRP
+
+-- ESRP interfaces
+def entity IF_ESRP_BCF 
+
+-- Conditions
+def condition connected
+def condition configured
+def condition full
+
+-- Messages
+def event SIP_INVITE
+def event OUTGOING_SIP_INVITE
+def event HTTP_MESSAGE
+
+-- Values
+def value Emergency_Call_Identifier
+def value Element_Identifier
+def value Incident_Tracking_Identifier
+def value String
+def value FQDN
+def value Resource_Priority
+def value Calls_Queue
+def value Discrepancy_Report
+def value DISCREPANCY_REPORTING_URI 'http://LAB_OSP_DOMAIN/DISCREPANCY_REPORT_HTTP_DESTINATION_URI'
+
+-- Keywords
+def word route
+def word call
+def word calls
+def word for
+def word times
+def word on
+
+
