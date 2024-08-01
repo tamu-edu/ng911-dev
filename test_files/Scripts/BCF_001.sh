@@ -2,7 +2,7 @@
 # --------------------------------------------------------------------
 #
 # Version: 	010.3d.1.1.1
-# Date:		2024.07.26
+# Date:		2024.07.31
 #
 # REQUIREMENTS:
 # - installed SIPp
@@ -17,8 +17,11 @@
 # - all parameters to be set in CONFIG section
 #
 # DESCRIPTION:
-# Script runs SIPp and waits for SIP INVITE.
-# Once the message is received, following header fields are checked:
+# Script runs SIPp to wait for SIP INVITE and spawns a separate process to prompt the OBCF with stimulus
+# OBCF is configured to attempt ESRP connections at SIP_RECEIVE_IP_ADDRESS which will satisfy the waiting
+# SIPp process with an incoming INVITE.
+#
+# Once the INVITE message is received, following header fields are checked:
 # - Emergency Call Identifier
 # - Incident Tracking Identifier
 # - Resource Priority
