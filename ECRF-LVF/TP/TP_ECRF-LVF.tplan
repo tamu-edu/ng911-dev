@@ -1,0 +1,48 @@
+TSS         : ECRF-LVF
+Title       : "ECRF-LVF Test Purposes"
+Version     : 010.3d.2.0.1
+Date        : 20241029
+
+#include '../../Test_files/Config/TP/CF_MAIN_SIP'
+
+ -- Cross references 
+xref ECRF-LVF_Requirements_v240613 -- requirements identification document
+
+-- Entities
+def entity Test_System
+def entity ECRF-LVF2
+
+-- DUT
+def entity DUT is ECRF-LVF
+
+-- DUT interfaces
+def entity IF_ECRF-LVF_TS
+def entity IF_ECRF-LVF_ECRF-LVF2
+
+-- Test_System interfaces
+def entity IF_TS_ECRF-LVF
+
+-- Conditions
+def condition connected
+def condition configured
+def condition provisioned
+
+-- Messages
+def event HTTP_request
+def event HTTP_locationServicesResponse
+def event HTTP_findServiceResponse
+
+
+-- Values
+def value URL
+def value FQDN
+def value SIP_URI
+def value URI
+
+-- Keywords
+def word file
+def word location
+def word service_boundary
+def word multiple
+def word single
+def word optionally

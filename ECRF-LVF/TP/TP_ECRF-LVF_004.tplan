@@ -1,0 +1,38 @@
+TP id           : TP_ECRF-LVF_004
+summary         : 'Recursive and iterative modes'
+Version         : 010.3d.2.0.1
+Date            : 20241029
+RQ ref          : 'ECRF-LVF_50'
+TD ref          : TD_ECRF-LVF_005
+config ref      : TP_ECRF-LVF
+
+
+with {
+    Test_System is configured to send from IF_TS_ECRF-LVF to IF_ECRF-LVF_TS
+    and to receive from IF_ECRF-LVF_TS on IF_TS_ECRF-LVF
+    and to receive from IF_ECRF-LVF_ECRF-LVF2
+    and DUT is configured to send and receive from ECRF-LVF2 on IF_ECRF-LVF_ECRF-LVF2
+    and DUT is configured with 'default configuration'
+    and DUT is in 'normal operating state'
+    and DUT is provisioned with single service_boundary
+    and file 'findService_recursive_mode_polygon_not_covering_boundaries' is configured with DUT URL and FQDN
+    and is configured with location not from DUT service_boundary
+    and file 'findService_iterative_mode_polygon_not_covering_boundaries' is configured with DUT URL and FQDN
+    and is configured with location not from DUT service_boundary
+}
+
+ensure that {
+    when {
+        Test_System sends to DUT HTTP_request with file 'findService_recursive_mode_polygon_not_covering_boundaries'
+    }
+    then {
+        DUT sends to ECRF-LVF2 HTTP_request on IF_ECRF-LVF_ECRF-LVF2 and receive HTTP_findServiceResponse
+        and DUT sends to Test_System HTTP_findServiceResponse with SIP_URI from ECRF-LVF2 service_boundary
+    }
+    when {
+        Test_System sends to DUT HTTP_request with file 'findService_iterative_mode_polygon_not_covering_boundaries'
+    }
+    then {
+        DUT sends to Test_System HTTP_findServiceResponse with URI of ECRF-LVF2
+    }
+}

@@ -1,34 +1,33 @@
 TP id           : TP_BCF_002
 summary         : 'Calls with non standard SIP messages'
-Version         : 010.3d.1.0.6
-Date            : 2024.07.24
-Author          : "Sebastian Wadolowski (Waverley Software)"
-RQ ref          : 'BCF_2'
-RQ ref          : 'BCF_7'
-RQ ref          : 'BCF_8'
+Version         : 010.3d.2.1.6
+Date            : 20241030
+RQ ref          : 'BCF_2, BCF_7, BCF_8'
 TD ref          : TD_BCF_001
 config ref      : TP_BCF
 
+
 with {
-    Sender is configured to send from IF_OSP_OBCF to IF_OBCF_OSP
-    and Receiver is configured to receive from IF_OBCF_ESRP on IF_ESRP_OBCF
+    Sender is configured to send from IF_OSP_O-BCF to IF_O-BCF_OSP
+    and Receiver is configured to receive from IF_O-BCF_ESRP on IF_ESRP_O-BCF
     and DUT is configured with 'default configuration'
-    and IF_OBCF_OSP is connected to IF_OSP_OBCF
-    and IF_OBCF_ESRP is connected to IF_ESRP_OBCF
+    and IF_O-BCF_OSP is connected to IF_OSP_O-BCF
+    and IF_O-BCF_ESRP is connected to IF_ESRP_O-BCF
     and DUT is in 'normal operating state'
     and Sender is in 'no active calls state'
     and DUT is in 'no active calls state'
     and Receiver is in 'no active calls state'
-    and 'INCORRECT_*' from CF_BCF_002 as OSP_TO_OBCF_SIP_INVITE
 }
 
 ensure that {
     when {
-        DUT receives OSP_TO_OBCF_SIP_INVITE
+        Sender sends to DUT 'SIP_INVITE_from_OSP_incorrect_1.xml'
+        or 'SIP_INVITE_from_OSP_incorrect_2.xml'
+        or 'SIP_INVITE_from_OSP_incorrect_3.xml'
     }
     then {
         DUT sends SIP_INVITE to Receiver within SIP_MESSAGE_TIMEOUT
-        and SIP_INVITE contains 'To: URN_SERVICE_SOS'
-        and SIP_HEADER_RESOURCE_PRIORITY_DEFAULT
+        and SIP_INVITE contains 'To: urn:service:sos'
+        and 'Resource-Priority: esnet.1'
     }
 }

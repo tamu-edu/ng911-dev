@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <presence xmlns="urn:ietf:params:xml:ns:pidf"
+            xmlns:dm="urn:ietf:params:xml:ns:pidf:data-model"
+            xmlns:gp="urn:ietf:params:xml:ns:pidf:geopriv10"
+            xmlns:gml="http://www.opengis.net/gml"
+            xmlns:cl="urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr"
+            entity="pres:test@example.com">
+    <dm:device id="test">
+      <gp:geopriv>
+        <gp:location-info>
+          <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
+            <gml:pos>-46.8123 16.12</gml:pos>
+          </gml:Point>
+          <cl:civicAddress>
+            <cl:FLR>10</cl:FLR>
+          </cl:civicAddress>
+        </gp:location-info>
+        <gp:usage-rules/>
+        <gp:method>Wiremap</gp:method>
+      </gp:geopriv>
+      <dm:deviceID>mac:9a514281aa3d</dm:deviceID>
+      <dm:timestamp>2024-10-30T20:00:00Z</dm:timestamp>
+    </dm:device>
+  </presence>

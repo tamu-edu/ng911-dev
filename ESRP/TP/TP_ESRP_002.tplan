@@ -1,0 +1,49 @@
+TP id           : TP_ESRP_002
+summary         : 'Default location handling'
+Version         : 010.3d.2.0.1
+Date            : 20241029
+RQ ref          : 'ESRP_22, ESRP_23, ESRP_24, ESRP_25, ESRP_26'
+TD ref          : TD_ESRP_003
+config ref      : TP_ESRP
+
+
+with {
+    Test_System_O-BCF is configured to send from IF_O-BCF_ESRP to IF_ESRP_O-BCF
+    and Test_System_T-BCF is configured to receive from IF_ESRP_T-BCF on IF_T-BCF_ESRP
+    and DUT is configured with 'default configuration'
+    and DUT is in 'normal operating state'
+    and DUT is in 'no active calls state'
+    and DUT is configured with Test_System_T-BCF as 'next hop'
+}
+
+ensure that {
+    when {
+        Test_System_O-BCF sends SIP_INVITE from 'SIP_INVITE_EMERGENCY_SINGLE.xml'
+    }
+    then {
+        DUT sends SIP_INVITE to Test_System_T-BCF
+        containing PIDF-LO with Content-ID
+        and containing Geolocation pointing to Content-ID of PIDF-LO
+    }
+    when {
+        Test_System_O-BCF sends SIP_INVITE from 'SIP_INVITE_location_garbled_PIDF-LO_body.xml'
+    }
+    then {
+        DUT sends SIP_INVITE to Test_System_T-BCF
+        containing PIDF-LO with Content-ID
+        and containing Geolocation pointing to Content-ID of PIDF-LO
+        and Geolocation is 'top-most entry' in Geolocation Header_Field section
+        and SIP_INVITE is containing original Geolocation
+        and containing original PIDF-LO
+    }
+    when {
+        Test_System_O-BCF sends SIP_INVITE from 'SIP_INVITE_incorrect_geolocation_for_dereference.xml'
+    }
+    then {
+        DUT sends SIP_INVITE to Test_System_T-BCF
+        containing PIDF-LO with Content-ID
+        and containing Geolocation pointing to Content-ID of PIDF-LO
+        and Geolocation is 'top-most entry' in Geolocation Header_Field section
+        and SIP_INVITE is containing original Geolocation
+    }
+}

@@ -1,7 +1,7 @@
 # Test Description: TD_BCF_001
 ## Overview
 ### Summary
-Incoming SIP messages handling by O-BCF
+Adding Emergency Call, Incident Tracking identifiers and Resource Priority
 
 ### Description
 This test checks header fields added by O-BCF while routing SIP packets inside ESInet:
@@ -21,21 +21,21 @@ Test steps description:
 ### SIP transport types
 Test can be performed with 2 different SIP transport types. Steps describing actions for specific one are marked as following:
 - (TLS transport) - used by default inside ESInet on production environment
-- (TCP transport) - used as a fallback if use of TLS is not possible
+- (TCP transport) - used in lab for testing purposes only if default TLS is not possible
 
 ### References
-* Requirements : BCF_1, BCF_2, BCF_3, BCF_5, BCF_6, BCF_7, BCF_8
+* Requirements : O-BCF_1, O-BCF_2, O-BCF_3, O-BCF_5, O-BCF_6, O-BCF_7, O-BCF_8
 * Test Purpose : TP_BCF_001, TP_BCF_002, TP_BCF_003
-* Test Case    :
+* Test Case    : TC_BCF_001
 
 ## Configuration
 ### Implementation Under Test Interface Connections
 <!-- Identify each of the FEs that are part of the configuration and how they are connected -->
+* Test System (OSP)
+  * IF_OSP_O-BCF - connected to O-BCF IF_O-BCF_OSP
 * O-BCF
   * IF_O-BCF_OSP - connected to Test System IF_OSP_O-BCF
   * IF_O-BCF_ESRP - connected to Test System IF_ESRP_O-BCF
-* Test System (OSP)
-  * IF_OSP_O-BCF - connected to O-BCF IF_O-BCF_OSP
 * Test System (ESRP)
   * IF_ESRP_O-BCF - connected to IF_O-BCF_ESRP
 
@@ -45,10 +45,9 @@ Test can be performed with 2 different SIP transport types. Steps describing act
   * IF_OSP_O-BCF - Active
 * O-BCF
   * IF_O-BCF_OSP - Active
-  * IF_O-BCF_ESRP - Active
-  * IF_O-BCF_TBCF - Passive
+  * IF_O-BCF_ESRP - Monitor
 * Test System (ESRP)
-  * IF_ESRP_O-BCF - Active
+  * IF_ESRP_O-BCF - Monitor
 
  
 ### Connectivity Diagram
@@ -67,6 +66,7 @@ Test can be performed with 2 different SIP transport types. Steps describing act
 * Interfaces are connected to network
 * Interfaces have IP addresses assigned by DHCP
 * Default configuration is loaded
+* Device has configured `Test System ESRP` as a next hop
 * Device is active
 * Device is in normal operating state
 * No active calls
@@ -84,111 +84,83 @@ Test can be performed with 2 different SIP transport types. Steps describing act
 * Install SIPp by following steps from documentation[^1]
 * Copy following XML scenario files to local storage:
   ```
-  SIP_INVITE_from_OSP.xml
-  SIP_INVITE_from_OSP_incorrect_1.xml
-  SIP_INVITE_from_OSP_incorrect_2.xml
-  SIP_INVITE_from_OSP_incorrect_3.xml
-  SIP_MESSAGE_from_OSP.xml
-  SIP_MESSAGE_from_OSP_incorrect_1.xml
-  SIP_MESSAGE_from_OSP_incorrect_2.xml
-  SIP_MESSAGE_from_OSP_incorrect_3.xml
+  SIP_INVITE_FROM_OSP.xml
+  SIP_INVITE_FROM_OSP_INCORRECT_1.xml
+  SIP_INVITE_FROM_OSP_INCORRECT_2.xml
+  SIP_INVITE_FROM_OSP_INCORRECT_3.xml
+  SIP_MESSAGE_FROM_OSP.xml
+  SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml
+  SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml
+  SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml
   ```
+* (TLS transport) Copy to local storage PCA-signed certificate and private key files:
+  > PCA-cacert.pem
+  > PCA-cakey.pem
+* (TLS transport) Copy to local storage PCA-signed certificate and private key files for O-BCF:
+  > O-BCF-cacert.pem
+  > O-BCF-cakey.pem
 
-* (TLS transport) Copy to local storage SIP TLS certificate and private key files used to decrypt SIP packets within ESInet:
-  > cacert.pem
-  > cakey.pem
 
 #### Test System ESRP
 * Install SIPp by following steps from documentation[^1]
-* Copy following XML scenario file to local storage:
-  ```
-  Receive_SIP_INVITE_from_O-BCF_regex_check.xml
-  Receive_SIP_MESSAGE_from_O-BCF_regex_check.xml
-  ```
- 
 * Install Wireshark[^2]
-* (TLS transport) Copy to local storage SIP TLS certificate and private key files used to decrypt SIP packets within ESInet:
-  > cacert.pem
-  > cakey.pem
+* (TLS transport) Copy to local storage PCA-signed certificate and private key files:
+  > PCA-cacert.pem
+  > PCA-cakey.pem
+* (TLS transport) Copy to local storage PCA-signed certificate and private key files for O-BCF:
+  > O-BCF-cacert.pem
+  > O-BCF-cakey.pem
 * (TLS transport) Configure Wireshark to decode SIP over TLS packets[^3]
-
-
-### Test Body
-**Following steps should be performed for all SIPp scenario files:**
-  ```
-  SIP_INVITE_from_OSP.xml
-  SIP_INVITE_from_OSP_incorrect_1.xml
-  SIP_INVITE_from_OSP_incorrect_2.xml
-  SIP_INVITE_from_OSP_incorrect_3.xml
-  SIP_MESSAGE_from_OSP.xml
-  SIP_MESSAGE_from_OSP_incorrect_1.xml
-  SIP_MESSAGE_from_OSP_incorrect_2.xml
-  SIP_MESSAGE_from_OSP_incorrect_3.xml
-  ```
-
-  1. Using Wireshark on 'Test System ESRP' start packet tracing on IF_ESRP_O-BCF interface - run following filter:
+* Using Wireshark on 'Test System ESRP' start packet tracing on IF_ESRP_O-BCF interface - run following filter:
      * (TLS transport)
        > ip.addr == IF_ESRP_O-BCF_IP_ADDRESS and tls
      * (TCP transport)
        > ip.addr == IF_ESRP_O-BCF_IP_ADDRESS and sip
-  2. Prepare 'Test System ESRP' to receive SIP message - run SIPp tool with one of following commands:
-     * (TCP transport)
-       ```
-       sudo sipp -t t1 -sf ./Receive_SIP_INVITE_from_O-BCF_regex_check.xml -i IF_ESRP_O-BCF_IP_ADDRESS:5060 -trace_logs -trace_msg -timeout 10 -max_recv_loops 1
-       sudo sipp -t t1 -sf ./Receive_SIP_INVITE_from_O-BCF_regex_check.xml -i IF_ESRP_O-BCF_IP_ADDRESS:5060 -trace_logs -trace_msg -timeout 10 -max_recv_loops 1
-       ```
-     * (TLS transport)
-       ```
-       sudo sipp -t l1 -sf ./Receive_SIP_INVITE_from_O-BCF_regex_check.xml -i IF_ESRP_O-BCF_IPv4:5060 -trace_logs -trace_msg -timeout 10 -max_recv_loops 1
-       sudo sipp -t l1 -sf ./Receive_SIP_INVITE_from_O-BCF_regex_check.xml -i IF_ESRP_O-BCF_IPv4:5060 -trace_logs -trace_msg -timeout 10 -max_recv_loops 1
-       ```
-  3. Send SIP packet to O-BCF - run following SIPp command on Test System OSP, example:
-     * (TCP transport)
-       ```
-       sudo sipp -t t1 -sf SIP_INVITE_from_OSP.xml IF_OSP_O-BCF_IPv4:5060
-       sudo sipp -t t1 -sf SIP_MESSAGE_from_OSP.xml IF_OSP_O-BCF_IPv4:5060
-       ```
-     * (TLS transport)
-       ```
-       sudo sipp -t l1 -sf SIP_INVITE_from_OSP.xml IF_OSP_O-BCF_IPv4:5060
-       sudo sipp -t l1 -sf SIP_MESSAGE_from_OSP.xml IF_OSP_O-BCF_IPv4:5060
-       ```
-  4. Once the message is sent, stop Wireshark on 'Test System ESRP'
-  5. Verify if SIP packet has been received by 'Test System ESRP' - SIPp script should stop automatically after receiving correct packet
-  6. Verify SIPp log file on 'Test System ESRP', file should be named like:
-    > RECEIVE_SIP_INVITE_FROM_O-BCF_CHECK_(PID)_logs.log
-  7. Log file should include successful result of all tests, example:
-```
-       -- RECEIVE_SIP_INVITE_FROM_O-BCF_CHECK ---
 
-      TEST 1/7 ( PASSED ) - Emergency Identifier URN: urn:emergency:uid:callid
-      TEST 2/7 ( PASSED ) - Emergency Identifier String ID: callid:123qweasdz123qweasdz123qweasdz12:
-      TEST 3/7 ( PASSED ) - Emergency Identifier Domain: urn:emergency:uid:callid:123qweasdz123qweasdz123qweasdz12:test.com
-      TEST 4/7 ( PASSED ) - Incident Tracking Identifier URN: urn:emergency:uid:incidentid
-      TEST 5/7 ( PASSED ) - Emergency Identifier String ID: incidentid:123qweasdz123qweasdz123qweasdz12:
-      TEST 6/7 ( PASSED ) - Emergency Identifier Domain: urn:emergency:uid:incidentid:123qweasdz123qweasdz123qweasdz12:test.com
-      TEST 7/7 ( PASSED ) - Resource-Priority: esnet.1
-```
-  8. **If SIPp logs have not been generated, verify Wireshark packets:**
-     *  Using Wireshark open SIP INVITE or SIP MESSAGE packet received from O-BCF on IF_ESRP_O-BCF for verification
-     *  Verify if 'To:' header field has been fixed, correct format is:
-       > To: urn:service:sos
-     *  Verify Emergency Call Identifier included in "Call-Info" header field:
-        * if header field contains "urn:emergency:uid:callid:"
-        * if "urn:emergency:uid:callid:" is followed by 10 to 32 alphanumeric characters (String ID)
-        * if String ID is followed by ":" and O-BCF domain name
-     * Verify Incident Tracking Identifier included in "Call-Info" header field:
-        * if header field contains "urn:emergency:uid:incidentid:"
-        * if "urn:emergency:uid:incidentid:" is followed by 10 to 32 alphanumeric characters (String ID)
-        * if String ID is followed by ":" and O-BCF domain name
-     * Verify Resource-Priority header field, default value should be added:
-        > Resource-Priority: esnet.1
- 
-**Conditions for TEST PASSED verdict:**
-* All steps performed for all SIPp scenarios
-* All steps performed for SIP INVITE and/or SIP MESSAGE
-* Step 7 for all scenarios printed all 7 test messages as PASSED
-* In case step 7 was improssible to check, then all checks from step 8 should be passed
+### Test Body
+#### Variations
+1. SIP_INVITE_FROM_OSP.xml
+2. SIP_INVITE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field
+3. SIP_INVITE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field
+4. SIP_INVITE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field
+5. SIP_MESSAGE_FROM_OSP.xml
+6. SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field
+7. SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field
+8. SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field
+
+#### Stimulus
+Send SIP packet to O-BCF - run following SIPp command on Test System OSP, example:
+* (TCP transport)
+  ```
+  sudo sipp -t t1 -sf SIP_INVITE_FROM_OSP.xml IF_OSP_O-BCF_IPv4:5060
+  sudo sipp -t t1 -sf SIP_MESSAGE_FROM_OSP.xml IF_OSP_O-BCF_IPv4:5060
+  ```
+* (TLS transport)
+  ```
+  sudo sipp -t l1 -tls_cert PCA-cacert.pem -tls_key PCA-cakey.pem -sf SIP_INVITE_FROM_OSP.xml IF_OSP_O-BCF_IPv4:5060
+  sudo sipp -t l1 -tls_cert PCA-cacert.pem -tls_key PCA-cakey.pem -sf SIP_MESSAGE_FROM_OSP.xml IF_OSP_O-BCF_IPv4:5060
+  ```
+
+#### Response
+Variations 1-8
+*  Using Wireshark open SIP INVITE or SIP MESSAGE packet received from O-BCF on IF_ESRP_O-BCF for verification
+*  Verify if 'To:' header field has been fixed, correct format is:
+   > To: urn:service:sos
+*  Verify Emergency Call Identifier included in "Call-Info" header field:
+  * if header field contains "urn:emergency:uid:callid:"
+  * if "urn:emergency:uid:callid:" is followed by 10 to 32 alphanumeric characters (String ID)
+  * if String ID is followed by ":" and O-BCF domain name
+* Verify Incident Tracking Identifier included in "Call-Info" header field:
+  * if header field contains "urn:emergency:uid:incidentid:"
+  * if "urn:emergency:uid:incidentid:" is followed by 10 to 32 alphanumeric characters (String ID)
+  * if String ID is followed by ":" and O-BCF domain name
+* Verify Resource-Priority header field, default value should be added:
+  > Resource-Priority: esnet.1
+
+VERDICT:
+* PASSED - if all checks passed for variation
+* FAILED - all other cases
+
 
 ### Test Postamble
 #### Test System OSP
@@ -232,13 +204,11 @@ Test can be performed with 2 different SIP transport types. Steps describing act
 
 ## Comments
 
-Version:  010.3d.1.0.11
+Version:  010.3d.2.2.12
 
-Date:     2024.07.24
-
+Date:     20241031
 
 ## Footnotes
 [^1]: SIPp - tool for SIP packet simulations. Official documentation: https://sipp.sourceforge.net/doc/reference.html#Getting+SIPp
 [^2]: Wireshark - tool for packet tracing and anaylisis. Official website: https://www.wireshark.org/download.html
 [^3]: Wireshark configuration to decrypt SIP over TLS packets: https://www.zoiper.com/en/support/home/article/162/How%20to%20decode%20SIP%20over%20TLS%20with%20Wireshark%20and%20Decrypting%20SDES%20Protected%20SRTP%20Stream
-

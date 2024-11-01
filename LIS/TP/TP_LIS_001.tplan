@@ -1,33 +1,34 @@
 TP id           : TP_LIS_001
-summary         : 'Location dereferencing using HELD'
-Version         : 010.3d.1.0.1
-Date            : 2024.07.24
-Author          : "Sebastian Wadolowski (Waverley Software)"
-RQ ref          : 'LIS_1'
-RQ ref          : 'LIS_2'
+summary         : 'Location URI dereferencing'
+Version         : 010.3d.2.0.1
+Date            : 20241029
+RQ ref          : 'LIS_1, LIS_2, LIS_7'
 TD ref          : TD_LIS_001
 config ref      : TP_LIS
 
+
 with {
-    Sender is configured to send and receive from IUT on IF_TS_LIS
-    and IUT is configured to send and receive from Sender on IF_LIS_TS
-    and IF_TS_LIS is connected to IF_LIS_TS
-    and IUT is configured with 'default configuration'
-    and IUT is in 'normal operating state'
-    and HELD_LOCATION_REQUEST is configured with LOCATION_URI is '/357yc6s64ceyoiuy5ax3o'
-    and with LIS_FQDN is 'lis.example.com'
-    and with PORT is '443'
+    Test_System is configured to send from IF_TS_LIS to IF_LIS_TS
+    and to receive from IF_LIS_TS on IF_TS_LIS
+    and locationURI is received from LIS
+    and DUT is configured with 'default configuration'
+    and DUT is in 'normal operating state'
+    and file 'Location_request' is configured with DUT URL and FQDN
+    and is configured with locationURI
+    and file 'SIP_SUBSCRIBE_FROM_LIS.xml' is configured with locationURI
 }
 
 ensure that {
     when {
-        Sender sends HELD_LOCATION_REQUEST to IUT
+        Test_System sends to DUT HTTP_request with file 'Location_request'
     }
     then {
-        IUT sends HTTP_MESSAGE to Sender
-        and HTTP_MESSAGE is '200 OK'
-        and contains 'Content-Type: application/pidf+xml'
-        and contains PIDF-LO_XML_BODY
-        and contains LOCATION_RESPONSE
+        DUT sends to Test_System HTTP_locationResponse with PIDF-LO
+    }
+    when {
+        Test_System sends to DUT SIP_SUBSCRIBE from file 'SIP_SUBSCRIBE_FROM_LIS.xml'
+    }
+    then {
+        DUT sends to Test_System SIP_NOTIFY with PIDF-LO
     }
 }
