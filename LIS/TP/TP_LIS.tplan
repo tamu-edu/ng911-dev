@@ -1,44 +1,43 @@
-TSS         : LIS
-Title       : "LIS Test Purposes"
-Version     : 010.3d.1.0.2
-Date        : 2024.07.25
-Author      : "Sebastian Wadolowski (Waverley Software)"
+TSS         : ECRF-LVF
+Title       : "ECRF-LVF Test Purposes"
+Version     : 010.3d.2.0.1
+Date        : 20241029
 
-#include 'Location_request' -- HTTP_HELD message
-#include 'SIP_SUBSCRIBE_from_LIS.xml'
+#include '../../Test_files/Config/TP/CF_MAIN_SIP'
 
  -- Cross references 
 xref LIS_Requirements_v240615 -- requirements identification document
-xref RFC5491 -- PIDF-LO
-xref RFC5139 -- PIDF-LO
 
 -- Entities
-def entity Sender is TEST_SYSTEM
-def entity Receiver is LIS
+def entity Test_System
 
--- IUT
-def entity IUT is LIS
+-- DUT
+def entity DUT is LIS
 
--- IUT interfaces
-def entity IF_LIS_TS -- interface with Test System
+-- DUT interfaces
+def entity IF_LIS_TS
 
--- TEST_SYSTEM interfaces
-def entity IF_TS_LIS -- interface with LIS
-
--- Messages
-def event HTTP_MESSAGE
-def event HELD_LOCATION_REQUEST is 'Location_request'
-def event PIDF-LO_XML_BODY
-def event SIP_NOTIFY
-def event SIP_SUBSCRIBE_PRESENCE_EVENT is from 'SIP_SUBSCRIBE_from_LIS.xml'
-def event SIP_200_OK
+-- Test_System interfaces
+def entity IF_TS_LIS
 
 -- Conditions
 def condition connected
 def condition configured
+def condition received
+
+-- Messages
+def event HTTP_request
+def event HTTP_locationResponse
+def event SIP_SUBSCRIBE
+def event SIP_NOTIFY
 
 -- Values
-def value IF_LIS_TS_IP_ADDRESS
-def value LOCATION_URI
-def value LIS_HELD_URL_LOCATION_DEREFERENCE 'http://IF_LIS_TS_IP_ADDRESS/LOCATION_URI'
-def value LOCATION_RESPONSE
+def value locationURI
+def value FQDN
+def value URL
+def value PIDF-LO
+def value expiration_time
+
+-- Keywords
+def word file
+def word between

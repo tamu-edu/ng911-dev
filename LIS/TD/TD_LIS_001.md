@@ -9,15 +9,15 @@ This test checks for LIS supplying location by reference (locationURI) at least 
 * HELD
 * SIP Presence Event Package
 
-### SIP and HTTP transport types
+### HTTP and SIP transport types
 Test can be performed with 2 different SIP and HTTP transport types. Steps describing actions for specific one are marked as following:
-- (TLS transport) - used by default inside ESInet on production environment
-- (TCP transport) - used as a fallback if use of TLS is not possible
+- (TLS transport) - should be used by default
+- (TCP transport) - used in lab for testing purposes only if default TLS is not possible
 
 ### References
 * Requirements : LIS_1, LIS_2, LIS_7
-* Test Purpose : TP_LIS_001, TP_LIS_002
-* Test Case    : 
+* Test Purpose : TP_LIS_001
+* Test Case    : TC_LIS_001
 
 
 ## Configuration
@@ -63,12 +63,13 @@ Test can be performed with 2 different SIP and HTTP transport types. Steps descr
 
 #### Test System
 * Install SIPp by following steps from documentation[^1]
-* Install NC tool[^2]
+* Install CURL[^2]
 * Install Wireshark[^3]
-* Copy following XML scenario files to local storage:
-  > SIP_SUBSCRIBE_from_LIS.xml
-* Copy following HTTP HELD scenario file to local storage:
-  > Location_request
+* Copy following scenario files to local storage:
+```
+Location_request
+SIP_SUBSCRIBE_FROM_LIS.xml
+```
 * Prepare at least one of locationURI received from LIS:
    * SIP locationURI - in example
      > 'sip:9769+357yc6s64ceyoiuy5ax3o@ls.example.com'
@@ -76,64 +77,62 @@ Test can be performed with 2 different SIP and HTTP transport types. Steps descr
      received from LIS, following part should be used to pass as '-s' parameter:
      > 9769+357yc6s64ceyoiuy5ax3o
    * HELD locationURI - example
-     > https://lis.example.com:9768/357yc6s64ceyoiuy5ax3o
+     > https://ls.example.com:9768/357yc6s64ceyoiuy5ax3o
+* In 'Location_request' file:
+   * configure LIS_FQDN to IF_LIS_TS_IP_ADDRESS
+   * configure PORT to one supported by LIS, if not received in locationURI use default:
+     * (TCP transport) configure PORT to '80'
+     * (TLS transport) configure PORT to '443'
 * (TLS transport) Copy to local storage TLS certificate and private key files:
   > cacert.pem
   > cakey.pem
 * (TLS transport) Configure Wireshark to decrypt TLS packets[^4]
+* Using Wireshark on 'Test System' start packet tracing on IF_TS_LIS interface - run following filter:
+   * (TLS transport)
+     > ip.addr == IF_TS_LIS_IP_ADDRESS and tls
+   * (TCP transport)
+     > ip.addr == IF_TS_LIS_IP_ADDRESS and (http or sip)
 
 
 ### Test Body
 
-**Following steps should be performed if LIS supports HELD:**
-1. On 'Test System' change configuration in scenario file:
-   > Location_request
-   * Change LOCATION_URI to HTTP locationURI - in example received from LIS
-     > https://ls.example.com:9768/357yc6s64ceyoiuy5ax3o
-     
-     use:
-     > /357yc6s64ceyoiuy5ax3o
-   * Configure LIS_FQDN to IF_LIS_TS_IP_ADDRESS
-   * Configure PORT to one supported by LIS, if not received in locationURI use default:
-     * (TCP transport) configure PORT to '80'
-     * (TLS transport) configure PORT to '443'
-2. Using Wireshark on 'Test System' start packet tracing on IF_TS_LIS interface - run following filter:
+**Variations**
+1. Sending HTTP request to LIS using Location_request file:
    * (TLS transport)
-     > ip.addr == IF_TS_LIS_IP_ADDRESS and tls
+     > curl -X POST LIS_URL -d "$(cat ../../Test_files/HTTP_messages/HTTP_HELD/Location_request | sed -n '/<?xml/,$p' | tr -d '\n' | tr -d '\r')"
    * (TCP transport)
-     > ip.addr == IF_TS_LIS_IP_ADDRESS and http
-2. From 'Test System' send HTTP message with HTTP POST to LIS:
+     > curl -X POST LIS_URL -d "$(cat ../../Test_files/HTTP_messages/HTTP_HELD/Location_request | sed -n '/<?xml/,$p' | tr -d '\n' | tr -d '\r')"
+
+2. Sending SIP SUBSCRIBE and then receiving SIP NOTIFY:
+   * (TCP transport)
+     > sudo sipp -t t1 -sf ../../Test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_FROM_LIS.xml -i IF_TS_LIS_IP_ADDRESS:5060 -timeout 10 -max_recv_loops 1 -s SIP_LOCATION_URI
    * (TLS transport)
-     > cat Location_request | openssl s_client -connect IF_TS_LIS_IP_ADDRESS:PORT -CAfile cacert.pem -ign_eof
-   * (TCP transport)
-     > cat Location_request | nc IF_TS_LIS_IP_ADDRESS PORT
- 3. Using Wireshark verify 200 OK response from LIS:
+     > sudo sipp -t l1 -tls_cert cacert.pem -tls_key cakey.pem -sf ../../Test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_FROM_LIS.xml -i IF_TS_LIS_IP_ADDRESS:5061 -trace_logs -trace_msg -timeout 10 -max_recv_loops 1 -s SIP_LOCATION_URI
+
+**Stimulus**
+
+Run HTTP/SIP scenario to request locationURI dereference from LIS
+
+**Response**
+
+Variation 1
+
+Using Wireshark verify 200 OK response from LIS:
    * if includes 'Content-Type: application/pidf+xml'
    * if 200 OK message includes XML with locationResponse
    * if XML body with location is correct PIDF-LO (RFC5491, RFC5139)
 
+Variation 2
 
-
-**Following steps should be performed if LIS supports SIP Presence Event Package:**
-1. Using Wireshark on 'Test System ESRP' start packet tracing on IF_ESRP_O-BCF interface - run following filter:
-   * (TLS transport)
-     > ip.addr == IF_TS_LIS_IP_ADDRESS and tls
-   * (TCP transport)
-     > ip.addr == IF_TS_LIS_IP_ADDRESS and sip
-2. Start SIP subscription scenario - run SIPp tool with following command:
-   * (TCP transport)
-     > sudo sipp -t t1 -sf SIP_SUBSCRIBE_from_LIS.xml -i IF_TS_LIS_IP_ADDRESS:5060 -trace_logs -trace_msg -timeout 10 -max_recv_loops 1 -s SIP_LOCATION_URI
-   * (TLS transport)
-     > sudo sipp -t l1 -sf SIP_SUBSCRIBE_from_LIS.xml -i IF_TS_LIS_IP_ADDRESS:5061 -trace_logs -trace_msg -timeout 10 -max_recv_loops 1 -s SIP_LOCATION_URI
-3. Using Wireshark verify 200 OK response from LIS:
+Using Wireshark verify SIP NOTIFY received from LIS:
    * if includes 'Content-Type: application/pidf+xml'
    * if SIP NOTIFY message includes XML with locationResponse
    * if XML body with location is correct PIDF-LO (RFC5491, RFC5139)
 
 
-**Conditions for TEST PASSED verdict:**
-* All steps performed for HELD and/or SIP
-* All steps have passed
+**VERDICT:**
+* PASSED - if all checks passed for variation
+* FAILED - all other cases
 
 
 ### Test Postamble
@@ -167,14 +166,14 @@ Test can be performed with 2 different SIP and HTTP transport types. Steps descr
 
 ## Comments
 
-Version:  010.3d.1.0.6
+Version:  010.3d.2.1.5
 
-Date:     2024.07.25
+Date:     20241031
 
 
 ## Footnotes
 [^1]: SIPp - tool for SIP packet simulations. Official documentation: https://sipp.sourceforge.net/doc/reference.html#Getting+SIPp
-[^2]: Netcat for Linux https://linux.die.net/man/1/nc
+[^2]: CURL for Linux https://linux.die.net/man/1/curl
 [^3]: Wireshark - tool for packet tracing and anaylisis. Official website: https://www.wireshark.org/download.html
 [^4]: Wireshark configuration to decrypt SIP over TLS packets: https://www.zoiper.com/en/support/home/article/162/How%20to%20decode%20SIP%20over%20TLS%20with%20Wireshark%20and%20Decrypting%20SDES%20Protected%20SRTP%20Stream
 

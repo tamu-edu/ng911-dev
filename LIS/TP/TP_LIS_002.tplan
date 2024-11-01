@@ -1,36 +1,26 @@
 TP id           : TP_LIS_002
-summary         : 'Location dereferencing using SIP Presence Event Package'
-Version         : 010.3d.1.0.1
-Date            : 2024.07.25
-Author          : "Sebastian Wadolowski (Waverley Software)"
-RQ ref          : 'LIS_7'
-TD ref          : TD_LIS_001
+summary         : 'Getting locationURI'
+Version         : 010.3d.2.0.1
+Date            : 20241029
+RQ ref          : 'LIS_6'
+TD ref          : TD_LIS_002
 config ref      : TP_LIS
 
+
 with {
-    Sender is configured to send and receive from IUT on IF_TS_LIS
-    and IUT is configured to send and receive from Sender on IF_LIS_TS
-    and IF_TS_LIS is connected to IF_LIS_TS
-    and IUT is configured with 'default configuration'
-    and IUT is in 'normal operating state'
-    and SIP_LOCATION_URI is 'sip:9769+357yc6s64ceyoiuy5ax3o@lis.example.com'
-    and SIP_SUBSRIBE_PRESENCE_EVENT contains SIP_LOCATION_URI
-
-
-    and HELD_LOCATION_REQUEST is configured with LOCATION_URI is '/357yc6s64ceyoiuy5ax3o'
-    and with LIS_FQDN is 'lis.example.com'
-    and with PORT is '443'
+    Test_System is configured to send from IF_TS_LIS to IF_LIS_TS
+    and to receive from IF_LIS_TS on IF_TS_LIS
+    and DUT is configured with 'default configuration'
+    and DUT is in 'normal operating state'
+    and file 'Location_request_for_locationURI' is configured with DUT URL and FQDN
 }
 
 ensure that {
     when {
-        Sender sends SIP_SUBSRIBE_PRESENCE_EVENT to IUT
-        and IUT sends SIP_200_OK
+        Test_System sends to DUT HTTP_request from file 'Location_request_for_locationURI'
     }
     then {
-        IUT sends SIP_NOTIFY to Sender
-        and SIP_NOTIFY contains 'Content-Type: application/pidf+xml'
-        and SIP_NOTIFY contains PIDF-LO_XML_BODY
-        and contains LOCATION_RESPONSE
+        DUT sends to Test_System HTTP_locationResponse with locationURI
+        and HTTP_locationResponse expiration_time is between '30 minutes' and '24 hours'
     }
 }

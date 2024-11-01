@@ -1,17 +1,17 @@
 # Next Generation 9-1-1
 
-Repository Name:	ng911-dev
+Repository Name:	ng911-exp
 
 **Revision: NENA-STA-010.3d-2021**
 
-**Release: 001**
+**Release: 2**
 
-Link to bookmark:	https://github.com/tamu-edu/ng911-dev
+Link to bookmark:	https://github.com/tamu-edu/ng911-exp/tree/010.3d-2021/release_2
 
-This repository is currently managed by the Texas A&M University (TAMU) Internet2 Technology Evaluation Center (ITEC).
+This repository is managed by the Texas A&M University (TAMU) Internet2 Technology Evaluation Center (ITEC).
 
 ## Purpose
-This repo is used by the TAMU ITEC development team to create draft releases of conformance and end-to-end tests for the NG911 testing environment.  The rate of change should be low, but may be adjusted based on the completion of milestones within the project.  Once governance is transitioned to a self-sustaining group this will be further adapted for the long-term maintenance of the program.
+This repo is used by the TAMU ITEC development team to experiment with document templates, repository structure, workflow, and other components of the NG911 testing environment.  Once the details are worked out and documented, the appropriate content will be moved to the public repo.  This prevents confusing the public repo users with experimental changes.
 
 ## Usage Policies
 

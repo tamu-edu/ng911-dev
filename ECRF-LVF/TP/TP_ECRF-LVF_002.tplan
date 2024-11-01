@@ -1,0 +1,44 @@
+TP id           : TP_ECRF-LVF_002
+summary         : 'Civic and geodetic locations handling'
+Version         : 010.3d.2.0.1
+Date            : 20241029
+RQ ref          : 'ECRF-LVF_46, ECRF-LVF_22, ECRF-LVF_53'
+TD ref          : TD_ECRF-LVF_002
+config ref      : TP_ECRF-LVF
+
+
+with {
+    Test_System is configured to send from IF_TS_ECRF-LVF to IF_ECRF-LVF_TS
+    and to receive from IF_ECRF-LVF_TS on IF_TS_ECRF-LVF
+    and DUT is configured with 'default configuration'
+    and DUT is in 'normal operating state'
+    and DUT is provisioned
+    and file 'findService_geodetic_point' is configured with DUT URL and FQDN
+    and is configured with location from DUT service_boundary
+    and file 'findService_geodetic_circle' is configured with DUT URL and FQDN
+    and is configured with location from DUT service_boundary
+    and file 'findService_geodetic_ellipse' is configured with DUT URL and FQDN
+    and is configured with location from DUT service_boundary
+    and file 'findService_geodetic_arc-band' is configured with DUT URL and FQDN
+    and is configured with location from DUT service_boundary
+    and file 'findService_geodetic_polygon' is configured with DUT URL and FQDN
+    and is configured with location from DUT service_boundary
+    and file 'findService_civic_address' is configured with DUT URL and FQDN
+    and is configured with location from DUT service_boundary
+}
+
+ensure that {
+    when {
+        Test_System sends to DUT HTTP_request with file 'findService_geodetic_point'
+        or with file 'findService_geodetic_circle'
+        or with file 'findService_geodetic_ellipse'
+        or with file 'findService_geodetic_arc-band'
+        or with file 'findService_geodetic_polygon'
+        or with file 'findService_civic_address'
+    }
+    then {
+        DUT sends to Test_System HTTP_findServiceResponse with service_boundary
+        and with SIP_URI
+        and optionally with '<serviceNumber>911</serviceNumber>'
+    }
+}
