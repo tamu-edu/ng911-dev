@@ -1,8 +1,8 @@
 #!/bin/bash
 # --------------------------------------------------------------------
 #
-# Version: 	010.3d.2.0.2
-# Date:		20241024
+# Version: 	010.3d.2.0.3
+# Date:		20241105
 #
 # REQUIREMENTS:
 # - installed SIPp
@@ -281,6 +281,10 @@ function then_SIP_INVITE_received_contains_default_PIDF_LO(){
 	else
 		TESTS+=("error")
 	fi
+ 	if [[ `grep "SIP" ${CURRENT_SCENARIO}.log` = "" ]]; then
+		echo "ERROR - SIP response not found TEST ${#TESTS[@]} = error" >&2
+		return 1
+	fi
 	cat $EXPECTED_DEFAULT_PIDF_LO | tr -d ' ' > DEFAULT_PIDF_FILE.tmp
 	cat ${CURRENT_SCENARIO}.log | tr -d ' ' > SCENARIO_PIDF_FILE.tmp
 	sed -i '/timestamp/d' DEFAULT_PIDF_FILE.tmp
@@ -301,6 +305,10 @@ function then_SIP_INVITE_received_contains_Geolocation_pointing_to_PIDF_LO(){
 		return 1
 	else
 		TESTS+=("error")
+	fi
+ 	if [[ `grep "SIP" ${CURRENT_SCENARIO}.log` = "" ]]; then
+		echo "ERROR - SIP response not found TEST ${#TESTS[@]} = error" >&2
+		return 1
 	fi
 	original_geolocation_header_fields=`cat ${CURRENT_SCENARIO}_sender.log | grep "Geolocation" | awk '{print $2}'`
 	received_geolocation_header_fields=`cat ${CURRENT_SCENARIO}.log | grep "Geolocation" | awk '{print $2}' | sed 's/^<cid://' | cut -d '>' -f1 | cut -d '<' -f2`
@@ -329,6 +337,10 @@ function then_SIP_INVITE_received_contains_Geolocation_added_on_top(){
 	else
 		TESTS+=("error")
 	fi
+ 	if [[ `grep "SIP" ${CURRENT_SCENARIO}.log` = "" ]]; then
+		echo "ERROR - SIP response not found TEST ${#TESTS[@]} = error" >&2
+		return 1
+	fi
 	original_geolocation_header_fields=`cat ${CURRENT_SCENARIO}_sender.log | grep "Geolocation" | awk '{print $2}'`
 	Geolocation_on_top_received_SIP_INVITE=`cat ${CURRENT_SCENARIO}.log | grep -m1 "Geolocation" | awk '{print $2}' | tr -d '\n' | tr -d '\r' | tr -d ' '`
 	for original_geolocation in $original_geolocation_header_fields; do
@@ -349,6 +361,10 @@ function then_SIP_INVITE_received_contains_original_Geolocation(){
 	else
 		TESTS+=("error")
 	fi
+ 	if [[ `grep "SIP" ${CURRENT_SCENARIO}.log` = "" ]]; then
+		echo "ERROR - SIP response not found TEST ${#TESTS[@]} = error" >&2
+		return 1
+	fi
 	original_geolocation_header_fields=`cat ${CURRENT_SCENARIO}_sender.log | grep "Geolocation" | awk '{print $2}'`
 	for original_geolocation in $original_geolocation_header_fields; do
 		if [[ `cat ${CURRENT_SCENARIO}.log | grep -F "$original_geolocation" | tr -d '\n' | tr -d '\r' | tr -d ' '` = "" ]]; then
@@ -366,6 +382,10 @@ function then_SIP_INVITE_received_contains_original_PIDF_LO(){
 		return 1
 	else
 		TESTS+=("error")
+	fi
+ 	if [[ `grep "SIP" ${CURRENT_SCENARIO}.log` = "" ]]; then
+		echo "ERROR - SIP response not found TEST ${#TESTS[@]} = error" >&2
+		return 1
 	fi
 	rm original_PIDF_LO.tmp 2> /dev/null
 	while IFS= read -r line; do
