@@ -1,8 +1,8 @@
 #!/bin/bash
 # --------------------------------------------------------------------
 #
-# Version: 	010.3d.2.0.1
-# Date:		20241028
+# Version: 	010.3d.2.0.2
+# Date:		20241105
 #
 # REQUIREMENTS:
 # - installed SIPp, openssl
@@ -266,6 +266,10 @@ function then_SIP_INVITE_received_contains_Via_header_field_specifying_ESRP(){
 	else
 		TESTS+=("error")
 	fi
+ 	if [[ `grep "SIP" ${CURRENT_SCENARIO}.log` = "" ]]; then
+		echo "ERROR - SIP response not found TEST ${#TESTS[@]} = error" >&2
+		return 1
+	fi
 	received_Via_header_fields_addresses=`cat ${CURRENT_SCENARIO}.log | grep "Via" | awk '{print $3}'`
 	esrp_address_port=`cat ${CURRENT_SCENARIO}.log | grep "From" | cut -d '@' -f2 | cut -d ';' -f1 | cut -d '>' -f1`
 	for address_port in $received_Via_header_fields_addresses; do
@@ -286,6 +290,10 @@ function then_SIP_INVITE_received_contains_Route_header_field_with_queue_URI(){
 	else
 		TESTS+=("error")
 	fi
+ 	if [[ `grep "SIP" ${CURRENT_SCENARIO}.log` = "" ]]; then
+		echo "ERROR - SIP response not found TEST ${#TESTS[@]} = error" >&2
+		return 1
+	fi
 	queue_uri=`cat $HTTP_RECEIVER_SCENARIOS_PATH/$HTTP_RECEIVER_SCENARIO_FILE | grep "sip:" | cut -d '>' -f2 | cut -d '<' -f1 | tr -d '\n' | tr -d '\r'`
 	received_queue_uri=`cat ${CURRENT_SCENARIO}.log | grep "Route:" | awk '{print $2}' | cut -d '<' -f2 | cut -d '>' -f1 | tr -d '\n' | tr -d '\r'`
 	received_queue_uri=`echo $received_queue_uri | awk -F';' '{print $1}'`
@@ -305,6 +313,10 @@ function then_SIP_INVITE_received_contains_Route_header_field_containing_lr(){
 	else
 		TESTS+=("error")
 	fi
+ 	if [[ `grep "SIP" ${CURRENT_SCENARIO}.log` = "" ]]; then
+		echo "ERROR - SIP response not found TEST ${#TESTS[@]} = error" >&2
+		return 1
+	fi
 	received_queue_uri=`cat ${CURRENT_SCENARIO}.log | grep "Route:" | cut -d '<' -f2 | cut -d '>' -f1 | tr -d '\n' | tr -d '\r'`
 	lr=`echo $received_queue_uri | cut -d ';' -f2 | tr -d ' '`
 	if [[ $lr != "lr" ]]; then
@@ -321,6 +333,10 @@ function then_SIP_INVITE_received_contains_Emergency_Call_ID(){
 		return 1
 	else
 		TESTS+=("error")
+	fi
+ 	if [[ `grep "SIP" ${CURRENT_SCENARIO}.log` = "" ]]; then
+		echo "ERROR - SIP response not found TEST ${#TESTS[@]} = error" >&2
+		return 1
 	fi
 	call_info_emergency_call_id=`cat ${CURRENT_SCENARIO}.log | grep "Call-Info" | grep -m1 "urn:emergency:uid:callid"`
 	id_string=`echo $call_info_emergency_call_id | rev | cut -d ':' -f2 | rev`
@@ -347,6 +363,10 @@ function then_SIP_INVITE_received_contains_Incident_Tracking_ID(){
 		return 1
 	else
 		TESTS+=("error")
+	fi
+ 	if [[ `grep "SIP" ${CURRENT_SCENARIO}.log` = "" ]]; then
+		echo "ERROR - SIP response not found TEST ${#TESTS[@]} = error" >&2
+		return 1
 	fi
 	call_info_incident_id=`cat ${CURRENT_SCENARIO}.log | grep "Call-Info" | grep -m1 "urn:emergency:uid:incidentid"`
 	id_string=`echo $call_info_incident_id | rev | cut -d ':' -f2 | rev`
@@ -385,6 +405,10 @@ function then_SIP_INVITE_received_contains_original_header_fields(){
 		return 1
 	else
 		TESTS+=("error")
+	fi
+ 	if [[ `grep "SIP" ${CURRENT_SCENARIO}.log` = "" ]]; then
+		echo "ERROR - SIP response not found TEST ${#TESTS[@]} = error" >&2
+		return 1
 	fi
 	sip_invite_read=false
 	while IFS= read -r line; do
