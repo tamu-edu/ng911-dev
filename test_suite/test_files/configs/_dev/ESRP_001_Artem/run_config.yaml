@@ -1,0 +1,88 @@
+run_config:
+  global:
+    response_timeout: 30
+    type: "conformance"
+    report_files:
+      - type: "pdf"
+        path: "CTR.pdf"
+      - type: "docx"
+        path: "CTR.docx"
+      - type: "xml"
+        path: "CTR.xml"
+      - type: "csv"
+        path: "CTR.csv"
+      - type: "json"
+        path: "CTR.json"
+    log:
+      level: "DEBUG"
+      output_file: "test_files/logs/logger.log"
+  tests:
+  - name: "ESRP_001"
+    requirements:
+    - name: "RQ_ESRP_005"
+      variations: [
+        "all",
+      ]
+    - name: "RQ_ESRP_006"
+      variations: [
+        "all",
+      ]
+    - name: "RQ_ESRP_007"
+      variations: [
+        "all",
+      ]
+    - name: "RQ_ESRP_008"
+      variations: [
+        "all",
+      ]
+    variations:
+    - name: "QueueState update after changing ServiceState"
+      mode: 'online'
+      pcap_file: '# OPTIONAL'
+      params:
+        messages:
+        - action: "send"
+          id: "send_subscribe_servicestate"
+          next_action: "send_subscribe_qstate"
+          prep_steps: []
+          type: "SIP"
+          method: "SUBSCRIBE"
+          response_code: ''
+          http_url: ''
+          body: ''
+          sipp_scenario:
+            scenario_file_path: "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_ServiceState.xml"
+            kwargs: {}
+            save_response_as: "ESRP_001_ServiceState_response.log"
+            save_log_as: "ESRP_001_ServiceState.log"
+          run_in_background: 'True'
+        - action: "send"
+          id: "send_subscribe_qstate"
+          prep_steps: []
+          type: "SIP"
+          method: "SUBSCRIBE"
+          response_code: ''
+          http_url: ''
+          body: ''
+          sipp_scenario:
+            scenario_file_path: "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_QueueState.xml"
+            kwargs: {}
+            save_response_as: "ESRP_001_QueueState_response.log"
+            save_log_as: "ESRP_001_QueueState.log"
+          run_in_background: 'True'
+        - action: "manual"
+          instead: ""
+          type: ""
+          method: ""
+          prompt: "MANUAL ACTION REQUIRED - please simulate change of ServiceState to 'Down' 
+                            and press any key to continue..."
+          next_action: "send_subscribe_servicestate"
+      filtering_options:
+      - message_type: 'stimulus'
+        src_interface: 'IF_ESRP_TS'
+        dst_interface: 'IF_TS_ESRP'
+        sip_method: 'NOTIFY'
+        http_request_method: ''
+        response_status_code: ''
+        header_contains: ''
+        body_contains: ''

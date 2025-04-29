@@ -1,0 +1,65 @@
+test_config:
+  conformance:
+    tests:
+      - name: "CHE_003"
+        variations:
+          - name: "CHE_003_variation_1"
+            description: "Validate SDP answer from CHE on 'SIP INVITE + SDP' without language tags"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "SIP_INVITE_SDP_with_audio_required.xml",
+                    kwargs: {},
+                    save_response_as: "",
+                    save_log_as: "SIP_INVITE_SDP_with_audio_required.log"
+                  }
+          - name: "CHE_003_variation_2"
+            description: "Validate SDP answer from CHE on 'SIP INVITE + SDP' with language tags"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "SIP_INVITE_SDP_with_language_tags.xml",
+                    kwargs: {},
+                    save_response_as: "",
+                    save_log_as: "SIP_INVITE_SDP_with_language_tags.log"
+                  }
+          - name: "CHE_003_variation_3"
+            description: "Validate SDP offer from CHE for outgoing calls"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "SIP_INVITE_RECEIVE.xml",
+                    kwargs: {},
+                    save_response_as: "",
+                    save_log_as: "SIP_INVITE_RECEIVE.log"
+                  }
+        requirements:
+          - name: "RQ_CHE_008"
+            variations: [
+              "CHE_003_variation_1",
+              "CHE_003_variation_2",
+              "CHE_003_variation_3"
+            ]
+          - name: "RQ_CHE_009"
+            variations: ["CHE_003_variation_2"]

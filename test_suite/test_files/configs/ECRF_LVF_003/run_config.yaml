@@ -1,0 +1,69 @@
+"run_config":
+  "global":
+    "response_timeout": 30
+    "type": "conformance"
+    "report_files":
+    - "type": "pdf"
+      "path": "CTR.pdf"
+    - "type": "docx"
+      "path": "CTR.docx"
+    - "type": "xml"
+      "path": "CTR.xml"
+    - "type": "csv"
+      "path": "CTR.csv"
+    - "type": "json"
+      "path": "CTR.json"
+    "log":
+      "level": "DEBUG"
+      "output_file": "test_files/logs/logger.log"
+  "tests":
+  - "name": "ECRF_LVF_003"
+    "requirements":
+    - "name": "RQ_ECRF-LVF_011"
+      "variations":
+      - "findService_polygon_covering_fully_one_and_partially_another_boundary"
+    "variations":
+    - "name": "findService_polygon_covering_fully_one_and_partially_another_boundary"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "200"
+          "http_url": "/lost"
+          "body": "file.test_files/HTTP_messages/HTTP_LoST/findService_polygon_covering_fully_one_and_partially_another_boundary"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_ECRF-LVF"
+        "dst_interface": "IF_ECRF-LVF_TS"
+        "http_request_method": "POST"
+        "response_status_code": "200"
+        "header_contains":
+        "body_contains":
+    - "name": "findService_polygon_covering_fully_two_boundaries"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "200"
+          "http_url": "/lost"
+          "body": "file.test_files/HTTP_messages/HTTP_LoST/findService_polygon_covering_fully_two_boundaries"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_ECRF-LVF"
+        "dst_interface": "IF_ECRF-LVF_TS"
+        "http_request_method": "POST"
+        "response_status_code": "200"
+        "header_contains":
+        "body_contains":

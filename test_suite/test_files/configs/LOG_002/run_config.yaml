@@ -1,0 +1,666 @@
+"run_config":
+  "global":
+    "response_timeout": 30
+    "type": "conformance"
+    "report_files":
+    - "type": "pdf"
+      "path": "CTR.pdf"
+    - "type": "docx"
+      "path": "CTR.docx"
+    - "type": "xml"
+      "path": "CTR.xml"
+    - "type": "csv"
+      "path": "CTR.csv"
+    - "type": "json"
+      "path": "CTR.json"
+    "log":
+      "level": "DEBUG"
+      "output_file": "test_files/logs/logger.log"
+  "tests":
+  - "name": "LOG_002"
+    "requirements":
+    - "name": "RQ_LOG_028"
+      "variations":
+      - "all"
+    - "name": "RQ_LOG_029"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "Request_with_incorrect_limit_send_string"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?limit=test"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_limit_send_empty"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?limit="
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_limit_send_space"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?limit=%20"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_limit_exceed_64bit_uint"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?limit=18446744073709551616"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_limit_negative_exceed_64bit"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?limit=-9223372036854775809"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_start_send_string"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?start=test"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_start_send_empty"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?start="
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_start_send_space"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?start=%20"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_start_exceed_64bit_uint"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?start=18446744073709551616"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_start_less_than_one"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?start=0"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_logEventType_typo"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?logEventType=CallProcessLogEventt"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_startTime_send_space"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=%20"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_startTime_bad_year"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=20155-08-21T12%3A58%3A03.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_startTime_bad_month"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-13-21T12%3A58%3A03.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_startTime_bad_day"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-12-32T12%3A58%3A03.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_startTime_bad_hour"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-12-21T24%3A58%3A03.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_startTime_bad_minutes"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-12-21T12%3A60%3A03.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_startTime_bad_seconds"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-12-21T12%3A58%3A61.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_startTime_offset_exceeded"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-12-21T12%3A58%3A61.01%2D13%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_startTime_february_day"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-02-30T12%3A58%3A61.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_endTime_send_space"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=%20"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_endTime_bad_year"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=20155-08-21T12%3A58%3A03.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_endTime_bad_month"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-13-21T12%3A58%3A03.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_endTime_bad_day"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-12-32T12%3A58%3A03.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_endTime_bad_hour"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-12-21T24%3A58%3A03.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_endTime_bad_minutes"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-12-21T12%3A60%3A03.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_endTime_bad_seconds"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-12-21T12%3A58%3A61.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_endTime_offset_exceeded"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-12-21T12%3A58%3A61.01%2D13%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_endTime_february_day"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-02-30T12%3A58%3A61.01%2D05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":

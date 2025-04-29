@@ -1,0 +1,64 @@
+run_config:
+  global:
+    response_timeout: 30
+    type: "conformance"
+    report_files:
+      - type: "pdf"
+        path: "CHE_001_CTR.pdf"
+    log:
+      level: "DEBUG"
+      output_file: "test_files/logs/CHE_001.log"
+  tests:
+    - name: "CHE_001"
+      requirements:
+        - name: "RQ_CHE_011"
+          variations: ["CHE_001_variation_1", "CHE_001_variation_2"]
+      variations:
+        - name: "CHE_001_variation_1"
+          mode: "online" # pcap / online
+          pcap_file: "" # optional
+          params: # optional - only for online required
+            stimulus_message: ""
+            headers: ["", ""]
+          filtering_options: # optional
+            stimulus_message:
+              src_interface: "IF_TSSIP_CHE"
+              dst_interface: "IF_CHE_TSSIP"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+            output_message:
+              src_interface: "IF_CHE_TSLIS-HTTP"
+              dst_interface: "IF_TSLIS-HTTP_CHE"
+              sip_method: "" #  leave empty if not needed
+              http_request_method: "POST" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+        - name: "CHE_001_variation_2"
+          mode: "online" # pcap / online
+          pcap_file: "" # optional
+          params: # optional - only for online required
+            stimulus_message: ""
+            headers: ["", ""]
+          filtering_options: # optional
+            stimulus_message:
+              - src_interface: "IF_TSSIP_CHE"
+                dst_interface: "IF_CHE_TSSIP"
+                sip_method: "INVITE" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+              - src_interface: "IF_TSLIS-SIP_CHE"
+                dst_interface: "IF_CHE_TSLIS-SIP"
+                sip_method: "NOTIFY" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+            output_message:
+              - src_interface: "IF_CHE_TSLIS-SIP"
+                dst_interface: "IF_TSLIS-SIP_CHE"
+                sip_method: "SUBSCRIBE" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+              - src_interface: "IF_CHE_TSLIS-SIP"
+                dst_interface: "IF_TSLIS-SIP_CHE"
+                sip_method: "OK" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed

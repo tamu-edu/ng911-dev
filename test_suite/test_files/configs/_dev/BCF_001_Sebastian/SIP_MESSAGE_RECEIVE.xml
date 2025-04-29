@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.3.0.1
+  Date:      20250418
+
+-->
+<scenario name="SIP_MESSAGE_RECEIVE">
+	<recv request="MESSAGE"></recv>
+</scenario>
