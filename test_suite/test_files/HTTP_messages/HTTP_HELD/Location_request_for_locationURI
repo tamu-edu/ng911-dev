@@ -1,0 +1,6 @@
+<held:locationRequest xmlns:held="urn:ietf:params:xml:ns:geopriv:held">
+  <held:locationType exact="false">locationURI</held:locationType>
+    <device xmlns="urn:ietf:params:xml:ns:geopriv:held:id">
+      <uri>tel:DEVICE_URI</uri>
+    </device>
+</held:locationRequest>

@@ -1,0 +1,119 @@
+test_config:
+  conformance:
+    tests:
+      - name: "BCF_001"
+        variations:
+          - name: "SIP_INVITE_FROM_OSP.xml"
+            description: "Adding CallID, IncidentID and Resource Priority to SIP INVITE from OSP"
+            params:
+              stimulus_message: "SIP_INVITE_FROM_OSP.xml"
+              headers: ["Call-Info", "Resource-Priority"]
+          - name: "SIP_INVITE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field"
+            description: "Adding CallID, IncidentID and Resource Priority to incorrect SIP INVITE from OSP"
+            params:
+              stimulus_message: "SIP_INVITE_FROM_OSP_INCORRECT_1.xml"
+              headers: ["Call-Info", "Resource-Priority"]
+          - name: "SIP_INVITE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field"
+            description: "Adding CallID, IncidentID and Resource Priority to incorrect SIP INVITE from OSP"
+            params:
+              stimulus_message: "SIP_INVITE_FROM_OSP_INCORRECT_2.xml"
+              headers: ["Call-Info", "Resource-Priority"]
+          - name: "SIP_INVITE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field"
+            description: "Adding CallID, IncidentID and Resource Priority to incorrect SIP INVITE from OSP"
+            params:
+              stimulus_message: "SIP_INVITE_FROM_OSP_INCORRECT_3.xml"
+              headers: ["Call-Info", "Resource-Priority"]
+          - name: "SIP_MESSAGE_FROM_OSP.xml"
+            description: "Adding CallID, IncidentID and Resource Priority to SIP MESSAGE from OSP"
+            params:
+              stimulus_message: "SIP_MESSAGE_FROM_OSP.xml"
+              headers: ["Call-Info", "Resource-Priority"]
+          - name: "SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field"
+            description: "Adding CallID, IncidentID and Resource Priority to incorrect SIP MESSAGE from OSP"
+            params:
+              stimulus_message: "SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml"
+              headers: ["Call-Info", "Resource-Priority"]
+          - name: "SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field"
+            description: "Adding CallID, IncidentID and Resource Priority to incorrect SIP MESSAGE from OSP"
+            params:
+              stimulus_message: "SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml"
+              headers: ["Call-Info", "Resource-Priority"]
+          - name: "SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field"
+            description: "Adding CallID, IncidentID and Resource Priority to incorrect SIP MESSAGE from OSP"
+            params:
+              stimulus_message: "SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml"
+              headers: ["Call-Info", "Resource-Priority"]
+        requirements:
+          - name: "RQ_BCF_001"
+            variations: [
+              "SIP_INVITE_FROM_OSP.xml", 
+              "SIP_INVITE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP.xml", 
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field"
+            ]
+          - name: "RQ_BCF_002"
+            variations: [
+              "SIP_INVITE_FROM_OSP.xml", 
+              "SIP_INVITE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP.xml", 
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field"
+            ]
+          - name: "RQ_BCF_003"
+            variations: [
+              "SIP_INVITE_FROM_OSP.xml", 
+              "SIP_INVITE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP.xml", 
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field"
+            ]
+          - name: "RQ_BCF_005"
+            variations: [
+              "SIP_INVITE_FROM_OSP.xml", 
+              "SIP_INVITE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP.xml", 
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field"
+            ]
+          - name: "RQ_BCF_007"
+            variations: [
+              "SIP_INVITE_FROM_OSP.xml", 
+              "SIP_INVITE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP.xml", 
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field"
+            ]
+          - name: "RQ_BCF_009"
+            variations: [
+              "SIP_INVITE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field"
+            ]
+          - name: "RQ_BCF_010"
+            variations: [
+              "SIP_INVITE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_INVITE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field",
+              "SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field"
+            ]

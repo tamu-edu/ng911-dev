@@ -1,0 +1,22 @@
+test_config:
+  conformance:
+    tests:
+      - name: "Test of BCF element"
+        variations:
+          - name: "Name of the variation 1"
+            description: "Description of the variation"
+            params:
+              stimulus_message: ""
+              headers: ["", ""]
+          - name: "Name of the variation 2"
+            description: "Description of the variation"
+            params:
+              stimulus_message: ""
+              headers: ["", ""]
+        requirements:
+          - name: "RQ_BCF_001"
+            variations: ["Name of the variation 1", ]
+          - name: "RQ_BCF_002"
+            variations: ["Name of the variation 1", "Name of the variation 2"]
+
+
