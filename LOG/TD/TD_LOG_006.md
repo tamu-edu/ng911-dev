@@ -11,7 +11,7 @@ Response for HTTP GET on /CallIds
 Test covers Logging Service HTTP GET requests verification on /CallIds and sending a response
 
 ### References
-* Requirements : RQ_LOG_042, RQ_LOG_043, RQ_LOG_044
+* Requirements : RQ_LOG_042, RQ_LOG_044
 * Test Case    : 
 
 ### Requirements
@@ -409,9 +409,9 @@ VERDICT:
 
 ## Comments
 
-Version:  010.3f.3.1.5
+Version:  010.3f.3.1.6
 
-Date:     20250429
+Date:     20250505
 
 ## Footnotes
 [^1]: Wireshark - tool for packet tracing and anaylisis. Official website: https://www.wireshark.org/download.html
