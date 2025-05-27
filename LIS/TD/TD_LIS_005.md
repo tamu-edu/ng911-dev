@@ -15,7 +15,7 @@ This test checks if LIS accepts only PCA traceable certificates
 
 ### References
 * Requirements : RQ_LIS_005. RQ_LIS_008
-* Test Case    : 
+* Test Case    : TC_LIS_005
 
 
 ## Configuration
@@ -48,7 +48,7 @@ This test checks if LIS accepts only PCA traceable certificates
 * Interfaces are connected to network
 * Interfaces have IP addresses assigned by DHCP
 * Device is active
-* Test System has it's own certificate signed by PCA
+* Test System has it's own certificate signed by PCA (test_system_PCA.crt, test_system_PCA.key)
 
 ### LIS
 * location is supplied by reference
@@ -67,13 +67,14 @@ This test checks if LIS accepts only PCA traceable certificates
 #### Test System
 * Install Openssl[^1]
 * Install Wireshark[^2]
-* Copy following HTTP scenario files to local storage:
-  > HTTP_HELD_location_request
+* Install SIPp by following steps from documentation[^4]
+* Copy following SIPp scenario file to local storage:
+  > SIP_SUBSCRIBE_from_LIS.xml
 * Copy to local storage PCA-signed TLS certificate and private key files:
   > cacert.pem
   > cakey.pem
 * Generate self-signed certificate:
-  > openssl req -x509 -newkey rsa:4096 -keyout self-signed-key.pem -out self-signed-cert.pem -sha256 -days 365
+  > openssl req -x509 -newkey rsa:4096 -keyout self-signed.key -out self-signed.crt -sha256 -days 365
 * Configure Wireshark to decode HTTP over TLS packets[^3]
 * Using Wireshark on 'Test System' start packet tracing on IF_TS_LIS interface - run following filter:
      > ip.addr == IF_TS_LIS_IP_ADDRESS and tls
@@ -82,11 +83,17 @@ This test checks if LIS accepts only PCA traceable certificates
 
 #### Variations 
 1. Self-signed certificate
+
+Use generated self-signed certificate and key files: self-signed.crt, self-signed.key
+
 2. PCA-signed certificate
 
-#### Variations 
+Use PCA signed certificate and key files: test_system_PCA.crt, test_system_PCA.key
+
+#### Stimulus
 From 'Test System' try to send HTTP message to LIS:
-     > cat HTTP_HELD_get_location | openssl s_client -connect IF_TS_LIS_IP_ADDRESS:443 -CAfile CERTIFICATE -ign_eof
+
+     > sudo sipp -t l1 -tls_cert CERTIFICATE_FILE -tls_key KEY_FILE -sf SIP_SUBSCRIBE_from_LIS.xml -i IF_TS_LIS IF_LIS_TS:5061
 
 #### Response
 
@@ -109,7 +116,7 @@ Using Wireshark verify:
 * stop all Openssl processes (if still running)
 * archive all logs generated
 * stop Wireshark (if still running)
-* remove all HTTP scenarios
+* remove all SIPp scenarios
 * disconnect interfaces from LIS
 
 #### LIS
@@ -135,13 +142,13 @@ Using Wireshark verify:
 
 ## Comments
 
-Version:  010.3d.3.1.4
+Version:  010.3d.3.1.5
 
-Date:     20250429
+Date:     20250508
 
 
 ## Footnotes
 [^1]: Openssl for Linux https://www.openssl.org/docs/
 [^2]: Wireshark - tool for packet tracing and anaylisis. Official website: https://www.wireshark.org/download.html
 [^3]: Wireshark configuration to decrypt SIP over TLS packets: https://www.zoiper.com/en/support/home/article/162/How%20to%20decode%20SIP%20over%20TLS%20with%20Wireshark%20and%20Decrypting%20SDES%20Protected%20SRTP%20Stream
-
+[^4]: SIPp - tool for SIP packet simulations. Official documentation: https://sipp.sourceforge.net/doc/reference.html#Getting+SIPp

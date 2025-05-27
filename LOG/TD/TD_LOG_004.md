@@ -11,8 +11,8 @@ Response for HTTP GET on /LogEvents and /LogEvents/{logEventId}
 Test covers Logging Service HTTP GET requests verification on /LogEvents/ and /LogEvents/{logEventId} and sending a response
 
 ### References
-* Requirements : RQ_LOG_030, RQ_LOG_031, RQ_LOG_032, RQ_LOG_034
-* Test Case    : 
+* Requirements : RQ_LOG_030, RQ_LOG_032, RQ_LOG_034
+* Test Case    : TC_LOG_004
 
 ### Requirements
 IXIT config file for Logging Service
@@ -283,9 +283,9 @@ VERDICT:
 
 ## Comments
 
-Version:  010.3f.3.0.11-requirements-under-clarification
+Version:  010.3f.3.0.12-requirements-under-clarification
 
-Date:     20250429
+Date:     20250430
 
 ## Footnotes
 [^1]: Wireshark - tool for packet tracing and anaylisis. Official website: https://www.wireshark.org/download.html

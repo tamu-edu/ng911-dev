@@ -8,7 +8,7 @@ Test covers if stored policies are byte-for-byte unaltered
 
 ### References
 * Requirements : RQ_PS_039
-* Test Case    :
+* Test Case    : TC_PS_008
 
 ### Requirements
 IXIT config file for Policy Store

@@ -11,8 +11,8 @@ Response for HTTP GET on /CallIds
 Test covers Logging Service HTTP GET requests verification on /CallIds and sending a response
 
 ### References
-* Requirements : RQ_LOG_042, RQ_LOG_044
-* Test Case    : 
+* Requirements : RQ_LOG_042, RQ_LOG_043, RQ_LOG_044
+* Test Case    : TC_LOG_006
 
 ### Requirements
 IXIT config file for Logging Service
@@ -402,10 +402,11 @@ VERDICT:
 
 ## Sequence Diagram
 <!--
-[![](https://mermaid.ink/img/pako:eNq1kV1rwjAUhv9KOLdrJf0wNbkQBrsY7EOhZcjITWiPNduauDSVOfG_r1aHsl2O5SoJ7_OeA88OSlshCAjDUJrSmqWuhTSENNo5665Lb10ryFK9tSjNEGrxvUNT4o1WtVPNIXw8j9YjsRt0pMDWk3zbemwCcm_rWpua5Og2ukRBnpTTymtrSBQm6Zm_oMLp9OoXd1sUczKf5cUZ-ZE5YBctJyRdLP6yZDL-_xVjSsnsjlyRl9YaCKBB1yhd9V52hyYJfoUNShD9tVLuVYI0-z6nOm_zrSlBeNdhAN26Uv7bDIhBWwBrZZ6tPb-x0r3Wh6P4wf-QAbGDDxBRzEYR45xnCeV8wrM4gC2I_jehMY3iCeeU8ihl-wA-h9p0FDPGaJaxKJkkdJwF4GxXr04D918eqr5-?type=png)](https://mermaid.live/edit#pako:eNq1kV1rwjAUhv9KOLdrJf0wNbkQBrsY7EOhZcjITWiPNduauDSVOfG_r1aHsl2O5SoJ7_OeA88OSlshCAjDUJrSmqWuhTSENNo5665Lb10ryFK9tSjNEGrxvUNT4o1WtVPNIXw8j9YjsRt0pMDWk3zbemwCcm_rWpua5Og2ukRBnpTTymtrSBQm6Zm_oMLp9OoXd1sUczKf5cUZ-ZE5YBctJyRdLP6yZDL-_xVjSsnsjlyRl9YaCKBB1yhd9V52hyYJfoUNShD9tVLuVYI0-z6nOm_zrSlBeNdhAN26Uv7bDIhBWwBrZZ6tPb-x0r3Wh6P4wf-QAbGDDxBRzEYR45xnCeV8wrM4gC2I_jehMY3iCeeU8ihl-wA-h9p0FDPGaJaxKJkkdJwF4GxXr04D918eqr5-)
+[![](https://mermaid.ink/img/pako:eNq1kU1Lw0AQhv_KMtcmJR-bNN1DQVQU_ISGUiSXJZmmq2a3TjbFWvrfTVJrix7FPe3hed-Z4dlCbgoEAa7rZjo3eqFKkWnGKkVk6Cy3hmrBFvK1xkz3UI1vDeocL5QsSVYdvH_3xiIzaySWYm3ZdFNbrBx2a8pS6ZJNkdYqR8FmkpS0ymjmuyE_5k9S7mQy-JW7TtNHdnWZHhM_kC51UvKV4PP5X3YMo3_fMPA89nDDBuy5NhocqJAqqYrWyrZrysAuscIMRPstJL1kkOldy8nGmulG5yAsNehAsyqkPXgB0UtzYCX1kzHVAcJCtU7v9tZ7-T0CYgvvIEb-0IuCJOQeD7wgSrgDGxB-HA-jmCcR536YREG8c-Cj7_SGoyAOeRKPEz8c-2Nv5ACZplx-jy-pu2Q_m1AXSOem0RZEzHef2GPG0g?type=png)](https://mermaid.live/edit#pako:eNq1kU1Lw0AQhv_KMtcmJR-bNN1DQVQU_ISGUiSXJZmmq2a3TjbFWvrfTVJrix7FPe3hed-Z4dlCbgoEAa7rZjo3eqFKkWnGKkVk6Cy3hmrBFvK1xkz3UI1vDeocL5QsSVYdvH_3xiIzaySWYm3ZdFNbrBx2a8pS6ZJNkdYqR8FmkpS0ymjmuyE_5k9S7mQy-JW7TtNHdnWZHhM_kC51UvKV4PP5X3YMo3_fMPA89nDDBuy5NhocqJAqqYrWyrZrysAuscIMRPstJL1kkOldy8nGmulG5yAsNehAsyqkPXgB0UtzYCX1kzHVAcJCtU7v9tZ7-T0CYgvvIEb-0IuCJOQeD7wgSrgDGxB-HA-jmCcR536YREG8c-Cj7_SGoyAOeRKPEz8c-2Nv5ACZplx-jy-pu2Q_m1AXSOem0RZEzHef2GPG0g)
 -->
 
-![image](https://github.com/user-attachments/assets/ffb4d5f7-e7c6-4ebf-9c4f-bc96ab25ead6)
+![image](https://github.com/user-attachments/assets/10381297-0435-4493-95f1-d3eb8933c598)
+
 
 ## Comments
 

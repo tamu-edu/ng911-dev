@@ -20,49 +20,49 @@ Test can be performed with 2 different SIP transport types. Steps describing act
 
 ### References
 * Requirements : RQ_ESRP_042, RQ_ESRP_043, RQ_ESRP_045, RQ_ESRP_046, RQ_ESRP_048, RQ_ESRP_049
-* Test Case    : 
+* Test Case    : TC_ESRP_006
 
 ### Requirements
 IXIT config file for ESRP
 
 ## Configuration
 ### Implementation Under Test Interface Connections
-* Test System U-ESRP (Upstream ESRP)
-  * IF_U-ESRP_ESRP - connected to IF_ESRP_U-ESRP
+* Test System 1 (Upstream ESRP)
+  * IF_TS1_ESRP - connected to IF_ESRP_TS1
 * ESRP
-  * IF_ESRP_U-ESRP - connected to Test System U-ESRP IF_U-ESRP_ESRP
-  * IF_ESRP_D-ESRP - connected to Test System D-ESRP IF_D-ESRP_ESRP
-  * IF_ESRP_ECRF-LVF - connected to Test System ECRF-LVF IF_ECRF-LVF_ESRP
-* Test System ECRF-LVF
-  * IF_ECRF-LVF_ESRP - connected to IF_ESRP_ECRF-LVF
-* Test System D-ESRP (Downstream ESRP)
-  * IF_D-ESRP_ESRP - connected to IF_ESRP_D-ESRP
+  * IF_ESRP_TS1 - connected to Test System 1 IF_TS1_ESRP
+  * IF_ESRP_TS2 - connected to Test System 2 IF_TS2_ESRP
+  * IF_ESRP_TS-ECRF - connected to Test System ECRF IF_TS-ECRF_ESRP
+* Test System ECRF
+  * IF_TS-ECRF_ESRP - connected to IF_ESRP_TS-ECRF
+* Test System 2 (Downstream ESRP)
+  * IF_TS2_ESRP - connected to IF_ESRP_TS2
 
 
 ### Test System Interfaces
 <!-- Identify each of the test system interfaces and whether it will be in active or monitor mode -->
-* Test System U-ESRP (Upstream ESRP)
-  * IF_U-ESRP_ESRP - Active
+* Test System 1 (Upstream ESRP)
+  * IF_TS1_ESRP - Active
 * ESRP
-  * IF_ESRP_U-ESRP - Active
-  * IF_ESRP_D-ESRP - Monitor
-  * IF_ESRP_ECRF-LVF - Active
-* Test System ECRF-LVF
-  * IF_ECRF-LVF_ESRP - Active
-* Test System D-ESRP (Downstream ESRP)
-  * IF_D-ESRP_ESRP - Monitor
+  * IF_ESRP_TS1 - Active
+  * IF_ESRP_TS2 - Monitor
+  * IF_ESRP_TS-ECRF - Active
+* Test System ECRF
+  * IF_TS-ECRF_ESRP - Active
+* Test System 2 (Downstream ESRP)
+  * IF_TS2_ESRP - Active
  
  
 ### Connectivity Diagram
 <!--
-[![](https://mermaid.ink/img/pako:eNp9UtFqwjAU_ZVwn9sfKLKX1cJAYbTbHiRQrs3VlpmkpAlDxH83GjurcctDyD2cnHNucg_QaEGQwWanf5oWjWWLkivm11tRf6bzqnyvz1vq14uHLkDAf2mB9FoW6eKrmI3Ea13H1DydKuY3k0Ab3HprsG_ZBw2WVfvBkmRTyzhdwEmJB4XoThQ_zhXjYyt_uUxz3nNHlfgt_ld5kiR_0i0kIMlI7IT_wcMZ5mBbksQh80eB5psDV0fPQ2d1tVcNZNY4SsD1Ai3lHXpzCdkGd4NHe1QrrW81ic5qswwjcpmUBIx22_bKOJ4AUiiqlw?type=png)](https://mermaid.live/edit#pako:eNp9UtFqwjAU_ZVwn9sfKLKX1cJAYbTbHiRQrs3VlpmkpAlDxH83GjurcctDyD2cnHNucg_QaEGQwWanf5oWjWWLkivm11tRf6bzqnyvz1vq14uHLkDAf2mB9FoW6eKrmI3Ea13H1DydKuY3k0Ab3HprsG_ZBw2WVfvBkmRTyzhdwEmJB4XoThQ_zhXjYyt_uUxz3nNHlfgt_ld5kiR_0i0kIMlI7IT_wcMZ5mBbksQh80eB5psDV0fPQ2d1tVcNZNY4SsD1Ai3lHXpzCdkGd4NHe1QrrW81ic5qswwjcpmUBIx22_bKOJ4AUiiqlw)
+[![](https://mermaid.ink/img/pako:eNp9klFrgzAQx7-K3LOVJmo1Yeyla2Gwwah9GkLJNK2ymkiMbK70uy9a56p0y1Pun9_d_Y_LCRKZcqCwP8qPJGNKW0-bWFjmPK532wjtVtHmZWbOvYnbeysOQC_MVsvN-q6H-rB7m4J4NkD4Cqjqt4NiZWZteaWtqKk0L6y-y8TKReQinWT-vo07olsiviV2rv8qf21shA72pkP_XwNPsvE4E2wouCpYnprVnFo5Bp3xgsdAzTVl6j2GWJwNx2oto0YkQLWquQ11mTLNH3JmmhZA9-xYGbVk4lXK4gfiaa6ler6svvsBHQL0BJ9APeQgFxOP-GHghsibezY0QLHvO36w8IN5iAjxgkV4tuGrqzp3wpAsPBcRjAnCPiE2KFkfssHAQbWzXLorMyFXS1kLDRS5wfkb9z67ig?type=png)](https://mermaid.live/edit#pako:eNp9klFrgzAQx7-K3LOVJmo1Yeyla2Gwwah9GkLJNK2ymkiMbK70uy9a56p0y1Pun9_d_Y_LCRKZcqCwP8qPJGNKW0-bWFjmPK532wjtVtHmZWbOvYnbeysOQC_MVsvN-q6H-rB7m4J4NkD4Cqjqt4NiZWZteaWtqKk0L6y-y8TKReQinWT-vo07olsiviV2rv8qf21shA72pkP_XwNPsvE4E2wouCpYnprVnFo5Bp3xgsdAzTVl6j2GWJwNx2oto0YkQLWquQ11mTLNH3JmmhZA9-xYGbVk4lXK4gfiaa6ler6svvsBHQL0BJ9APeQgFxOP-GHghsibezY0QLHvO36w8IN5iAjxgkV4tuGrqzp3wpAsPBcRjAnCPiE2KFkfssHAQbWzXLorMyFXS1kLDRS5wfkb9z67ig)
 -->
 
-![image](https://github.com/user-attachments/assets/e8fc2187-b28a-41d7-b143-11c92e3e5138)
+![image](https://github.com/user-attachments/assets/0f8fff20-d2cf-4d91-85d0-3b07936f6e12)
 
 
 ## Pre-Test Conditions
-### Test System U-ESRP
+### Test System 1
 * Interfaces are connected to network
 * Interfaces have IP addresses assigned by DHCP
 * Device is active
@@ -74,20 +74,19 @@ IXIT config file for ESRP
 * Interfaces have IP addresses assigned by DHCP
 * Device is active
 * Device is in normal operating state
+* Device is initialized with steps from IXIT config file
 * No active calls
 * Logging enabled
+* Device is configured to use Test System ECRF for LoST requests on '/lost' URL entrypoint
+* Device is configured to use Test System 2 as a next hop host
 
-### ECRF-LVF
+### Test System ECRF
 * Interfaces are connected to network
 * Interfaces have IP addresses assigned by DHCP
-* Device is provisioned with `Test System U-ESRP` as upstream ESRP
-* Device is provisioned with `Test System D-ESRP` as downstream ESRP
-* Device is initialized with steps from IXIT config file
 * Device is active
-* No active calls
 * Test System has it's own certificate signed by PCA
 
-### Test System D-ESRP
+### Test System 2
 * Interfaces are connected to network
 * Interfaces have IP addresses assigned by DHCP
 * Device is active
@@ -98,11 +97,11 @@ IXIT config file for ESRP
 
 ### Test Preamble
 
-#### Test System U-ESRP
+#### Test System 1
 * Install SIPp by following steps from documentation[^1]
 * Copy following XML scenario files to local storage:
   ```
-  SIP_INVITE_from_OSP.xml
+  SIP_INVITE_location_PIDF-LO_Boundary1_without_identifiers.xml
   ```
 * Install Wireshark[^2]
 * (TLS transport) Copy to local storage PCA-signed TLS certificate and private key files:
@@ -116,13 +115,13 @@ IXIT config file for ESRP
   ESRP-cakey.pem
   ```
 * (TLS transport) Configure Wireshark to decode SIP over TLS packets from Test System and ESRP as well[^3]
-* Using Wireshark on 'Test System' start packet tracing on IF_U-ESRP_ESRP interface - run following filter:
+* Using Wireshark on 'Test System' start packet tracing on IF_TS1_ESRP interface - run following filter:
    * (TLS transport)
-     > ip.addr == IF_U-ESRP_ESRP_IP_ADDRESS and tls
+     > ip.addr == IF_TS1_ESRP_IP_ADDRESS and tls
    * (TCP transport)
-     > ip.addr == IF_U-ESRP_ESRP_IP_ADDRESS and sip
+     > ip.addr == IF_TS1_ESRP_IP_ADDRESS and sip
 
-#### Test System D-ESRP
+#### Test System 2
 * Install SIPp by following steps from documentation[^1]
 * Copy following XML scenario files to local storage:
   ```
@@ -140,14 +139,14 @@ IXIT config file for ESRP
   ESRP-cakey.pem
   ```
 * (TLS transport) Configure Wireshark to decode SIP over TLS packets from Test System and ESRP as well[^3]
-* Using Wireshark on 'Test System' start packet tracing on IF_U-ESRP_ESRP interface - run following filter:
+* Using Wireshark on 'Test System' start packet tracing on IF_TS2_ESRP interface - run following filter:
    * (TLS transport)
-     > ip.addr == IF_D-ESRP_ESRP_IP_ADDRESS and tls
+     > ip.addr == IF_TS2_ESRP_IP_ADDRESS and tls
    * (TCP transport)
-     > ip.addr == IF_D-ESRP_ESRP_IP_ADDRESS and sip
+     > ip.addr == IF_TS2_ESRP_IP_ADDRESS and sip
 
 
- #### Test System ECRF-LVF
+ #### Test System ECRF
 * Install Wireshark[^2]
 * Copy following scenario files to local storage:
   ```
@@ -164,45 +163,48 @@ IXIT config file for ESRP
   ESRP-cakey.pem
   ```
 * (TLS transport) Configure Wireshark to decode HTTP over TLS packets from Test System and ESRP as well[^3]
-* Using Wireshark on 'Test System' start packet tracing on IF_LIS_ESRP interface - run following filter:
+* Using Wireshark on 'Test System' start packet tracing on IF_TS-ECRF_ESRP interface - run following filter:
    * (TLS transport)
-     > ip.addr == IF_ECRF-LVF_ESRP_IP_ADDRESS and tls
+     > ip.addr == IF_TS-ECRF_ESRP_IP_ADDRESS and tls
    * (TCP transport)
-     > ip.addr == IF_ECRF-LVF_ESRP_IP_ADDRESS and sip
-* Rename PCA-signed certificate files for Test System ECRF-LVF to server.pem and server.key
+     > ip.addr == IF_TS-ECRF_ESRP_IP_ADDRESS and sip
+* Rename PCA-signed certificate files for Test System ECRF to server.pem and server.key
 * Start https server responding for HTTPS GET requests:
    ```
-   echo -e "HTTP/1.1 200 OK\r\nContent-Type: application/xml\r\nContent-Length: 1167\r\n\r\n$(cat findServiceResponse | sed -n  '/<?xml/,/findServiceResponse>/p')\r\n" | \
+   echo -e "HTTP/1.1 200 OK\r\nContent-Type: application/lost+xml\r\nContent-Length: 1167\r\n\r\n$(cat findServiceResponse | sed -n  '/<?xml/,/findServiceResponse>/p')\r\n" | \
    openssl s_server -quiet -accept LOCAL_PORT -cert server.pem -key server.key
    ```
 
 ### Test Body
 
 #### Stimulus
-Send SIP packet to ESRP using scenario file for tested variation - run following SIPp command on Test System U-ESRP, example:
+Send SIP packet to ESRP - run following SIPp command on Test System 1, example:
 * (TCP transport)
   ```
-  sudo sipp -t t1 -sf SIP_INVITE_from_OSP.xml -i IF_U-ESRP_ESRP_IP_ADDRESS:5060 IF_ESRP_U-ESRP_IP_ADDRESS:5060 -max_recv_loops 1 -m 1
+  sudo sipp -t t1 -sf SIP_INVITE_location_PIDF-LO_Boundary1_without_identifiers.xml -i IF_TS1_ESRP_IP_ADDRESS:5060 IF_ESRP_TS1_IP_ADDRESS:5060 -max_recv_loops 1 -m 1
   ```
 * (TLS transport)
   ```
-  sudo sipp -t l1 -tls_cert PCA-cacert.pem -tls_key PCA-cakey.pem -sf SIP_INVITE_from_OSP.xml -i IF_U-ESRP_ESRP_IP_ADDRESS:5060 IF_ESRP_U-ESRP_IP_ADDRESS:5060 -max_recv_loops 1 -m 1
+  sudo sipp -t l1 -tls_cert PCA-cacert.pem -tls_key PCA-cakey.pem -sf SIP_INVITE_location_PIDF-LO_Boundary1_without_identifiers.xml -i IF_TS1_ESRP_IP_ADDRESS:5060 IF_ESRP_TS1_IP_ADDRESS:5060 -max_recv_loops 1 -m 1
   ```
 
 #### Response
-* ESRP sends LoST query via HTTP to provisioned Test System ECRF-LVF with default location
-* ESRP sends SIP INVITE to Test System D-ESRP
+* ESRP sends HTTP LoST query to Test System ECRF with findService request
+* findService request contains geolocation from received SIP INVITE
 * SIP INVITE has 'Via' header field specifying ESRP
-* SIP INVITE has 'Route' header field containing D-ESRP queue URI received from ECRF-LVF
+* SIP INVITE has 'Route' header field containing Test System 2 queue URI received from Test System ECRF
+* SIP INVITE has 'Route' header field containing 'lr' parameter
 * Verify Emergency Call Identifier included in "Call-Info" header field from SIP INVITE:
   * if header field contains "urn:emergency:uid:callid:"
   * if "urn:emergency:uid:callid:" is followed by 10 to 32 alphanumeric characters (String ID)
   * if String ID is followed by ":" and ESRP domain name
+* Verify if Call-Info header field with CallId contains 'emergency-CallId' purpose
 * Verify Incident Tracking Identifier included in "Call-Info" header field from SIP INVITE:
   * if header field contains "urn:emergency:uid:incidentid:"
   * if "urn:emergency:uid:incidentid:" is followed by 10 to 32 alphanumeric characters (String ID)
   * if String ID is followed by ":" and ESRP domain name
-* verify if all header fields from SIP INVITE received from U-ESRP are included in SIP INVITE addressed to D-ESRP
+* Verify if Call-Info header field with IncidentId contains 'emergency-IncidentId' purpose
+* verify if all header fields from SIP INVITE received from Test System 1 are included in SIP INVITE addressed to Test System 2
 
 VERDICT:
 * PASSED - if all checks passed for variation
@@ -213,7 +215,7 @@ VERDICT:
 -->
 
 ### Test Postamble
-#### Test System U-ESRP
+#### Test System 1
 * stop Sipp process (if still running)
 * archive all logs generated
 * stop Wireshark (if still running)
@@ -226,15 +228,15 @@ VERDICT:
 * reconnect interfaces back to default
 * restore previous configuration
 
-#### Test System ECRF-LVF
-* stop simple_http_server.py
+#### Test System ECRF
+* stop http server
 * archive all logs generated
 * stop Wireshark (if still running)
 * remove all scenario files
 * disconnect interfaces from ESRP
 * (TLS transport) remove certificates
 
-#### Test System D-ESRP
+#### Test System 2
 * stop Sipp process (if still running)
 * archive all logs generated
 * stop Wireshark (if still running)
@@ -243,7 +245,7 @@ VERDICT:
 * (TLS transport) remove certificates
 
 ## Post-Test Conditions
-### Test System U-ESRP
+### Test System 1
 * Test tools stopped
 * interfaces disconnected from ESRP
 
@@ -251,27 +253,27 @@ VERDICT:
 * device connected back to default
 * device in normal operating state
 
-### Test System ECRF-LVF
+### Test System ECRF
 * Test tools stopped
 * interfaces disconnected from ESRP
 
-### Test System D-ESRP
+### Test System 2
 * Test tools stopped
 * interfaces disconnected from ESRP
 
 ## Sequence Diagram
 <!--
-[![](https://mermaid.ink/img/pako:eNp9kEFLwzAUx7_K450UGxgecxiI67Q4taxxB8klNG9d0CQzTQ5j7LvbdpaKDN8lL_D783_8jlh7TciRMSZd7d3WNFw6AGtC8OGujj60HLbqsyXpBqilr0SupoVRTVC2h88jqI1QHdpIFt5YXq1LNp_f9C-HqiiheNkUIp_4kfidy-_XS7baLDk8ClHCQy7gauUrcX25ZsSnoiF2O5vB69P_TQv29zLM0FKwyujOx7FPS4w7siSRd6tW4UOidKeOUyn66uBq5DEkyjDttYqjEeSDrgz3yr17P_1Jm07n81n44D3D4FOz-yFO34JUee0?type=png)](https://mermaid.live/edit#pako:eNp9kEFLwzAUx7_K450UGxgecxiI67Q4taxxB8klNG9d0CQzTQ5j7LvbdpaKDN8lL_D783_8jlh7TciRMSZd7d3WNFw6AGtC8OGujj60HLbqsyXpBqilr0SupoVRTVC2h88jqI1QHdpIFt5YXq1LNp_f9C-HqiiheNkUIp_4kfidy-_XS7baLDk8ClHCQy7gauUrcX25ZsSnoiF2O5vB69P_TQv29zLM0FKwyujOx7FPS4w7siSRd6tW4UOidKeOUyn66uBq5DEkyjDttYqjEeSDrgz3yr17P_1Jm07n81n44D3D4FOz-yFO34JUee0)
+[![](https://mermaid.ink/img/pako:eNp9kF9PgzAUxb9Kc580wkILjLYPS8xEXfxHBvHB8NJAx4jSzlIS57LvLrDM7cHYp5v0d-655-yg0KUEDq7r5qrQalVXPFcINbUx2lwXVpuWo5X4aGWuRqiVn51UhbypRWVEM8CHl8nWonTbWtkg7M5mV3G6TDhKFwlaPL8usviEDj8DcS6J58tbju6zLEF3cYYuHnWaXf69fUBPBqOEeB56efjfgZwfAw400jSiLvv0u0GYg13LRubA-7EU5j2HXO17TnRWp1tVALemkw50m1LYY37gYzkObIR607o5QrKs--6eDu2OJY8I8B18AQ_wBPuEBSykkU9x4AUObIGTMJyE0TSMPIoZC6Ip3TvwPW71JpSyaeBjRgjDJGTUAaO7av17QGWGLAd3I1UpzVx3ygLH1N__ACelkNM?type=png)](https://mermaid.live/edit#pako:eNp9kF9PgzAUxb9Kc580wkILjLYPS8xEXfxHBvHB8NJAx4jSzlIS57LvLrDM7cHYp5v0d-655-yg0KUEDq7r5qrQalVXPFcINbUx2lwXVpuWo5X4aGWuRqiVn51UhbypRWVEM8CHl8nWonTbWtkg7M5mV3G6TDhKFwlaPL8usviEDj8DcS6J58tbju6zLEF3cYYuHnWaXf69fUBPBqOEeB56efjfgZwfAw400jSiLvv0u0GYg13LRubA-7EU5j2HXO17TnRWp1tVALemkw50m1LYY37gYzkObIR607o5QrKs--6eDu2OJY8I8B18AQ_wBPuEBSykkU9x4AUObIGTMJyE0TSMPIoZC6Ip3TvwPW71JpSyaeBjRgjDJGTUAaO7av17QGWGLAd3I1UpzVx3ygLH1N__ACelkNM)
 -->
 
-![image](https://github.com/user-attachments/assets/c4eacd50-768b-4f4e-b2c8-8517b245300a)
+![image](https://github.com/user-attachments/assets/1933a96d-e026-4d0d-bacc-6a340ef450cb)
 
 
 ## Comments
 
-Version:  010.3d.3.0.6
+Version:  010.3d.3.0.8
 
-Date:     20250428
+Date:     20250519
 
 ## Footnotes
 [^1]: SIPp - tool for SIP packet simulations. Official documentation: https://sipp.sourceforge.net/doc/reference.html#Getting+SIPp

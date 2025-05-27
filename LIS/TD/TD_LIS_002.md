@@ -22,7 +22,7 @@ Test can be performed with 2 different SIP and HTTP transport types. Steps descr
 
 ### References
 * Requirements : RQ_LIS_006
-* Test Case    : 
+* Test Case    : TC_LIS_002
 
 ### Requirements
 IXIT config file for LIS

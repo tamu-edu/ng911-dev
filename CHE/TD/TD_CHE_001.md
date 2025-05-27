@@ -10,7 +10,7 @@ This test checks CHE dereferencing from LIS:
 
 ### References
 * Requirements : RQ_CHE_11
-* Test Case    : 
+* Test Case    : TC_CHE_001
 
 ### Requirements
 IXIT config file for CHE
@@ -107,6 +107,18 @@ Test can be performed with 2 different SIP and HTTP transport types. Steps descr
      > ip.addr == IF_TSLIS_CHE_IP_ADDRESS and tls
    * (TCP)
      > ip.addr == IF_TSLIS_CHE_IP_ADDRESS and (http or sip)
+* Start http server responding for HTTPS POST requests:
+    * (TCP transport)
+      ```
+      echo -e "HTTP/1.1 200 OK\r\nContent-Type: application/lost+xml\r\nContent-Length: 750\r\n\r\n$(cat Location_response | \
+      nc -lp 80
+      ```
+    * (TLS transport)
+      ```
+      echo -e "HTTP/1.1 200 OK\r\nContent-Type: application/lost+xml\r\nContent-Length: 750\r\n\r\n$(cat Location_response | \
+      openssl s_server -quiet -accept LOCAL_PORT -cert server.pem -key server.key
+      ```
+
 * run following SIPp scenario to handle SIP Presence Event Package:
     * (TCP transport)
       ```
@@ -205,8 +217,8 @@ VERDICT:
 
 ## Comments
 
-Version: 010.3f.3.0.5
-Date: 20250429
+Version: 010.3f.3.0.6
+Date: 20250519
 
 
 ## Footnotes

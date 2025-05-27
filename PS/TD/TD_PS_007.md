@@ -8,7 +8,7 @@ Test covers rulesets verification by Policy Store
 
 ### References
 * Requirements : RQ_PS_027, RQ_PS_031, RQ_PS_034, RQ_PS_035, RQ_PS_044
-* Test Case    : 
+* Test Case    : TC_PS_007
 
 ### HTTP transport types
 Test can be performed with 2 different HTTP transport types. Steps describing actions for specific one are marked as following:
@@ -84,25 +84,39 @@ python3 -m main generate_jws Policy_object_without_unique_id_v010.3f.3.0.X.json 
 ### Test Body
 
 #### Variations
+
 1. Validate 4xx error response for HTTP POST request with policy ruleset missing unique ID's
+
 Generate JWS from file:
 `Policy_object_without_unique_id_v010.3f.3.0.X.json`
+
 2. Validate 4xx error response for HTTP PUT request with policy ruleset missing unique ID's
+
 Generate JWS from file:
 `Policy_object_without_unique_id_v010.3f.3.0.X.json`
+
 3. Validate 4xx error response for HTTP POST request with policy ruleset missing 'id'
+
 Generate JWS from file:
 `Policy_object_without_id_member_v010.3f.3.0.X.json`
+
 4. Validate 4xx error response for HTTP POST request with policy ruleset missing 'priority'
+
 Generate JWS from file:
 `Policy_object_without_priority_member_v010.3f.3.0.X.json`
+
 5. Validate 4xx error response for HTTP POST request with policy ruleset missing 'actions'
+
 Generate JWS from file:
 `Policy_object_without_actions_member_v010.3f.3.0.X.json`
+
 6. Validate 4xx error response for HTTP POST request with policy ruleset missing unique 'priority' for each rule
+
 Generate JWS from file:
 `Policy_object_without_unique_priority_v010.3f.3.0.X.json`
+
 7. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateStart' in 'TimePeriodCondition' (incorrect year)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -111,7 +125,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 8. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateStart' in 'TimePeriodCondition' (incorrect month)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -120,7 +136,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 9. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateStart' in 'TimePeriodCondition' (incorrect day)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -129,7 +147,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 10. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateStart' in 'TimePeriodCondition' (incorrect hour)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -138,7 +158,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 11. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateStart' in 'TimePeriodCondition' (incorrect minute)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -147,7 +169,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 12. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateStart' in 'TimePeriodCondition' (incorrect second)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -156,7 +180,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 13. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateStart' in 'TimePeriodCondition' (incorrect time offset)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -165,7 +191,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 14. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateStart' in 'TimePeriodCondition' (incorrect day in February)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -174,7 +202,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 15. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateEnd' in 'TimePeriodCondition' (incorrect year)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -183,7 +213,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 16. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateEnd' in 'TimePeriodCondition' (incorrect month)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -192,7 +224,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 17. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateEnd' in 'TimePeriodCondition' (incorrect day)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -201,7 +235,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 18. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateEnd' in 'TimePeriodCondition' (incorrect hour)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -210,7 +246,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 19. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateEnd' in 'TimePeriodCondition' (incorrect minute)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -219,7 +257,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 20. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateEnd' in 'TimePeriodCondition' (incorrect second)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -228,7 +268,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 21. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateEnd' in 'TimePeriodCondition' (incorrect time offset)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -237,7 +279,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 22. Validate 4xx error response for HTTP POST request with policy containing incorrect 'dateEnd' in 'TimePeriodCondition' (incorrect day in February)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -246,7 +290,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 23. Validate 4xx error response for HTTP POST request with policy containing incorrect TimePeriodCondition (dateEnd earlier than dateStart)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -255,7 +301,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 24. Validate 4xx error response for HTTP POST request with policy containing incorrect 'timeStart' in 'TimePeriodCondition' (incorrect hour)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -266,7 +314,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 25. Validate 4xx error response for HTTP POST request with policy containing incorrect 'timeStart' in 'TimePeriodCondition' (incorrect minute)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -277,7 +327,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 26. Validate 4xx error response for HTTP POST request with policy containing incorrect 'timeStart' in 'TimePeriodCondition' (incorrect second)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -288,7 +340,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 27. Validate 4xx error response for HTTP POST request with policy containing incorrect 'timeEnd' in 'TimePeriodCondition' (incorrect hour)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -299,7 +353,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 28. Validate 4xx error response for HTTP POST request with policy containing incorrect 'timeEnd' in 'TimePeriodCondition' (incorrect minute)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -310,7 +366,9 @@ Parameters to set:
 ```
 Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
+
 29. Validate 4xx error response for HTTP POST request with policy containing incorrect 'timeEnd' in 'TimePeriodCondition' (incorrect second)
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -323,6 +381,7 @@ Generate JWS from file:
 `Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.X.json`
 
 30. Validate 4xx error response for HTTP POST request with policy containing incorrect 'weekdayList' in 'TimePeriodCondition'
+
 Parameters to set:
 ```
 "policyRules_0_conditions_0_conditionType": "TimePeriodCondition",
@@ -395,16 +454,17 @@ VERDICT:
 
 ## Sequence Diagram
 <!--
-[![](https://mermaid.ink/img/pako:eNq9Ut9LwzAQ_lfCvZqOtJ3pkoeB4IMI6qBVh-QltLctuCYzTcU69r_bdZPNRxHM0-X4fhz33RZKVyFIiKJI2dLZhVlKZQmpjffOX5XB-UaShV43qOwAavCtRVvitdFLr-s9-PAKbALJuyZgHU2nFzO3NmVH8l4BJbkpihmZPeQFuSC3z_mJdQ7b085UjqzxfP4rk8e_ety7gMS9oz93o-Sn15P2RgfjbEPSKGX_vAagUKOvtan67Lb7voKwwhoVyL6stH9VoOyux-k2uLyzJcjgW6TQbiodvtMDOURLYaPti3OnP1amH-XucBzDjQwYkFv4ABknfBRzIUSWMiEmIksodCD7bsoSFicTIRgT8ZjvKHwOsuNRwjlnWcbjdJKyy4yCd-1ydTTcfQGRQMTf?type=png)](https://mermaid.live/edit#pako:eNq9Ut9LwzAQ_lfCvZqOtJ3pkoeB4IMI6qBVh-QltLctuCYzTcU69r_bdZPNRxHM0-X4fhz33RZKVyFIiKJI2dLZhVlKZQmpjffOX5XB-UaShV43qOwAavCtRVvitdFLr-s9-PAKbALJuyZgHU2nFzO3NmVH8l4BJbkpihmZPeQFuSC3z_mJdQ7b085UjqzxfP4rk8e_ety7gMS9oz93o-Sn15P2RgfjbEPSKGX_vAagUKOvtan67Lb7voKwwhoVyL6stH9VoOyux-k2uLyzJcjgW6TQbiodvtMDOURLYaPti3OnP1amH-XucBzDjQwYkFv4ABknfBRzIUSWMiEmIksodCD7bsoSFicTIRgT8ZjvKHwOsuNRwjlnWcbjdJKyy4yCd-1ydTTcfQGRQMTf)
+[![](https://mermaid.ink/img/pako:eNq9klFPgzAUhf9Kc18HCww6aB-WGH0wJuoS0C2GlwbuWONoZylGXPbfBebcfNSH9alpvnPuuc3ZQa4LBA6u62Yq12olS54pQippjDZXudWm5mQlNjVmaoBqfGtQ5XgjRWlE1cOH86AtEv2OhqRYW5K0tcXKIXO9kXlLks4JOXkWRgortSL-SXnGu7PZ6LfiNk3nZP6YpGRE7hbJSXWO9bIzl29VuFz-O97kT_GeLpuuJoEbeBf-QHCgQlMJWXR92fXvGdg1VpgB766FMK8ZZGrfcaKxOmlVDtyaBh1otoWwx8YAH-rkwFaoF62rI4SF7JLcH_o41HJAgO_gA3jIxtSb0JAyGvsBjSYOtMB9RseeH4cspD6dhpG_d-Bz8PTG04hRP2JxGLBOGMcOGN2U65_xpek3Ocw2qAo017pRtjP1gv0XFQj0BQ?type=png)](https://mermaid.live/edit#pako:eNq9klFPgzAUhf9Kc18HCww6aB-WGH0wJuoS0C2GlwbuWONoZylGXPbfBebcfNSH9alpvnPuuc3ZQa4LBA6u62Yq12olS54pQippjDZXudWm5mQlNjVmaoBqfGtQ5XgjRWlE1cOH86AtEv2OhqRYW5K0tcXKIXO9kXlLks4JOXkWRgortSL-SXnGu7PZ6LfiNk3nZP6YpGRE7hbJSXWO9bIzl29VuFz-O97kT_GeLpuuJoEbeBf-QHCgQlMJWXR92fXvGdg1VpgB766FMK8ZZGrfcaKxOmlVDtyaBh1otoWwx8YAH-rkwFaoF62rI4SF7JLcH_o41HJAgO_gA3jIxtSb0JAyGvsBjSYOtMB9RseeH4cspD6dhpG_d-Bz8PTG04hRP2JxGLBOGMcOGN2U65_xpek3Ocw2qAo017pRtjP1gv0XFQj0BQ)
 -->
 
-![image](https://github.com/user-attachments/assets/257d8507-3e4f-44b7-98e5-97307a360858)
+![image](https://github.com/user-attachments/assets/f63fa8cb-d076-4283-8bdd-c5e60ebdd823)
+
 
 ## Comments
 
-Version:  010.3f.3.1.4
+Version:  010.3f.3.1.6
 
-Date:     20250428
+Date:     20250509
 
 ## Footnotes
 [^1]: Wireshark - tool for packet tracing and anaylisis. Official website: https://www.wireshark.org/download.html

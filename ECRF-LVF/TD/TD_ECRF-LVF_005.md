@@ -18,7 +18,7 @@ Test can be performed with 2 different HTTP transport types. Steps describing ac
 
 ### References
 * Requirements : RQ_ECRF-LVF_043, RQ_ECRF-LVF_050
-* Test Case    : 
+* Test Case    : TC_ECRF_LVF_005
 
 ### Requirements
 IXIT config file for ECRF-LVF
@@ -30,8 +30,9 @@ IXIT config file for ECRF-LVF
   * IF_TS_ECRF - connected to IF_ECRF_TS
 * ECRF
   * IF_ECRF_TS - connected to IF_TS_ECRF
-  * IF_ECRF_ECRF2 - connected to IF_TS_ECRF
-
+  * IF_ECRF_TS2 - connected to IF_TS2_ECRF
+* Test System 2
+  * IF_TS2_ECRF - connected to IF_ECRF_TS2
 
 ### Test System Interfaces
 <!-- Identify each of the test system interfaces and whether it will be in active or monitor mode -->
@@ -39,15 +40,16 @@ IXIT config file for ECRF-LVF
   * IF_TS_ECRF - Active
 * ECRF
   * IF_ECRF_TS - Active
-  * IF_ECRF_ECRF2 - Monitor
-
+  * IF_ECRF_TS2 - Active
+* Test System 2
+  * IF_TS2_ECRF - Active
 
 ### Connectivity Diagram
 <!--
-[![](https://mermaid.ink/img/pako:eNplUM0KwjAMfpWS8-bB4xAv6kDQi_MkhRHX6IZrO7oWGeK727pBZSYQ2u8PkhdUWhBkcGv1s6rRWHY4ccV89e56N9jV7Ey9ZcXQW5IjE2qfl-ei3G1O-YiREjNb5CZ9ALzpHwtjOYuJ-as0Xc_dv-wi0lNQ6KCCBCQZiY3wC74CxsHWJIlD5p8CzYMDV2-vQ2d1MagKMmscJeA6gZa2DfpdJGQ3bHuPdqguWsc_icZqcxwv-D1kAka7ez0p3h8L52qu?type=png)](https://mermaid.live/edit#pako:eNplUM0KwjAMfpWS8-bB4xAv6kDQi_MkhRHX6IZrO7oWGeK727pBZSYQ2u8PkhdUWhBkcGv1s6rRWHY4ccV89e56N9jV7Ey9ZcXQW5IjE2qfl-ei3G1O-YiREjNb5CZ9ALzpHwtjOYuJ-as0Xc_dv-wi0lNQ6KCCBCQZiY3wC74CxsHWJIlD5p8CzYMDV2-vQ2d1MagKMmscJeA6gZa2DfpdJGQ3bHuPdqguWsc_icZqcxwv-D1kAka7ez0p3h8L52qu)
+[![](https://mermaid.ink/img/pako:eNp1UU1vgzAM_SvIZ4pCwmc07dKt0qTtUnqakKqMpIBWCApBG0P89wW6rh3q7Ev8np-fIw-QSS6AwuEoP7KCKW09b9PaMtF2b7liTWHtRKutpG-1qE7MFE-b_S7ZP663mxMmar6QXbif_gkwolsY_m_IlbeFF-74lv1lr7vV6n7peqX7S5vZU049YEOuSg5Uq07YUAlVsamEYeJT0IWoRArUPDlT7ymk9Wg0DatfpazOMiW7vAB6YMfWVF3DmRYPJTO_qn5RZbYWai27WgN1g2AeAnSAT6AYuw5CQRwSHBCMEIps6A3s-Q7BbuzFhGAcht5ow9dsixw_DgMSRG4URX6ECLaBdVomfZ2dlxK81FK9nC4-H378BkpElmM?type=png)](https://mermaid.live/edit#pako:eNp1UU1vgzAM_SvIZ4pCwmc07dKt0qTtUnqakKqMpIBWCApBG0P89wW6rh3q7Ev8np-fIw-QSS6AwuEoP7KCKW09b9PaMtF2b7liTWHtRKutpG-1qE7MFE-b_S7ZP663mxMmar6QXbif_gkwolsY_m_IlbeFF-74lv1lr7vV6n7peqX7S5vZU049YEOuSg5Uq07YUAlVsamEYeJT0IWoRArUPDlT7ymk9Wg0DatfpazOMiW7vAB6YMfWVF3DmRYPJTO_qn5RZbYWai27WgN1g2AeAnSAT6AYuw5CQRwSHBCMEIps6A3s-Q7BbuzFhGAcht5ow9dsixw_DgMSRG4URX6ECLaBdVomfZ2dlxK81FK9nC4-H378BkpElmM)
 -->
 
-![image](https://github.com/user-attachments/assets/55f96fc1-65ac-4b7d-b935-641d5c333f84)
+![image](https://github.com/user-attachments/assets/751ff4ac-4867-4002-8f65-3cbe2df978b8)
 
 
 ## Pre-Test Conditions
@@ -62,10 +64,32 @@ IXIT config file for ECRF-LVF
 * Interfaces are connected to network
 * Interfaces have IP addresses assigned by DHCP
 * Default configuration is loaded
+* IUT is configured to use Test System 2 as another ECRF
+* IUT is initialized with steps from IXIT config file
 * IUT is active
 * IUT is in normal operating state
-* Provisioning file provided
+* IUT is provisioned with following service boundaries:
+```
+Boundary1 - service SIP URI: sip:boundary1@example.com
+40.717309464520554, -73.99120141285248
+40.71672360940788, -73.9891917501422
+40.71556789497267, -73.9898030924558
+40.716159065144886, -73.9917916448061
+```
 
+```
+Boundary2 - service SIP URI: sip:boundary2@example.com
+40.71556789497267, -73.9898030924558
+40.716159065144886, -73.9917916448061
+40.715035291934925, -73.99236780617362
+40.71443880503375, -73.99025982895066
+```
+
+### Test System 2
+* Interfaces are connected to network
+* Interfaces have IP addresses assigned by DHCP
+* Device is active
+* (TLS transport) Test System has it's own certificate signed by PCA
 
 ## Test Sequence
 
@@ -80,10 +104,6 @@ IXIT config file for ECRF-LVF
 	findService_recursive_mode_polygon_not_covering_boundaries
 	findService_iterative_mode_polygon_not_covering_boundaries
   ```
-* Change configuration in HTTP scenario files to be used:
-  * change /LoST to ECRF URL for LoST
-  * change IF_ECRF_TS to ECRF address (FQDN or IP)
-  * change polygon location to one which do not match service boundary in provided provisioning file for ECRF
 * (TLS transport) Copy to local storage PCA-signed TLS certificate and private key files:
   ```
   PCA-cacert.pem
@@ -96,16 +116,33 @@ IXIT config file for ECRF-LVF
 
   ```
 * (TLS transport) Configure Wireshark to decode HTTP over TLS packets from Test System and ECRF as well[^3]
-* Using Wireshark on 'Test System' start packet tracing on IF_TS_ECRF and IF_ECRF_ECRF2 interface - run following filter:
+* Using Wireshark on 'Test System' start packet tracing on IF_TS_ECRF interface - run following filter:
    * (TLS transport)
-     > (ip.addr == IF_TS_ECRF_IP_ADDRESS or ip.addr == IF_ECRF_ECRF2_IP_ADDRESS) and tls
+     > (ip.addr == IF_TS_ECRF_IP_ADDRESS) and tls
    * (TCP transport)
-     > (ip.addr == IF_TS_ECRF_IP_ADDRESS or ip.addr == IF_ECRF_ECRF2_IP_ADDRESS) and http
+     > (ip.addr == IF_TS_ECRF_IP_ADDRESS) and http
 
-#### ECRF
-* Backup current configuration
-* Provision IUT with file provided
-
+#### Test System 2
+* (TLS transport) Install Openssl[^1]
+* (TCP transport) Install Netcat[^4]
+* Install Wireshark[^2]
+* (TLS transport) Configure Wireshark to decode HTTP over TLS packets from Test System and ECRF as well[^3]
+* Using Wireshark on 'Test System' start packet tracing on IF_TS2_ECRF interface - run following filter:
+   * (TLS transport)
+     > (ip.addr == IF_TS2_ECRF_IP_ADDRESS) and tls
+   * (TCP transport)
+     > (ip.addr == IF_TS2_ECRF_IP_ADDRESS) and http
+* Start http server responding for HTTPS GET requests:
+    * (TCP transport)
+      ```
+      echo -e "HTTP/1.1 200 OK\r\nContent-Type: application/lost+xml\r\nContent-Length: 1212\r\n\r\n$(cat findServiceResponse | \
+      nc -lp 80
+      ```
+    * (TLS transport)
+      ```
+      echo -e "HTTP/1.1 200 OK\r\nContent-Type: application/lost+xml\r\nContent-Length: 1212\r\n\r\n$(cat findServiceResponse | \
+      openssl s_server -quiet -accept LOCAL_PORT -cert test_system2.pem -key test_system2.key
+      ```
 
 ### Test Body
 
@@ -116,20 +153,24 @@ IXIT config file for ECRF-LVF
 **Stimulus**
 From 'Test System' send request with recursion enabled to ECRF:
    * (TLS transport)
-     > curl -X POST https://ECRF_URL -d @SCENARIO_FILE
+     > curl -X GET https://ECRF_URL -d @SCENARIO_FILE
    * (TCP transport)
-     > curl -X POST http://ECRF_URL -d @SCENARIO_FILE
+     > curl -X GET http://ECRF_URL -d @SCENARIO_FILE
 
 **Response**
 
 Variation 1
 
-Using Wireshark verify if ECRF tries to reach another ECRF's (by sending LoST requests on IF_ECRF_ECRF2) to get info about polygon from the request and responds with service from another ECRF
+Using Wireshark verify if ECRF:
+- Sends HTTP LoST request to another ECRF to get info about polygon from the request
+- Sends back the response received from another ECRF
 
 
 Variation 2
 
-Using Wireshark verify if ECRF responds HTTP 30X message with Location containing URL of another ECRF
+Using Wireshark verify if ECRF:
+- responds HTTP 3XX message
+- message contain Location header field with URL to another ECRF
 
 
 **VERDICT:**
@@ -152,6 +193,14 @@ Using Wireshark verify if ECRF responds HTTP 30X message with Location containin
 * reconnect interfaces back to default
 * restore previous configuration
 
+#### Test System 2
+* (TLS transport) stop all Openssl processes (if still running)
+* (TCP transport) stop all Netcat processes (if still running)
+* archive all logs generated
+* stop Wireshark (if still running)
+* remove all HTTP scenarios
+* disconnect interfaces from ECRF
+* (TLS transport) remove certificates
 
 ## Post-Test Conditions 
 ### Test System 
@@ -162,20 +211,23 @@ Using Wireshark verify if ECRF responds HTTP 30X message with Location containin
 * device connected back to default
 * device in normal operating state
 
+### Test System 2
+* Test tools stopped
+* interfaces disconnected from ECRF
 
 ## Sequence Diagram
 <!--
-[![](https://mermaid.ink/img/pako:eNqlkVFLwzAUhf9KuK-2Y2vWdgk4kKn4oCCuTyMvob3rijaZt4k4x_67TedURJ_MS0LynXty7t1DaSsECXEcK1Nas25qqQxjbUNk6aJ0ljrJ1vqpQ2UGqMNnj6bEy0bXpNsAH1eBnWPLXeewjefzs6vFw7VkN0Vxz27tsmAUdD1BWHrqmhc8d-TxSx74oPtW5jd5wJizw578w_wj0g_3P827rTWBhwhapFY3Vd-0fdArcBtsUYHsj5WmRwXKHHpOe2eXO1OCDEEj8NtKu1PbQA4fiGCrzcra9gRh1fQtvzsOZZjNgIDcwyvIJB0JnmTjNJ2JbMrzfBbBrr_O-CjlWZ4KLqZiwvkhgreh6HgksoTn_RsXk3SW8QjI-nrzaV9TSHL0JjQV0sJ640BO-OEdcdqozg?type=png)](https://mermaid.live/edit#pako:eNqlkVFLwzAUhf9KuK-2Y2vWdgk4kKn4oCCuTyMvob3rijaZt4k4x_67TedURJ_MS0LynXty7t1DaSsECXEcK1Nas25qqQxjbUNk6aJ0ljrJ1vqpQ2UGqMNnj6bEy0bXpNsAH1eBnWPLXeewjefzs6vFw7VkN0Vxz27tsmAUdD1BWHrqmhc8d-TxSx74oPtW5jd5wJizw578w_wj0g_3P827rTWBhwhapFY3Vd-0fdArcBtsUYHsj5WmRwXKHHpOe2eXO1OCDEEj8NtKu1PbQA4fiGCrzcra9gRh1fQtvzsOZZjNgIDcwyvIJB0JnmTjNJ2JbMrzfBbBrr_O-CjlWZ4KLqZiwvkhgreh6HgksoTn_RsXk3SW8QjI-nrzaV9TSHL0JjQV0sJ640BO-OEdcdqozg)
+[![](https://mermaid.ink/img/pako:eNqlUl1LwzAU_SvhvtqOLl0_FnAgU_FhirgpQ_oS2rstaJN5m07n2H-37dwHbKhgnpLLOeceTs4KUpMhCHBdN9Gp0RM1FYlmLFdEhi5Sa6gQbCJfC0x0AyrwrUSd4qWSU5J5Dd6cO2ORmQUSG2Fh2XBZWMwddtV_uBbsSZKSVhnN2nvGAc7t9c42yJvR6J4NzHDEqN5UIQjTkgq1wHNLJe7pNb7mHcgwfkrAGia1sbPKWs05aYDxSurYQTE3ujjeeUD8Gf_HUPg_Qvn-nF8d-uPxziB7V3bGHh8GiQYHpqQyEHW4DuRIuayfsKo1E6hiyzEBUV0zSS8JJHpdceZSPxuTb2lkyukMROPFgXKeSbttyG5KqDOkvim1BRFEYSMCYgUfIDhvtzwv7EY-D33ueV7swLIad4KWz9vdTtf3OY-iztqBz2at1wq6UeiHcTuO4yD2fO6ALK0ZLnW6NYWZqvp7u2l4U_T1F1fY6Zg?type=png)](https://mermaid.live/edit#pako:eNqlUl1LwzAU_SvhvtqOLl0_FnAgU_FhirgpQ_oS2rstaJN5m07n2H-37dwHbKhgnpLLOeceTs4KUpMhCHBdN9Gp0RM1FYlmLFdEhi5Sa6gQbCJfC0x0AyrwrUSd4qWSU5J5Dd6cO2ORmQUSG2Fh2XBZWMwddtV_uBbsSZKSVhnN2nvGAc7t9c42yJvR6J4NzHDEqN5UIQjTkgq1wHNLJe7pNb7mHcgwfkrAGia1sbPKWs05aYDxSurYQTE3ujjeeUD8Gf_HUPg_Qvn-nF8d-uPxziB7V3bGHh8GiQYHpqQyEHW4DuRIuayfsKo1E6hiyzEBUV0zSS8JJHpdceZSPxuTb2lkyukMROPFgXKeSbttyG5KqDOkvim1BRFEYSMCYgUfIDhvtzwv7EY-D33ueV7swLIad4KWz9vdTtf3OY-iztqBz2at1wq6UeiHcTuO4yD2fO6ALK0ZLnW6NYWZqvp7u2l4U_T1F1fY6Zg)
 -->
 
-![image](https://github.com/user-attachments/assets/7b887317-d75e-48bf-8274-5e9f888ee59f)
+![image](https://github.com/user-attachments/assets/d0134b44-8e77-4370-a1f0-6583a8ed7574)
 
 
 ## Comments
 
-Version:  010.3d.3.0.7
+Version:  010.3d.3.0.10
 
-Date:     20250428
+Date:     20250523
 
 
 ## Footnotes
