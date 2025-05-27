@@ -8,8 +8,8 @@ SIP INVITE for callbacks and other outbound calls
 This test covers SIP INVITE validation for callbacks and other outbound calls
 
 ### References
-* Requirements : RQ_CHE_3, RQ_CHE_4, RQ_CHE_5
-* Test Case    : 
+* Requirements : RQ_CHE_003, RQ_CHE_004, RQ_CHE_005
+* Test Case    : TC_CHE_004
 
 ### Requirements
 IXIT config file for CHE
@@ -78,9 +78,14 @@ Test can be performed with 2 different SIP transport types. Steps describing act
      > ip.addr == IF_TS_CHE_IP_ADDRESS and sip
 * Generate call for callback test. Send SIP INVITE to CHE - run following SIPp command on Test System, example:
     * (TLS transport)
-      > sudo sipp -t l1 -sf SIP_INVITE_SDP_with_audio_required.xml IF_TS_CHE_IP_ADDRESS:5060
+      > sudo sipp -t l1 -sf SIP_INVITE_SDP_with_g711alaw_audio.xml  -tls_cert test_system.crt -tls_key test_system.key IF_CHE_TS_IP_ADDRESS:5061
     * (TCP transport)
-      > sudo sipp -t t1 -sf SIP_INVITE_SDP_with_audio_required.xml IF_TS_CHE_IP_ADDRESS:5061
+      > sudo sipp -t t1 -sf SIP_INVITE_SDP_with_g711alaw_audio.xml IF_CHE_TS_IP_ADDRESS:5060
+* Prepare Test System to receive SIP INVITE - run following SIPp command on Test System, example:
+    * (TLS transport)
+      > sudo sipp -t l1 -sf SIP_INVITE_RECEIVE.xml -tls_cert test_system.crt -tls_key test_system.key -i IF_TS_CHE_IP_ADDRESS -p 5061
+    * (TCP transport)
+      > sudo sipp -t t1 -sf SIP_INVITE_RECEIVE.xml -i IF_TS_CHE_IP_ADDRESS -p 5060
 
 
 ### Test Body
@@ -97,7 +102,7 @@ Test can be performed with 2 different SIP transport types. Steps describing act
   
 * Variation 2
   
-  On CHE trigger outbound call to any target outside ESInet - follow steps described in IXIT config file
+  On CHE trigger outbound call to to Test System - follow steps described in IXIT config file
 
 #### Response
 * Variation 1
@@ -203,9 +208,9 @@ VERDICT:
 
 ## Comments
 
-Version:  010.3f.3.0.6
+Version:  010.3f.3.0.8
 
-Date:     20250429
+Date:     20250521
 
 ## Footnotes
 [^1]: SIPp - tool for SIP packet simulations. Official documentation: https://sipp.sourceforge.net/doc/reference.html#Getting+SIPp

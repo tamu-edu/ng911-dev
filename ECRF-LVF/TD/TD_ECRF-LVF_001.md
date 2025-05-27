@@ -9,7 +9,7 @@ This test checks for ECRF/LVF if PCA traceable certificates are accepted for est
 
 ### References
 * Requirements : RQ_ECRF-LVF_009
-* Test Case    : 
+* Test Case    : TC_ECRF_LVF_001
 
 
 ## Configuration

@@ -16,7 +16,7 @@ Test also includes:
 * Check if SIP packets sent towards ESInet are TLS with AES-256 or better
 
 ### References
-* Requirements : RQ_BCF_016, RQ_BCF_017
+* Requirements : RQ_BCF_031, RQ_BCF_032, RQ_BCF_036
 * Test Case    : 
 
 ### Requirements
@@ -90,6 +90,19 @@ IXIT config file for BCF
   cacert.pem
   cakey.pem
   ```
+* Copy to local storage script for sending example SIP INVITE via SCTP:
+```
+send_SIP_INVITE_via_SCTP.py
+```
+* edit script file to configure O-BCF target IP address and port
+* install following dependencies for the script:
+```
+python3
+pysctp (python lib)
+libsctp-dev
+libsctp1
+lksctp-tools
+```
 
 #### Test System ESRP
 * Install SIPp by following steps from documentation[^1]
@@ -125,20 +138,36 @@ IXIT config file for BCF
 1. UDP ('-t u1' param for SIPp)
 2. TCP ('-t t1' param for SIPp)
 3. TLS ('-t l1' param for SIPp + files cacert.pem, cakey.pem)
+4. SCTP (use send_SIP_INVITE_via_SCTP.py)
 
 #### Stimulus
-Send SIP packet to O-BCF - run following SIPp command on Test System OSP, example:
-* (TCP transport)
+
+Variations 1-2:
+
+Send SIP packet to O-BCF - run following SIPp command on Test System OSP, example for Variation 1:
+
   ```
-  sudo sipp -t t1 -sf SIP_INVITE_FROM_OSP.xml IF_OSP_O-BCF_IPv4:5060
+  sudo sipp -t u1 -sf SIP_INVITE_from_OSP.xml IF_O-BCF_OSP:5060
   ```
-* (TLS transport)
+
+Variation 3:
+
+Send SIP packet to O-BCF - run following SIPp command on Test System OSP, example for Variation 1:
+
   ```
-  sudo sipp -t l1 -sf SIP_INVITE_FROM_OSP.xml IF_OSP_O-BCF_IPv4:5060
+  sudo sipp -t l1 -tls_cert cacert.pem -tls_key cakey.pem -sf SIP_INVITE_from_OSP.xml IF_O-BCF_OSP:5060
+  ```
+
+
+Variation 4:
+
+Send SIP packet to O-BCF - run python script:
+  ```
+  sudo python3 send_SIP_INVITE_via_SCTP.py
   ```
 
 #### Response
-Variations 1-3
+Variations 1-4
 Verify if SIP INVITE from O-BCF to Test System ESRP:
   * have TLS transport configured
   * packets should be encrypted with AES-256 or better
@@ -198,9 +227,9 @@ VERDICT:
 
 ## Comments
 
-Version:  010.3d.3.1.3
+Version:  010.3d.3.1.5
 
-Date:     20250428
+Date:     20250509
 
 ## Footnotes
 [^1]: SIPp - tool for SIP packet simulations. Official documentation: https://sipp.sourceforge.net/doc/reference.html#Getting+SIPp

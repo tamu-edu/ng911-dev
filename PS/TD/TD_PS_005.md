@@ -7,7 +7,7 @@ Handling HTTP PUT on /Policies entrypoint
 Test covers Policy Store HTTP PUT requests verification and sending response
 
 ### References
-* Requirements : RQ_PS_019, RQ_PS_020, RQ_PS_029, RQ_PS_032
+* Requirements : RQ_PS_019, RQ_PS_029, RQ_PS_032
 * Test Case    : TC_PS_005
 
 ### Requirements
@@ -107,9 +107,9 @@ python3 -m main generate_jws Policy_object_example_v010.3f.3.0.X.json --cert tes
 
 * Generate new JWS (to be used where POLICY_ORIGNATIONROUTE_JWS mentioned) using prepared JSON file and send policy using HTTP POST
 
-* For Variations 21-29 generate JWS objects using `Policy_object_example_v010.3f.3.0.X.json` JSON file with changed one of parameters (as mentioned in description of each variation)
+* For Variations 19-27 generate JWS objects using `Policy_object_example_v010.3f.3.0.X.json` JSON file with changed one of parameters (as mentioned in description of each variation)
 
-* For Variation 30 generate JWS object using `Policy_object_example_v010.3f.3.0.X.json` JSON file and then replace signature part (JWS: {header}.{payload}.{signature}) with f.e.:
+* For Variation 28 generate JWS object using `Policy_object_example_v010.3f.3.0.X.json` JSON file and then replace signature part (JWS: {header}.{payload}.{signature}) with f.e.:
 
 ```
 GciOiJFZERTQSIsI
@@ -238,47 +238,33 @@ GciOiJFZERTQSIsI
   ```
   JWS: POLICY_ORIGINATIONROUTE_JWS
 
-16. Validate 4xx error response for request with incorrect "policyId" parameter (send string):
+
+16. Validate 201 created response for request with "policyId": "\n":
 
   URL:
   ```
-  POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=test
+  POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=%0A
   ```
   JWS: POLICY_JWS
 
-17. Validate 4xx error response for request with incorrect "policyId" parameter (send empty):
+17. Validate 201 created response for request with "policyId": "'":
 
   URL:
   ```
-  POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=
+  POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=%27
   ```
   JWS: POLICY_JWS
 
-18. Validate 4xx error response for request with incorrect "policyId" parameter (send space):
+18. Validate 201 created response for request with "policyId": "(":
 
   URL:
   ```
-  POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=%20
+  POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=%28
   ```
   JWS: POLICY_JWS
 
-19. Validate 4xx error response for request with incorrect "policyId" parameter (send value exceeding 64bit unsigned int):
 
-  URL:
-  ```
-  POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=18446744073709551616
-  ```
-  JWS: POLICY_JWS
-
-20. Validate 4xx error response for request with incorrect "policyId" parameter (send negative value exceeding 64bit int):
-
-  URL:
-  ```
-  POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=-9223372036854775809
-  ```
-  JWS: POLICY_JWS
-
-21. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect year): `"policyExpirationTime": "21155-08-21T12:58:03.01-05:00"`
+19. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect year): `"policyExpirationTime": "21155-08-21T12:58:03.01-05:00"`
 
   URL:
   ```
@@ -287,7 +273,7 @@ GciOiJFZERTQSIsI
   
   JWS: generated in Test Preamble with incorrect parameter in JSON payload
 
-22. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect month): `"policyExpirationTime": "2115-13-21T12:58:03.01-05:00"`
+20. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect month): `"policyExpirationTime": "2115-13-21T12:58:03.01-05:00"`
 
   URL:
   ```
@@ -296,7 +282,7 @@ GciOiJFZERTQSIsI
   
   JWS: generated in Test Preamble with incorrect parameter in JSON payload
 
-23. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect day): `"policyExpirationTime": "2115-12-32T12:58:03.01-05:00"`
+21. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect day): `"policyExpirationTime": "2115-12-32T12:58:03.01-05:00"`
 
   URL:
   ```
@@ -305,7 +291,7 @@ GciOiJFZERTQSIsI
   
   JWS: generated in Test Preamble with incorrect parameter in JSON payload
 
-24. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect hour): `"policyExpirationTime": "2115-12-21T24:58:03.01-05:00"`
+22. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect hour): `"policyExpirationTime": "2115-12-21T24:58:03.01-05:00"`
 
   URL:
   ```
@@ -314,7 +300,7 @@ GciOiJFZERTQSIsI
   
   JWS: generated in Test Preamble with incorrect parameter in JSON payload
 
-25. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect minute): `"policyExpirationTime": "2115-12-21T12:60:03.01-05:00"`
+23. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect minute): `"policyExpirationTime": "2115-12-21T12:60:03.01-05:00"`
 
   URL:
   ```
@@ -323,7 +309,7 @@ GciOiJFZERTQSIsI
   
   JWS: generated in Test Preamble with incorrect parameter in JSON payload
 
-26. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect second): `"policyExpirationTime": "2115-12-21T12:58:61.01-05:00"`
+24. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect second): `"policyExpirationTime": "2115-12-21T12:58:61.01-05:00"`
 
   URL:
   ```
@@ -332,7 +318,7 @@ GciOiJFZERTQSIsI
   
   JWS: generated in Test Preamble with incorrect parameter in JSON payload
 
-27. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect time offset): `"policyExpirationTime": "2115-12-21T12:58:03.01-13:00"`
+25. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect time offset): `"policyExpirationTime": "2115-12-21T12:58:03.01-13:00"`
 
   URL:
   ```
@@ -341,7 +327,7 @@ GciOiJFZERTQSIsI
   
   JWS: generated in Test Preamble with incorrect parameter in JSON payload
 
-28. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect day in February): `"policyExpirationTime": "2115-02-30T12:58:03.01-05:00"`
+26. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (incorrect day in February): `"policyExpirationTime": "2115-02-30T12:58:03.01-05:00"`
 
   URL:
   ```
@@ -350,7 +336,7 @@ GciOiJFZERTQSIsI
   
   JWS: generated in Test Preamble with incorrect parameter in JSON payload
 
-29. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (date in the past): `"policyExpirationTime": "2015-02-20T12:58:03.01-05:00"`
+27. Validate 4xx error response for request with incorrect 'policyExpirationTime' parameter in JWS (date in the past): `"policyExpirationTime": "2015-02-20T12:58:03.01-05:00"`
 
   URL:
   ```
@@ -359,7 +345,7 @@ GciOiJFZERTQSIsI
   
   JWS: generated in Test Preamble with incorrect parameter in JSON payload
 
-30. Validate 4xx error response for request with incorrect signature (check Test Preamble)
+28. Validate 4xx error response for request with incorrect signature (check Test Preamble)
 
   URL:
   ```
@@ -370,7 +356,7 @@ GciOiJFZERTQSIsI
 
 #### Stimulus
 
-JWS_OBJECT = POLICY_JWS or POLICY_ORIGINATIONROUTE_JWS or JWS object generated for variations 21-30
+JWS_OBJECT = 'POLICY_JWS' or 'POLICY_ORIGINATIONROUTE_JWS' or 'JWS object generated for variation 19-28'
 
 Send HTTP PUT to /Policies entrypoint of Policy Store:
 
@@ -388,7 +374,11 @@ Send HTTP PUT to /Policies entrypoint of Policy Store:
 
 
 #### Response
+Variations 1-15, 19-28
 IUT responds with HTTP 4XX error message
+
+Variations 16-18
+IUT responds with HTTP 201 Created message
 
 VERDICT:
 * PASSED - if Policy Store responded as expected
@@ -419,17 +409,18 @@ VERDICT:
 
 ## Sequence Diagram
 <!--
-[![](https://mermaid.ink/img/pako:eNpVkF1PgzAUhv9Kc24tS4FZ1l4sMfHCGw0JaBbTmwbOtsbRzlKMuOy_C2xm2Kt-PM85fc8JKlcjSIiiSNnK2a3ZSWUJaYz3zj9UwflWkq0-tKjsBLX42aGt8NHondfNCBPy4gIS94WelNgGUvRtwIaS3B1M1ZNiqIKSvGlvdDDOkjhK2UUc10yJ1uu7_9JTWeYkfy1v-Px95Gf6FV9uNkChQd9oUw_hTqOsIOyxQQVy2NbafyhQ9jxwuguu6G0FMvgOKXTHWoe_eCCn7BSO2r47dztjbYYPPF-mNw1xYkCe4BtknPBFzIUQWcqEWIksodCDHG5TlrA4WQnBmIiX_EzhZyq7XCScc5ZlPE5XKbvPKHjX7fbXhudfbT-Exw?type=png)](https://mermaid.live/edit#pako:eNpVkF1PgzAUhv9Kc24tS4FZ1l4sMfHCGw0JaBbTmwbOtsbRzlKMuOy_C2xm2Kt-PM85fc8JKlcjSIiiSNnK2a3ZSWUJaYz3zj9UwflWkq0-tKjsBLX42aGt8NHondfNCBPy4gIS94WelNgGUvRtwIaS3B1M1ZNiqIKSvGlvdDDOkjhK2UUc10yJ1uu7_9JTWeYkfy1v-Px95Gf6FV9uNkChQd9oUw_hTqOsIOyxQQVy2NbafyhQ9jxwuguu6G0FMvgOKXTHWoe_eCCn7BSO2r47dztjbYYPPF-mNw1xYkCe4BtknPBFzIUQWcqEWIksodCDHG5TlrA4WQnBmIiX_EzhZyq7XCScc5ZlPE5XKbvPKHjX7fbXhudfbT-Exw)
+[![](https://mermaid.ink/img/pako:eNq1klFrgzAUhf9KuK_TYjTamIfC6B72slGoG2X4EvTWhtWki3HMlf73qe267rXQPAXynXvODWcPhSkRBPi-n-vC6LWqRK4JqZW1xt4XzthGkLXcNpjrEWrwo0Vd4IOSlZX1ABPybBwS84mWZNg4suwah7VHFmario4s-ykoyKu0SjplNKE-jY_C4VxI_Nns7r_oMcsWZPGS_eGX7wN_IT_hbLW6LlbiU37DXGFAydyidFhely_1Q37bfwMParS1VGVfiv0gzsFtsMYcRH8tpX3PIdeHnpOtM8tOFyCcbdGDdlf2m51qAWLsjAc7qd-MqX8hLFXv_3Qs3di9EQGxhy8QUzoJ4pBHLGBhEMacedCBoEkyiRPGY8ZoxOMwOXjwPc4MJtMwiRhPUk6jlKbB1ANr2mpztq_ssMnR26Iu0c5Nqx2IODr8APTC73E?type=png)](https://mermaid.live/edit#pako:eNq1klFrgzAUhf9KuK_TYjTamIfC6B72slGoG2X4EvTWhtWki3HMlf73qe267rXQPAXynXvODWcPhSkRBPi-n-vC6LWqRK4JqZW1xt4XzthGkLXcNpjrEWrwo0Vd4IOSlZX1ABPybBwS84mWZNg4suwah7VHFmario4s-ykoyKu0SjplNKE-jY_C4VxI_Nns7r_oMcsWZPGS_eGX7wN_IT_hbLW6LlbiU37DXGFAydyidFhely_1Q37bfwMParS1VGVfiv0gzsFtsMYcRH8tpX3PIdeHnpOtM8tOFyCcbdGDdlf2m51qAWLsjAc7qd-MqX8hLFXv_3Qs3di9EQGxhy8QUzoJ4pBHLGBhEMacedCBoEkyiRPGY8ZoxOMwOXjwPc4MJtMwiRhPUk6jlKbB1ANr2mpztq_ssMnR26Iu0c5Nqx2IODr8APTC73E)
 -->
 
-![image](https://github.com/user-attachments/assets/eaa3a36d-1dbb-4a63-8d1b-ddabde4e1448)
+![image](https://github.com/user-attachments/assets/659b44d1-6364-45e8-9b44-e4988c20ccf6)
+
 
 
 ## Comments
 
-Version:  010.3f.3.1.7
+Version:  010.3f.3.2.10
 
-Date:     20250428
+Date:     20250512
 
 ## Footnotes
 [^1]: Wireshark - tool for packet tracing and anaylisis. Official website: https://www.wireshark.org/download.html

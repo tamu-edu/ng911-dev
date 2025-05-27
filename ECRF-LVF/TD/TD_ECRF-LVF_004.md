@@ -22,7 +22,7 @@ Test can be performed with 2 different HTTP transport types. Steps describing ac
 
 ### References
 * Requirements : RQ_ECRF-LVF_051, RQ_ECRF-LVF_052, RQ_ECRF-LVF-054
-* Test Case    : 
+* Test Case    : TC_ECRF_LVF_004
 
 ### Requirements
 IXIT config file for ECRF-LVF

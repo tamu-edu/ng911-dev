@@ -9,7 +9,7 @@ This test checks if Bridge has implemented ElementState and ServiceState
 
 ### References
 * Requirements : RQ_BRIDGE_002
-* Test Case    : 
+* Test Case    : TC_BCF_002
 
 ### Requirements
 IXIT config file for BRIDGE
@@ -78,8 +78,8 @@ Test can be performed with 2 different SIP transport types. Steps describing act
 
 ### Test Body
 
-1. ServiceState - scenario file: `SIP_SUBSCRIBE_ServiceState.xml`
-2. ElementState - scenario file: `SIP_SUBSCRIBE_ElementState.xml`
+1. ElementState - scenario file: `SIP_SUBSCRIBE_ElementState.xml`
+2. ServiceState - scenario file: `SIP_SUBSCRIBE_ServiceState.xml`
 
 #### Stimulus
 
@@ -95,23 +95,64 @@ Variation 1
 * BRIDGE responds with 200 OK for SIP SUBSCRIBE
 * BRIDGE sends SIP NOTIFY with the same event as requested in SIP SUBSCRIBE
 * SIP NOTIFY contains following fields in JSON body:
-- elementId
-- state
-- reason (optional)
+- elementId which is FQDN
+- state which is one of:
+  ```
+   Normal
+   ScheduledMaintenance
+   ServiceDisruption 
+   Overloaded
+   GoingDown
+   Down
+   Unreachable
+  ```
+- reason (optional) which is a string
 
 Variation 2
 * BRIDGE responds with 200 OK for SIP SUBSCRIBE
 * BRIDGE sends SIP NOTIFY with the same event as requested in SIP SUBSCRIBE
 * SIP NOTIFY contains following fields in JSON body:
-- service
-- name
-- serviceId (optional)
-- domain
-- serviceState
-- state
-- reason
-- securityPosture (optional)
-- posture
+- service which contains:
+    - name which is one of:
+      ```
+       ADR
+       Bridge
+       ECRF
+       ESRP
+       GCS
+       IMR
+       Logging
+       LVF
+       MCS
+       MDS
+       PolicyStore
+       PSAP 
+      ```
+    - serviceId (optional) which is FQDN the same as in 'domain'
+    - domain which is FQDN
+- serviceState which contains:
+    - state which is one of:
+      ```
+       Normal
+       Unstaffed
+       ScheduledMaintenanceDown
+       ScheduledMaintenanceAvailable
+       MajorIncidentInProgress
+       Partial
+       Overloaded
+       GoingDown
+       Down
+       Unreachable
+      ```
+    - reason whish is string or empty
+- securityPosture (optional) which contains:
+    - posture which is one of:
+        ```
+          Green
+          Yellow
+          Orange
+          Red
+        ```
 
 VERDICT:
 * PASSED - if BRIDGE responded as expected
@@ -148,9 +189,9 @@ VERDICT:
 
 ## Comments
 
-Version:  010.3f.3.0.2
+Version:  010.3f.3.0.3
 
-Date:     20250429
+Date:     20250509
 
 ## Footnotes
 [^1]: SIPp - tool for SIP packet simulations. Official documentation: https://sipp.sourceforge.net/doc/reference.html#Getting+SIPp

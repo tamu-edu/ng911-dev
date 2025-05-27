@@ -1,12 +1,8 @@
-# Next Generation 9-1-1
+# Next Generation 9-1-1 -- Experimental
 
 Repository Name:	ng911-exp
 
-**Revision: NENA-STA-010.3d-2021**
-
-**Release: 3**
-
-Link to bookmark:	https://github.com/tamu-edu/ng911-exp/tree/010.3d-2021/release_3
+Link to bookmark:	https://github.com/tamu-edu/ng911-exp
 
 This repository is managed by the Texas A&M University System (TAMUS) Center for Applied Communications and Networks (CACN).
 

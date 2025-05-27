@@ -9,7 +9,7 @@ Test covers LogEvent JWS object verification on HTTP POST request and sending a 
 
 ### References
 * Requirements : RQ_LOG_026, RQ_LOG_036
-* Test Case    : 
+* Test Case    : TC_LOG_003
 
 ### Requirements
 IXIT config file for Logging Service

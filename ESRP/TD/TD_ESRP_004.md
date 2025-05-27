@@ -14,7 +14,7 @@ Test can be performed with 2 different SIP transport types. Steps describing act
 
 ### References
 * Requirements : RQ_ESRP_033, RQ_ESRP_034
-* Test Case    : 
+* Test Case    : TC_ESRP_004
 
 ### Requirements
 IXIT config file for ESRP
@@ -145,7 +145,7 @@ Send SIP packet to ESRP using scenario file for tested variation - run following
 
 #### Response
 Variation 1
-* verify if ESRP responds with SIP 200 OK including it's capabilities
+* verify if ESRP responds with SIP 200 OK including it's capabilities (allowed methods, accepted content types etc.)
 
 Variation 2
 * verify if ESRP responds with 200 OK to Test System U-ESRP
@@ -214,9 +214,9 @@ Variant 2
 
 ## Comments
 
-Version:  010.3d.3.0.3
+Version:  010.3d.3.0.4
 
-Date:     20250428
+Date:     20250520
 
 ## Footnotes
 [^1]: SIPp - tool for SIP packet simulations. Official documentation: https://sipp.sourceforge.net/doc/reference.html#Getting+SIPp

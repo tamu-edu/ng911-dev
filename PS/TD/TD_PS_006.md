@@ -8,7 +8,7 @@ Test covers Policy Store HTTP DELETE requests verification and sending response
 
 ### References
 * Requirements : RQ_PS_021, RQ_PS_022
-* Test Case    : 
+* Test Case    : TC_PS_006
 
 ### Requirements
 IXIT config file for Policy Store
@@ -98,6 +98,11 @@ python3 -m main generate_jws Policy_object_example_v010.3f.3.0.X.json --cert tes
   
     `curl -X POST https://IF_PS_TS_IP_ADDRESS:PORT/Policies -H "Content-Type: application/json" -d JWS_OBJECT`
 
+* For variation 16 use adjusted `Policy_object_example_v010.3f.3.0.X.json` file, add `"policyId": "\n"` parameter, then generate JWS and send in HTTP POST
+
+* For variation 17 use adjusted `Policy_object_example_v010.3f.3.0.X.json` file, add `"policyId": "'"` parameter, then generate JWS and send in HTTP POST
+
+* For variation 18 use adjusted `Policy_object_example_v010.3f.3.0.X.json` file, add `"policyId": "("` parameter, then generate JWS and send in HTTP POST
 
 ### Test Body
 
@@ -191,35 +196,30 @@ URL:
 POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OriginationRoutePolicy&policyQueueName=zip%3Atest%40example$%2Ecom%3A5060
 ```
 
-16. Validate 4xx error response for request with incorrect "policyId" parameter (send string):
-URL:
-```
-POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=test
-```
+16. Validate 200 Policy Successfully Deleted response for request with "policyId": "\n":
 
-17. Validate 4xx error response for request with incorrect "policyId" parameter (send empty):
-URL:
-```
-POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=
-```
+  URL:
+  ```
+  POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=%0A
+  ```
+  JWS: POLICY_JWS
 
-18. Validate 4xx error response for request with incorrect "policyId" parameter (send space):
-URL:
-```
-POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=%20
-```
+17. Validate 200 Policy Successfully Deleted response for request with "policyId": "'":
 
-19. Validate 4xx error response for request with incorrect "policyId" parameter (send value exceeding 64bit unsigned int):
-URL:
-```
-POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=18446744073709551616
-```
+  URL:
+  ```
+  POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=%27
+  ```
+  JWS: POLICY_JWS
 
-20. Validate 4xx error response for request with incorrect "policyId" parameter (send negative value exceeding 64bit int):
-URL:
-```
-POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=-9223372036854775809
-```
+18. Validate 200 Policy Successfully Deleted response for request with "policyId": "(":
+
+  URL:
+  ```
+  POLICY_STORE_FQDN_OR_IP:PORT/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=%28
+  ```
+  JWS: POLICY_JWS
+
 
 #### Stimulus
 
@@ -239,7 +239,12 @@ Send HTTP DELETE to /Policies entrypoint of Policy Store:
 
 
 #### Response
+
+Variation 1-15
 IUT responds with HTTP 4XX error message
+
+Variation 16-18
+IUT responds with HTTP 200 Policy Successfully Deleted
 
 VERDICT:
 * PASSED - if Policy Store responded as expected
@@ -270,17 +275,17 @@ VERDICT:
 
 ## Sequence Diagram
 <!--
-[![](https://mermaid.ink/img/pako:eNpVkNFqwjAUhl8lnNulkrYuNbkQBgq72IZgGTJyE9qjhtnEpelYJ7772qrY5SoJ3_cn_zlB4UoECVEUKVs4uzU7qSwhlfHe-aciOF9LstWHGpUdoBq_GrQFLozeeV31MCFvLiBx3-hJjnUg67YOWFGycgdTtGTdpaAk79obHYyzNYmjhF3Mfo2caD5_-G895_mKLJYvy3x5N8ZIr4wSrsZ0swEKFfpKm7IreOplBWGPFSqQ3bbU_lOBsueO001w69YWIINvkEJzLHW4VQQ59Kdw1PbDufsZS9N94PUywWGQAwPyBD8g44RPYi6EyFImxExkCYUWZHebsoTFyUwIxkQ85WcKv0PsdJJwzlmW8Tidpewxo-Bds9tfHzz_AYYxhfM?type=png)](https://mermaid.live/edit#pako:eNpVkNFqwjAUhl8lnNulkrYuNbkQBgq72IZgGTJyE9qjhtnEpelYJ7772qrY5SoJ3_cn_zlB4UoECVEUKVs4uzU7qSwhlfHe-aciOF9LstWHGpUdoBq_GrQFLozeeV31MCFvLiBx3-hJjnUg67YOWFGycgdTtGTdpaAk79obHYyzNYmjhF3Mfo2caD5_-G895_mKLJYvy3x5N8ZIr4wSrsZ0swEKFfpKm7IreOplBWGPFSqQ3bbU_lOBsueO001w69YWIINvkEJzLHW4VQQ59Kdw1PbDufsZS9N94PUywWGQAwPyBD8g44RPYi6EyFImxExkCYUWZHebsoTFyUwIxkQ85WcKv0PsdJJwzlmW8Tidpewxo-Bds9tfHzz_AYYxhfM)
+[![](https://mermaid.ink/img/pako:eNq1kU1Lw0AQhv_KMleTku9u91AQW_CgUmiQIrksm2kaTHbrfoix9L-bpLbWq-Ce9vA878zwHkCoEoGB7_uFFEpu64oVkpC21lrpW2GVNoxseWOwkCNk8M2hFLioeaV5O8CEPCmLRL2jJjkaS9adsdh6ZKWaWnRk3acgI89c19zWShoS-mF6Mod35fjz-c1v6z7PV2SxfFjmyx_jGhmUq4RvI9ls_rha5of0f3eLguBCOSHQmK1rmo4ssEGLJXjQom55XfbFHIbgAuwOWyyA9d-S69cCCnnsOe6sWndSALPaoQduX3J7rgbY2JsHey5flGrPEJZ1v9vjqfix_xEBdoAPYNNwEqQRjZMgiYIopYkHHbAwyyZpltA0ScKYplF29OBzzAwm0yiLE5rNaBjPwlkw9UArV-0u4ys9XHKarVGWqO-Uk7YPpfT4BeY6yjQ?type=png)](https://mermaid.live/edit#pako:eNq1kU1Lw0AQhv_KMleTku9u91AQW_CgUmiQIrksm2kaTHbrfoix9L-bpLbWq-Ce9vA878zwHkCoEoGB7_uFFEpu64oVkpC21lrpW2GVNoxseWOwkCNk8M2hFLioeaV5O8CEPCmLRL2jJjkaS9adsdh6ZKWaWnRk3acgI89c19zWShoS-mF6Mod35fjz-c1v6z7PV2SxfFjmyx_jGhmUq4RvI9ls_rha5of0f3eLguBCOSHQmK1rmo4ssEGLJXjQom55XfbFHIbgAuwOWyyA9d-S69cCCnnsOe6sWndSALPaoQduX3J7rgbY2JsHey5flGrPEJZ1v9vjqfix_xEBdoAPYNNwEqQRjZMgiYIopYkHHbAwyyZpltA0ScKYplF29OBzzAwm0yiLE5rNaBjPwlkw9UArV-0u4ys9XHKarVGWqO-Uk7YPpfT4BeY6yjQ)
 -->
 
-![image](https://github.com/user-attachments/assets/9f7afe92-d381-4c75-9d32-b4d81c1e1469)
+![image](https://github.com/user-attachments/assets/3b738d19-14c6-4391-874f-72ae7f62e421)
 
 
 ## Comments
 
-Version:  010.3f.3.1.3
+Version:  010.3f.3.1.5
 
-Date:     20250428
+Date:     20250507
 
 ## Footnotes
 [^1]: Wireshark - tool for packet tracing and anaylisis. Official website: https://www.wireshark.org/download.html

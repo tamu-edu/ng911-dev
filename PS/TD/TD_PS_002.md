@@ -8,7 +8,7 @@ Test covers Policy Object contents verification while sending HTTP POST
 
 ### References
 * Requirements : RQ_PS_010, RQ_PS_025
-* Test Case    : 
+* Test Case    : TC_PS_002
 
 ### Requirements
 IXIT config file for Policy Store
@@ -145,7 +145,11 @@ Send HTTP POST to Policy Store with generated JWS object for tested variation:
   `curl -X POST https://IF_PS_TS_IP_ADDRESS:PORT/Policies -H "Content-Type: application/json" -d JWS_OBJECT`
 
 #### Response
+Variations 1-11, 15-27
 Policy Store responds with HTTP 4XX error message
+
+Variations 12-14, 28-30
+Policy Store responds with HTTP 201 Created message
 
 VERDICT:
 * PASSED - if Policy Store responded as expected
@@ -184,9 +188,9 @@ VERDICT:
 
 ## Comments
 
-Version:  010.3f.3.1.10
+Version:  010.3f.3.1.11
 
-Date:     20250428
+Date:     20250512
 
 ## Footnotes
 [^1]: Wireshark - tool for packet tracing and anaylisis. Official website: https://www.wireshark.org/download.html
