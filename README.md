@@ -13,7 +13,7 @@ This repository is managed by the Texas A&M University System (TAMUS) Center for
 ## Purpose
 This repo is used by the TAMU CACN development team to share the NG9-1-1 Conformance and Interoperability Testing program code with the general public.
 
-Currently, development is performed in a different (experimental) GitHub so that multiple (sometimes major) changes per day don't confuse the general public users.  Changes are pushed to this site on an as needed basis.  Once the initial versions of the code are ready for broader use, we expect to move development and maintenance of that code to this GitHub, where we can accept pull requests and "Issues" (bugs reports or feature requests).
+Currently, development is performed in a different (experimental) GitHub so that multiple (sometimes major) changes per day don't confuse the general public users.  Changes are pushed to this site on an as needed basis.  Once the initial versions of the code are ready for broader use, we expect to move development and maintenance of that code to this GitHub, where we can accept pull requests and "Issues" (bugs reports or feature requests). More specifics on this will be posted in the next few weeks.
 
 ## Usage Policies
 
