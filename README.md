@@ -8,7 +8,7 @@ Repository Name:	ng911-dev
 
 Link to bookmark:	https://github.com/tamu-edu/ng911-dev
 
-This repository is managed by the Texas A&M University System (TAMUS) Center for Applied Communications and Networks (CACN).
+This repository is managed by the [Texas A&M Center for Applied Communications and Networks (CACN)](https://cacn.tamus.edu).
 
 ## Purpose
 This repo is used by the TAMU CACN development team to share the NG9-1-1 Conformance and Interoperability Testing program code with the general public.
