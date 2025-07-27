@@ -1,7 +1,5 @@
 # Next Generation 9-1-1
 
-Repository Name:	ng911-dev
-
 Link to bookmark:	https://github.com/tamu-edu/ng911-dev
 
 This repository is managed by the [Texas A&M Center for Applied Communications and Networks (CACN)](https://cacn.tamus.edu).
