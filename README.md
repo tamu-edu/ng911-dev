@@ -5,7 +5,7 @@ Link to bookmark:	https://github.com/tamu-edu/ng911-dev
 This repository is managed by the [Texas A&M Center for Applied Communications and Networks (CACN)](https://cacn.tamus.edu).
 
 ## Purpose
-This repo is used by the TAMU CACN development team to share the NG9-1-1 Conformance and Interoperability Testing program details with the general public.
+This repo is used by the Texas A&M Center for Applied Communications and Networks (CACN) development team to share the NG9-1-1 Conformance and Interoperability Testing program details with the general public.
 
 Currently, development is performed in a different (experimental) GitHub so that multiple (sometimes major) changes per day don't confuse the general public users.  Changes are pushed to this site on an as needed basis.  Once the initial versions of the code are ready for broader use, we expect to move development and maintenance of that code to this GitHub, where we can accept pull requests and "Issues" (bugs reports or feature requests). More specifics on this will be posted in the next few weeks.
 
