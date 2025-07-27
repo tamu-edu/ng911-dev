@@ -24,4 +24,4 @@ All users of this repository agree to abide by the following Texas A&M Universit
 In general, all users must take care not to:
 * Release any confidential information, such a passwords, secrets, HIPAA or FERPA-protected data
 * Release information that may be subject to Copyright
-* Conduct yourself in a way that may compromise the public’s trust and confidence in you or Texas A&M University
+* Conduct yourself in a way that may compromise the public’s trust and confidence in you or The Texas A&M University System
