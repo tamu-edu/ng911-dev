@@ -1,0 +1,198 @@
+test_config:
+  conformance:
+    tests:
+      - name: "ECRF_LVF_002"
+        variations:
+          - name: "Point_as_a_location_in_findService_request"
+            description: "Validate HTTP 200 OK response on findService request with point geolocation"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ECRF-LVF"
+                        extract_field: "api"
+                      "save_result_as": "var.ecrf_lvf_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.ecrf_lvf_api"
+                        extract_field: "http_url_suffix_lost"
+                      "save_result_as": "var.http_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.http_url"   # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findService_geodetic_point"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Circle_as_a_location_in_findService_request"
+            description: "Validate HTTP 200 OK response on findService request with circle geolocation"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ECRF-LVF"
+                        extract_field: "api"
+                      "save_result_as": "var.ecrf_lvf_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.ecrf_lvf_api"
+                        extract_field: "http_url_suffix_lost"
+                      "save_result_as": "var.http_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.http_url"  # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findService_geodetic_circle"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Ellipse_as_a_location_in_findService_request"
+            description: "Validate HTTP 200 OK response on findService request with ellipse geolocation"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ECRF-LVF"
+                        extract_field: "api"
+                      "save_result_as": "var.ecrf_lvf_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.ecrf_lvf_api"
+                        extract_field: "http_url_suffix_lost"
+                      "save_result_as": "var.http_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.http_url"  # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findService_geodetic_ellipse"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Arc-band_as_a_location_in_findService_request"
+            description: "Validate HTTP 200 OK response on findService request with arc-band geolocation"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ECRF-LVF"
+                        extract_field: "api"
+                      "save_result_as": "var.ecrf_lvf_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.ecrf_lvf_api"
+                        extract_field: "http_url_suffix_lost"
+                      "save_result_as": "var.http_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.http_url"  # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findService_geodetic_arc-band"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Polygon_as_a_location_in_findService_request"
+            description: "Validate HTTP 200 OK response on findService request with polygon geolocation"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ECRF-LVF"
+                        extract_field: "api"
+                      "save_result_as": "var.ecrf_lvf_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.ecrf_lvf_api"
+                        extract_field: "http_url_suffix_lost"
+                      "save_result_as": "var.http_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.http_url"  # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findService_geodetic_polygon"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Civic_address_as_a_location_in_findService_request"
+            description: "Validate HTTP 200 OK response on findService request with civic address"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ECRF-LVF"
+                        extract_field: "api"
+                      "save_result_as": "var.ecrf_lvf_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.ecrf_lvf_api"
+                        extract_field: "http_url_suffix_lost"
+                      "save_result_as": "var.http_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.http_url"  # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findService_civic_address"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_ECRF_022"
+            variations: ["Civic_address_as_a_location_in_findService_request"]
+          - name: "RQ_ECRF_046"
+            variations: [
+              "Point_as_a_location_in_findService_request",
+              "Circle_as_a_location_in_findService_request",
+              "Ellipse_as_a_location_in_findService_request",
+              "Arc-band_as_a_location_in_findService_request",
+              "Polygon_as_a_location_in_findService_request"
+            ]
+          - name: "RQ_ECRF_053"
+            variations: ["all"]

@@ -1,0 +1,130 @@
+"run_config":
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": "logan/ESRP_001"
+      "filename": "ESRP_001"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "TAMUS CACN ISO LAB"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "Department of Homeland Security"
+        "addr_line_1": "1501 Texas Ave S"
+        "addr_line_2": "ATTN: Logan Freeman"
+        "city": "College Station"
+        "state": "Texas"
+        "country": "US"
+        "zip": "77840"
+        "url": "https://cacn.tamus.edu"
+        "eng_name": "Logan Freeman"
+      "supplier":
+        "name": "Foo"
+        "addr_line_1": "1 Foo Rd"
+        "addr_line_2": "Suite 1234"
+        "city": "Bryan"
+        "state": "Texas"
+        "country": "US"
+        "zip": "77801"
+        "url": "https://www.foo.com"
+      "iut":
+        "type": "ESRP"
+        "name": "IUT_ESRP"
+        "version": "0.0.0.1"
+        "test_period": "20250617"
+        "date_of_receipt": "20250615"
+        "location": "n/a"
+        "cs_id": "00001"
+      "test_env":
+        "ixit_id": "00001-ixit"
+        "spec_name": "i3"
+        "spec_version": "v3revF"
+        "ts_version": "0.5"
+        "test_period_start": "20250616"
+        "test_period_end": "20250617"
+        "log_ref": "1234567"
+        "log_ret_date": "20250617"
+    "log":
+      "level": "DEBUG"
+      "output_file": "logan/ESRP_001/ESRP_001.log"
+    "comments":
+    - "author": "X"
+      "comment": "This is test comment X."
+    - "author": "Y"
+      "comment": "I am the Y comment."
+  "tests":
+  - "name": "ESRP_001"
+    "requirements":
+    - "name": "RQ_ESRP_005"
+      "variations":
+      - "all"
+    - "name": "RQ_ESRP_007"
+      "variations":
+      - "all"
+    - "name": "RQ_ESRP_008"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "QueueState update after changing ServiceState"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "execution_order": 1
+          "prep_steps":
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_ServiceState.xml"
+              "param_name": "[service]"
+              "value": "ESRP"
+              "output_file": "file./tmp/ESRP_001/SIP_SUBSCRIBE_ServiceState.xml"
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file./tmp/ESRP_001/SIP_SUBSCRIBE_ServiceState.xml"
+            "kwargs": {}
+            "save_response_as": "ESRP_001_ServiceState_response.log"
+            "save_log_as": "ESRP_001_ServiceState.log"
+          "run_in_background": "True"
+        - "action": "send"
+          "execution_order": 2
+          "prep_steps":
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_QueueState.xml"
+              "param_name": "[service]"
+              "value": "# Queue URI to be manually filled in run_config"
+              "output_file": "file./tmp/ESRP_001/SIP_SUBSCRIBE_QueueState.xml"
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file./tmp/ESRP_001/SIP_SUBSCRIBE_QueueState.xml"
+            "kwargs": {}
+            "save_response_as": "ESRP_001_QueueState_response.log"
+            "save_log_as": "ESRP_001_QueueState.log"
+          "run_in_background": "True"
+        - "action": "manual"
+          "instead": ""
+          "type": ""
+          "method": ""
+          "prompt": "MANUAL ACTION REQUIRED - please simulate change of ServiceState\
+            \ to 'Down' and press any key to continue..."
+          "next_action": "send"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_O-BCF_ESRP"
+        "dst_interface": "IF_ESRP_O-BCF"
+        "sip_method": "SUBSCRIBE"
+        "header_contains": ""
+        "body_contains": ""

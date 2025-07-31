@@ -1,0 +1,106 @@
+"run_config":
+  "global":
+    "response_timeout": 30
+    "type": "conformance"
+    "report_files":
+    - "type": "pdf"
+      "path": "CTR.pdf"
+    - "type": "docx"
+      "path": "CTR.docx"
+    - "type": "xml"
+      "path": "CTR.xml"
+    - "type": "csv"
+      "path": "CTR.csv"
+    - "type": "json"
+      "path": "CTR.json"
+    "log":
+      "level": "DEBUG"
+      "output_file": "test_files/logs/logger.log"
+  "tests":
+  - "name": "ECRF_LVF_005"
+    "requirements":
+    - "name": "RQ_ECRF-LVF_043"
+      "variations":
+      - "all"
+    - "name": "RQ_ECRF-LVF_050"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "findService_recursive_mode_polygon_not_covering_boundaries"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "receive"
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "TS2"
+              "extract_field": "interfaces"
+            "save_result_as": "var.ts2_interfaces"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.ts2_interfaces"
+              "where_field": "name"
+              "where_value": "IF_TS2_ECRF-LVF"
+              "extract_field": "ip"
+            "save_result_as": "var.ts2_ip"
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "True"
+          "run_on_ip": "var.ts2_ip"
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": ""
+          "http_url": "# to be manually filled in run_config"
+          "body": "file.test_files/HTTP_messages/HTTP_LoST/findService_recursive_mode_polygon_not_covering_boundaries"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_ECRF-LVF"
+        "dst_interface": "IF_ECRF-LVF_TS"
+        "http_request_method": "GET"
+        "response_status_code": ""
+        "header_contains": ""
+        "body_contains": ""
+      - "message_type": "output"
+        "src_interface": "IF_ECRF-LVF_TS2"
+        "dst_interface": "IF_TS2_ECRF-LVF"
+        "http_request_method": "GET"
+        "response_status_code": ""
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "findService_iterative_mode_polygon_not_covering_boundaries"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "3XX"
+          "http_url": "# to be manually filled in run_config"
+          "body": "file.test_files/HTTP_messages/HTTP_LoST/findService_iterative_mode_polygon_not_covering_boundaries"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_ECRF-LVF"
+        "dst_interface": "IF_ECRF-LVF_TS"
+        "http_request_method": "GET"
+        "response_status_code": "3XX"
+        "header_contains": ""
+        "body_contains": ""
+      - "message_type": "output"
+        "src_interface": ""
+        "dst_interface": ""

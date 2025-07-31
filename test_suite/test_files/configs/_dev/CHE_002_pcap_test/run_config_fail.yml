@@ -1,0 +1,157 @@
+run_config:
+  global:
+    response_timeout: 30
+    type: "conformance"
+    report_files:
+      - type: "pdf"
+        path: "CHE_002_CTR.pdf"
+    log:
+      level: "DEBUG"
+      output_file: "test_files/logs/CHE_002.log"
+  tests:
+    - name: "CHE_002"
+      requirements:
+        - name: "RQ_CHE_006"
+          variations: [
+            "CHE_002_variation_1",
+            "CHE_002_variation_2",
+            "CHE_002_variation_3",
+            "CHE_002_variation_4",
+            "CHE_002_variation_5",
+            "CHE_002_variation_6",
+            "CHE_002_variation_7"
+          ]
+      variations:
+        - name: "CHE_002_variation_1"
+          mode: "pcap" # pcap / online
+          pcap_file: "test_files/pcaps/CHE_002/TC_CHE_002_fail_WITHOUT_VARIATION_7.pcap" # optional
+          params: # optional - only for online required
+            stimulus_message: ""
+            headers: ["", ""]
+          filtering_options: # optional
+            stimulus_message:
+              src_interface: "IF_TS_CHE"
+              dst_interface: "IF_CHE_TS"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+            output_message:
+              src_interface: "IF_CHE_TSP"
+              dst_interface: "IF_TS_CHE"
+              sip_method: "OK" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "200" #  leave empty if not needed
+        - name: "CHE_002_variation_2"
+          mode: "pcap" # pcap / online
+          pcap_file: "test_files/pcaps/CHE_002/TC_CHE_002_fail_WITHOUT_VARIATION_7.pcap" # optional
+          params: # optional - only for online required
+            stimulus_message: ""
+            headers: ["", ""]
+          filtering_options: # optional
+            stimulus_message:
+              src_interface: "IF_TS_CHE"
+              dst_interface: "IF_CHE_TS"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+            output_message:
+              src_interface: "IF_CHE_TSP"
+              dst_interface: "IF_TS_CHE"
+              sip_method: "OK" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "200" #  leave empty if not needed
+        - name: "CHE_002_variation_3"
+          mode: "pcap" # pcap / online
+          pcap_file: "test_files/pcaps/CHE_002/TC_CHE_002_fail_WITHOUT_VARIATION_7.pcap" # optional
+          params: # optional - only for online required
+            stimulus_message: ""
+            headers: ["", ""]
+          filtering_options: # optional
+            stimulus_message:
+              src_interface: "IF_TS_CHE"
+              dst_interface: "IF_CHE_TS"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+            output_message:
+              src_interface: "IF_CHE_TSP"
+              dst_interface: "IF_TS_CHE"
+              sip_method: "OK" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "200" #  leave empty if not needed
+        - name: "CHE_002_variation_4"
+          mode: "pcap" # pcap / online
+          pcap_file: "test_files/pcaps/CHE_002/TC_CHE_002_fail_WITHOUT_VARIATION_7.pcap" # optional
+          params: # optional - only for online required
+            stimulus_message: ""
+            headers: ["", ""]
+          filtering_options: # optional
+            stimulus_message:
+              src_interface: "IF_TS_CHE"
+              dst_interface: "IF_CHE_TS"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+            output_message:
+              src_interface: "IF_CHE_TSP"
+              dst_interface: "IF_TS_CHE"
+              sip_method: "OK" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "200" #  leave empty if not needed
+        - name: "CHE_002_variation_5"
+          mode: "pcap" # pcap / online
+          pcap_file: "test_files/pcaps/CHE_002/TC_CHE_002_fail_WITHOUT_VARIATION_7.pcap" # optional
+          params: # optional - only for online required
+            stimulus_message: ""
+            headers: ["", ""]
+          filtering_options: # optional
+            stimulus_message:
+              src_interface: "IF_TS_CHE"
+              dst_interface: "IF_CHE_TS"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+            output_message:
+              src_interface: "IF_CHE_TSP"
+              dst_interface: "IF_TS_CHE"
+              sip_method: "OK" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "200" #  leave empty if not needed
+        - name: "CHE_002_variation_6"
+          mode: "pcap" # pcap / online
+          pcap_file: "test_files/pcaps/CHE_002/TC_CHE_002_fail_WITHOUT_VARIATION_7.pcap" # optional
+          params: # optional - only for online required
+            stimulus_message: ""
+            headers: ["", ""]
+          filtering_options: # optional
+            stimulus_message:
+              src_interface: "IF_TS_CHE"
+              dst_interface: "IF_CHE_TS"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+            output_message:
+              src_interface: "IF_CHE_TSP"
+              dst_interface: "IF_TS_CHE"
+              sip_method: "OK" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "200" #  leave empty if not needed
+        - name: "CHE_002_variation_7"
+          mode: "pcap" # pcap / online
+          pcap_file: "test_files/pcaps/CHE_002/TC_CHE_002_fail_WITHOUT_VARIATION_7.pcap" # optional
+          params: # optional - only for online required
+            stimulus_message: ""
+            headers: ["", ""]
+          filtering_options: # optional
+            stimulus_message:
+              src_interface: "IF_TS_CHE"
+              dst_interface: "IF_CHE_TS"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+            output_message:
+              src_interface: "IF_CHE_TSP"
+              dst_interface: "IF_TS_CHE"
+              sip_method: "OK" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "200" #  leave empty if not needed

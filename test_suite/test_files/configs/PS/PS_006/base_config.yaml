@@ -1,0 +1,3 @@
+test_config: "test_files/configs/PS/PS_006/test_config.yaml"
+lab_config: "test_files/configs/PS/PS_006/lab_config.yaml"
+run_config: "test_files/configs/PS/PS_006/run_config.yaml"

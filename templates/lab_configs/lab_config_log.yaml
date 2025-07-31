@@ -1,0 +1,45 @@
+lab_config:
+  pca_certificate_file: ""
+  pca_certificate_key: ""
+  test_suite_host_ip: ""
+  entities:
+    # Test System
+    - name: "ESRP"
+      mode: "STUB_SERVER"
+      function: "ESRP"
+      role: "SENDER"
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_ESRP_LOG"
+          fqdn: ""
+          ip: ""
+          mask: ""
+          gateway: ""  #  Leave empty if not required
+          dns: [ ]  #  Leave empty if not required
+          port_mapping:
+            - name: "IF_ESRP_LOG_HTTP_8080_TCP"
+              protocol: "HTTP"
+              port: 8080
+              transport_protocol: "TCP"
+    # Logging Service
+    - name: "LOG"
+      mode: "REAL_DEVICE"
+      function: "LOG"
+      role: "IUT"
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_LOG_ESRP"
+          fqdn: ""
+          ip: ""
+          mask: ""
+          gateway: ""  #  Leave empty if not required
+          dns: []  #  Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG_ESRP_HTTP_8080_TCP"
+              protocol: "HTTP"
+              port: 8080
+              transport_protocol: "TCP"

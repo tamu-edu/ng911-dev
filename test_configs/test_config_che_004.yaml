@@ -1,0 +1,92 @@
+test_config:
+  conformance:
+    tests:
+      - name: "CHE_004"
+        variations:
+          - name: "SIP_INVITE_for_callbacks"
+            description: "Validate SIP INVITE sent by CHE for callbacks"
+            interfaces:
+              - name: "IF_BCF_CHE"
+                port_names: []
+              - name: "IF_BCF-RECEIVER_CHE"
+                port_names: []
+            params:
+              messages:
+                - action: "manual"
+                  id: "show_user_prompt"
+                  if_name: ""
+                  type: ""
+                  method: ""
+                  instead: ""
+                  prompt: "Please answer and end incoming call on CHE, then trigger callback.\
+                          Press any key to continue when ready..."
+                  next_action: "receive_initial_invite"
+                - action: "receive"
+                  id: "receive_initial_invite"
+                  if_name: "IF_BCF-RECEIVER_CHE"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/\
+                      SIP_INVITE_SDP_with_g711alaw_audio_receive_callback.xml",
+                    kwargs: {},
+                    save_response_as: "CHE_004_var1_SEND_response.log",
+                    save_log_as: "CHE_004_var1_SEND.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "show_confirm_prompt"
+                - action: "manual"
+                  id: "show_confirm_prompt"
+                  if_name: ""
+                  type: ""
+                  method: ""
+                  instead: ""
+                  prompt: "Confirm that callback was triggered."
+                  next_action: ""
+          - name: "SIP_INVITE_for_outbound_calls"
+            description: "Validate SIP INVITE sent by CHE for outbound calls"
+            interfaces:
+              - name: "IF_BCF-RECEIVER_CHE"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  id: "receive_outbound_invite"
+                  if_name: "IF_BCF-RECEIVER_CHE"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml",
+                    kwargs: {},
+                    save_response_as: "CHE_004_var2_RECEIVE_response.log",
+                    save_log_as: "CHE_004_var2_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                  next_action: "show_user_prompt"
+                - action: "manual"
+                  id: "show_user_prompt"
+                  if_name: ""
+                  type: ""
+                  method: ""
+                  instead: ""
+                  prompt: "MANUAL ACTION REQUIRED - please trigger outbound call to Test System on CHE \
+                          and press any key to continue..."
+                  next_action: "receive_outbound_invite"
+        requirements:
+          - name: "RQ_CHE_003"
+            variations: ["all"]
+          - name: "RQ_CHE_004"
+            variations: ["SIP_INVITE_for_outbound_calls"]
+          - name: "RQ_CHE_005"
+            variations: ["all"]

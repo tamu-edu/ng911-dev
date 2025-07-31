@@ -1,0 +1,1521 @@
+test_config:
+  conformance:
+    tests:
+      - name: "PS_007"
+        variations:
+          - name: "Request_with_policy_ruleset_missing_unique_IDs"
+            description: "Validate 4xx error response for HTTP POST request with policy ruleset missing unique ID's"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "PUT_Request_with_policy_ruleset_missing_unique_IDs"
+            description: "Validate 4xx error response for HTTP PUT request with policy ruleset missing unique ID's"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "PUT"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&\
+                            policyId=test_example_1"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_missing_id"
+            description: "Validate 4xx error response for HTTP POST request with policy ruleset missing 'id'"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/Policy_object_without_id_member_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_missing_priority"
+            description: "Validate 4xx error response for HTTP POST request with policy ruleset missing 'priority'"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/Policy_object_without_priority_member_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_missing_actions"
+            description: "Validate 4xx error response for HTTP POST request with policy ruleset missing 'actions'"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/Policy_object_without_actions_member_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_missing_unique_priority"
+            description: "Validate 4xx error response for HTTP POST request with policy ruleset missing unique \
+                          'priority' for each rule"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/Policy_object_without_unique_priority_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_year"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateStart' in 'TimePeriodCondition' (incorrect year)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "20130-08-10T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_month"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateStart' in 'TimePeriodCondition' (incorrect month)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-13-10T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_day"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateStart' in 'TimePeriodCondition' (incorrect month)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-32T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_hour"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateStart' in 'TimePeriodCondition' (incorrect hour)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-10T24:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_minute"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateStart' in 'TimePeriodCondition' (incorrect minute)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-10T12:60:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_second"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateStart' in 'TimePeriodCondition' (incorrect second)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-10T12:58:60.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_time_offset"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateStart' in 'TimePeriodCondition' (incorrect time offset)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-10T12:58:03.01-13:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_day_in_Feb"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateStart' in 'TimePeriodCondition' (incorrect day in February)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-02-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_year"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateEnd' in 'TimePeriodCondition' (incorrect year)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "20130-08-10T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_month"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateEnd' in 'TimePeriodCondition' (incorrect month)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-13-10T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_day"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateStart' in 'TimePeriodCondition' (incorrect month)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-32T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_hour"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateEnd' in 'TimePeriodCondition' (incorrect hour)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-10T24:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_minute"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateEnd' in 'TimePeriodCondition' (incorrect minute)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-10T12:60:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_second"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateEnd' in 'TimePeriodCondition' (incorrect second)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-10T12:58:60.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_time_offset"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateEnd' in 'TimePeriodCondition' (incorrect time offset)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-08-10T12:58:03.01-13:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_day_in_Feb"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'dateEnd' in 'TimePeriodCondition' (incorrect day in February)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-02-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-08-11T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_dateEnd_earlier_than_dateStart"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          TimePeriodCondition (dateEnd earlier than dateStart)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-03-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-01-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_timeStart_incorrect_hour"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'timeStart' in 'TimePeriodCondition' (incorrect hour)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-01-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-03-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeStart"
+                        value: "24:10:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeEnd"
+                        value: "20:24:12"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_timeStart_incorrect_minute"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'timeStart' in 'TimePeriodCondition' (incorrect minute)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-01-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-03-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeStart"
+                        value: "12:61:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeEnd"
+                        value: "20:24:12"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_timeStart_incorrect_second"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'timeStart' in 'TimePeriodCondition' (incorrect second)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-01-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-03-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeStart"
+                        value: "12:10:61"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeEnd"
+                        value: "20:24:12"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_timeEnd_incorrect_hour"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'timeEnd' in 'TimePeriodCondition' (incorrect hour)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-01-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-03-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeEnd"
+                        value: "24:10:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeStart"
+                        value: "20:24:12"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_timeEnd_incorrect_minute"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'timeEnd' in 'TimePeriodCondition' (incorrect minute)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-01-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-03-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeEnd"
+                        value: "12:61:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeStart"
+                        value: "20:24:12"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_timeEnd_incorrect_second"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'timeEnd' in 'TimePeriodCondition' (incorrect second)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-01-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-03-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeEnd"
+                        value: "12:10:61"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeStart"
+                        value: "20:24:12"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policy_ruleset_with_incorrect_weekDayList"
+            description: "Validate 4xx error response for HTTP POST request with policy containing incorrect \
+                          'weekdayList' in 'TimePeriodCondition'"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_incorrect_TimePeriodCondition_1_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_conditionType"
+                        value: "TimePeriodCondition"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateStart"
+                        value: "2030-01-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_dateEnd"
+                        value: "2030-03-30T12:58:03.01-05:00"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeStart"
+                        value: "12:10:11"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_timeEnd"
+                        value: "20:24:11"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_007/PS_007.json"
+                        param_name: "policyRules_0_conditions_0_weekdayList_0"
+                        value: "test"
+                        output_file: "file./tmp/PS_007/PS_007.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_007/PS_007.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_PS_027"
+            variations: [ "Request_with_policy_ruleset_missing_unique_IDs" ]
+          - name: "RQ_PS_031"
+            variations: [ "PUT_Request_with_policy_ruleset_missing_unique_IDs" ]
+          - name: "RQ_PS_034"
+            variations: [
+              "Request_with_policy_ruleset_missing_id",
+              "Request_with_policy_ruleset_missing_actions",
+              "Request_with_policy_ruleset_missing_unique_priority"
+            ]
+          - name: "RQ_PS_044"
+            variations: [
+              "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_year",
+              "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_month",
+              "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_hour",
+              "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_minute",
+              "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_second",
+              "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_time_offset",
+              "Request_with_policy_ruleset_with_incorrect_dateStart_incorrect_day_in_Feb",
+              "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_year",
+              "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_month",
+              "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_hour",
+              "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_minute",
+              "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_second",
+              "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_time_offset",
+              "Request_with_policy_ruleset_with_incorrect_dateEnd_incorrect_day_in_Feb",
+              "Request_with_policy_ruleset_with_dateEnd_earlier_than_dateStart",
+              "Request_with_policy_ruleset_with_incorrect_timeStart_incorrect_hour",
+              "Request_with_policy_ruleset_with_incorrect_timeStart_incorrect_minute",
+              "Request_with_policy_ruleset_with_incorrect_timeStart_incorrect_second",
+              "Request_with_policy_ruleset_with_incorrect_timeEnd_incorrect_hour",
+              "Request_with_policy_ruleset_with_incorrect_timeEnd_incorrect_minute",
+              "Request_with_policy_ruleset_with_incorrect_timeEnd_incorrect_second",
+              "Request_with_policy_ruleset_with_incorrect_weekDayList"
+            ]

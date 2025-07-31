@@ -1,0 +1,76 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LIS_005"
+        variations:
+          - name: "Self-signed_certificate"
+            description: "Validate rejecting certificates not signed by PCA"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - "method_name": "generate_random_certificate"
+                      "kwargs":
+                        "output_certificate_file": "file./tmp/temp.crt"
+                        "output_key_file": "file./tmp/temp.key"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_FROM_LIS.xml",
+                    kwargs: {
+                              t: "l1",
+                              s: "service",
+                              tls_cert: "file./tmp/temp.crt",
+                              tls_key: "file./tmp/temp.key"
+                    },
+                    save_response_as: "LIS_005_var1_SEND_response.log",
+                    save_log_as: "LIS_005_var1_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "PCA-signed_certificate"
+            description: "Validate accepting PCA-signed certificates"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "lab_config['lab_config']['entities']",
+                             where_field: "name",
+                             where_value: "TS",
+                             extract_field: 'certificate_file'
+                      }
+                      save_result_as: "var.cert"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "lab_config['lab_config']['entities']",
+                             where_field: "name",
+                             where_value: "TS",
+                             extract_field: 'certificate_key'
+                      }
+                      save_result_as: "var.key"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_FROM_LIS.xml",
+                    kwargs: {
+                              t: "l1",
+                              s: "service",
+                              tls_cert: "var.cert",
+                              tls_key: "var.key"
+                    },
+                    save_response_as: "LIS_005_var2_SEND_response.log",
+                    save_log_as: "LIS_005_var2_SEND.log"
+                  }
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_LIS_005"
+            variations: ["all"]
+          - name: "RQ_LIS_008"
+            variations: ["all"]

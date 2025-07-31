@@ -1,0 +1,531 @@
+test_config:
+  conformance:
+    tests:
+      - name: "PS_006"
+        variations:
+          - name: "Request_without_policyOwner"
+            description: "Validate 4xx error response for request without 'policyOwner'"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyType=OtherRoutePolicy&policyId=test_example_1"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_without_policyType"
+            description: "Validate 4xx error response for request without 'policyType'"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyId=test_example_1"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_without_policyId"
+            description: "Validate 4xx error response for request without 'policyId'"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policyType_OriginationRoutePolicy_without_policyQueueName"
+            description: 'Validate 4xx error response for request with "policyType": "OriginationRoutePolicy" and \
+                          without "policyQueueName"'
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OriginationRoutePolicy"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policyType_OriginationRoutePolicy_with_incorrect_policyOwner_fqdn_special_chars"
+            description: "Validate 4xx error response for request with incorrect 'policyOwner' parameter \
+                          (special characters not allowed in FQDN)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=te$t%40example%2Ecom&policyType=OriginationRoutePolicy&\
+                            policyQueueName=sip%3Atest%40example.com"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_policyOwner_fqdn_missing_at"
+            description: "Validate 4xx error response for request with incorrect 'policyOwner' parameter (missing '@')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=testexample%2Ecom&policyType=OriginationRoutePolicy&\
+                  policyQueueName=sip%3Atest%40example.com"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_policyOwner_fqdn_double_at"
+            description: "Validate 4xx error response for request with incorrect 'policyOwner' parameter (double '@')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=test%40%40example%2Ecom&policyType=OriginationRoutePolicy&\
+                              policyQueueName=sip%3Atest%40example.com"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_policyOwner_fqdn_leading_period"
+            description: "Validate 4xx error response for request with incorrect 'policyOwner' parameter \
+                          (leading period)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=%2Etest%40example%2Ecom&policyType=OriginationRoutePolicy&\
+                            policyQueueName=sip%3Atest%40example.com"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_policyOwner_fqdn_length_exceed"
+            description: "Validate 4xx error response for request with incorrect 'policyOwner' parameter \
+                          (length exceeded)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=test%40example%2Ecomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomc\
+                            omcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcom\
+                            comcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomco\
+                            mcomcomcomcom&policyType=OriginationRoutePolicy&policyQueueName=sip%3Atest%40example.com"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_policyType"
+            description: "Validate 4xx error response for request with incorrect 'policyType' parameter"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyType=OtherRoutePolicyy&policyOwner=TEST_SYSTEM_POLICY_OWNER&\
+                              policyId=test_example_1"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_policyQueueName_without_username"
+            description: 'Validate 4xx error response for request with incorrect "policyQueueName" \
+                          (send without username)'
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OriginationRoutePolicy&\
+                            policyQueueName=sip%3A%40example%2Ecom%3A5060"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_policyQueueName_without_domain"
+            description: 'Validate 4xx error response for request with incorrect "policyQueueName" \
+                          (send without domain)'
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OriginationRoutePolicy&\
+                            policyQueueName=sip%3Atest%40%3A5060"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_policyQueueName_not_allowed_chars"
+            description: 'Validate 4xx error response for request with incorrect "policyQueueName" \
+                          (send with not allowed characters)'
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OriginationRoutePolicy&\
+                            policyQueueName=sip%3Atest%40example$%2Ecom%3A5060"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_policyQueueName_invalid_port"
+            description: 'Validate 4xx error response for request with incorrect "policyQueueName" (send invalid port)'
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OriginationRoutePolicy&\
+                            policyQueueName=sip%3Atest%40example$%2Ecom%3A65536"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_policyQueueName_invalid_scheme"
+            description: 'Validate 4xx error response for request with incorrect "policyQueueName" \
+                          (send invalid scheme)'
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OriginationRoutePolicy&\
+                            policyQueueName=zip%3Atest%40example$%2Ecom%3A5060"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policyId_newline"
+            description: 'Validate 200 Policy Successfully Deleted response for request with "policyId": "\n"'
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        param_name: "policyId"
+                        value: "\n"
+                        output_file: "file./tmp/PS_006/Request_with_policyId.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_006/Request_with_policyId.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "200"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=%0A"  # part after f.e. http://IP:PORT
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policyId_quote"
+            description: "Validate 200 Policy Successfully Deleted response for request with\"policyId\": \"'\""
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        param_name: "policyId"
+                        value: "'"
+                        output_file: "file./tmp/PS_006/Request_with_policyId.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_006/Request_with_policyId.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "200"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=%27"  # part after f.e. http://IP:PORT
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_policyId_paren"
+            description: "Validate 200 Policy Successfully Deleted response for request with \"policyId\": \"(\""
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+                        param_name: "policyId"
+                        value: "("
+                        output_file: "file./tmp/PS_006/Request_with_policyId.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_006/Request_with_policyId.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "DELETE"
+                  response_code: "200"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyType=OtherRoutePolicy&policyId=%28"  # part after f.e. http://IP:PORT
+                  sipp_scenario: {}
+                  run_in_background: "False"
+
+        requirements:
+          - name: "RQ_PS_021"
+            variations: [ "all" ]

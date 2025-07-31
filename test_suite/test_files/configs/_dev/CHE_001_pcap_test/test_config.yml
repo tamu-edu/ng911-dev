@@ -1,0 +1,65 @@
+test_config:
+  conformance:
+    tests:
+      - name: "CHE_001"
+        variations:
+          - name: "CHE_001_variation_1"
+            description: "Validate HTTP POST sent to LIS after receiving SIP INVITE (HELD)"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: ""
+                  http_url: "/location_1234_test_1"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "SIP_INVITE_geolocation_HELD.xml",
+                    kwargs: {},
+                    save_response_as: "",
+                    save_log_as: "SIP_INVITE_geolocation_HELD.log"
+                  }
+          - name: "CHE_001_variation_2"
+            description: "Validate SIP SUBSCRIBE sent to LIS after receiving SIP INVITE (SIP Presence Event Package)"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "SIP_SUBSCRIBE_LIS.xml",
+                    kwargs: {},
+                    save_response_as: "",
+                    save_log_as: "SIP_SUBSCRIBE_LIS.xml"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "SIP_INVITE_geolocation_SIP.xml",
+                    kwargs: {},
+                    save_response_as: "",
+                    save_log_as: "SIP_INVITE_geolocation_SIP.log"
+                  }
+        requirements:
+          - name: "RQ_CHE_011"
+            variations: ["CHE_001_variation_1", "CHE_001_variation_2"]

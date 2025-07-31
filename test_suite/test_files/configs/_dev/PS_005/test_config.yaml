@@ -1,0 +1,54 @@
+test_config:
+  test_case_name: "TC_PS_005"
+  global:
+    response_timeout: 30
+  report_files:
+    - type: "xml"
+      path: "TC_PS_005_CTR.xml"
+  log:
+    level: "DEBUG"
+    output_file: "test_files/logs/logger.log"
+  scenarios:
+    - name: "TC_PS_005_pass"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/PS_005/TC_PS_005_pass.pcap"
+      tests:
+        - name: "PS_005 variation 1"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+            #header_contains: "?policyType=OriginationRoutePolicy&policyQueueName=test@example.com"
+            #body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+          output_message:
+            src_interface: "IF_PS_TS"
+            dst_interface: "IF_TS_PS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+    - name: "TC_PS_005_fail"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/PS_005/TC_PS_005_fail.pcap"
+      tests:
+        - name: "PS_005 variation 1"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+            #header_contains: "?policyType=OriginationRoutePolicy&policyQueueName=test@example.com"
+            #body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+          output_message:
+            src_interface: "IF_PS_TS"
+            dst_interface: "IF_TS_PS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+

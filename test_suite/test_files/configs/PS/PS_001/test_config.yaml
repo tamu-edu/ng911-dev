@@ -1,0 +1,78 @@
+test_config:
+  conformance:
+    tests:
+      - name: "PS_001"
+        variations:
+          - name: "Policy_not_signed"
+            description: "Validate 4xx error response for JWS with policy not signed"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file.test_files/HTTP_messages/HTTP_JWS/Policy_not_signed.txt"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Policy_not_signed_by_policy_owner"
+            description: "Validate 4xx error response for JWS with policy not signed by the policy owner"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [
+                    {
+                      method_name: "generate_random_certificate",
+                      kwargs: {
+                                output_certificate_file: "file./tmp/temp.crt",
+                                output_key_file: "file./tmp/temp.key"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                                json_source: "file.test_files/JSON/Policy_object_policyOwner_ng911.example.com_v010.3f.3.0.1.json",
+                                cert_path: "file./tmp/temp.crt",
+                                key_path: "file./tmp/temp.key"
+                      },
+                      save_result_as: "var.jws_body"
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "var.jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Incorrect_JWS"
+            description: "Validate 4xx error response for incorrect JWS object"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file.test_files/HTTP_messages/HTTP_JWS/Incorrect_JWS.txt"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_PS_004"
+            variations: [
+              "Policy_not_signed",
+              "Policy_not_signed_by_policy_owner"
+            ]
+          - name: "RQ_PS_005"
+            variations: [
+              "Policy_not_signed",
+              "Policy_not_signed_by_policy_owner"
+            ]
+          - name: "RQ_PS_006"
+            variations: ["Incorrect_JWS"]
+          - name: "RQ_PS_007"
+            variations: ["Incorrect_JWS"]
+          - name: "RQ_PS_028"
+            variations: ["all"]

@@ -1,0 +1,58 @@
+test_config:
+  conformance:
+    tests:
+      - name: "ECRF_LVF_001"
+        variations:
+          - name: "Self-signed_certificate"
+            description: "Validate rejecting certificates not signed by PCA"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - "method_name": "generate_random_certificate"
+                      "kwargs":
+                        "output_certificate_file": "file./tmp/temp.crt"
+                        "output_key_file": "file./tmp/temp.key"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/listServices_urn-service-sos"
+                  sipp_scenario: {}
+                  certificate_file: "file./tmp/temp.crt"
+                  certificate_key: "file./tmp/temp.key"
+                  run_in_background: "False"
+          - name: "PCA-signed_certificate"
+            description: "Validate accepting PCA-signed certificates"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "lab_config['lab_config']['entities']",
+                             where_field: "name",
+                             where_value: "TS",
+                             extract_field: 'certificate_file'
+                      }
+                      save_result_as: "var.cert"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "lab_config['lab_config']['entities']",
+                             where_field: "name",
+                             where_value: "TS",
+                             extract_field: 'certificate_key'
+                      }
+                      save_result_as: "var.key"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/listServices_urn-service-sos"
+                  sipp_scenario: {}
+                  certificate_file: "var.cert"
+                  certificate_key: "var.key"
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_ECRF_LVF_009"
+            variations: ["all"]

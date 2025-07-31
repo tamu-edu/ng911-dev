@@ -1,0 +1,327 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LOG_005"
+        variations:
+          - name: "Request_with_incorrect_limit_send_string"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter (send string)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?limit=test"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_limit_send_empty"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter (send empty)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?limit="  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_limit_send_space"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter (send space)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?limit=%20"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_limit_exceed_64bit_uint"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter \
+                          (send value exceeding 64bit unsigned int)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?limit=18446744073709551616"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_limit_negative_exceed_64bit"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter \
+                          (send negative value exceeding 64bit int)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?limit=-9223372036854775809"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_start_send_string"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter (send string)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?start=test"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_start_send_empty"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter (send empty)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?start="  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_start_send_space"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter (send space)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?start=%20"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_start_exceed_64bit_uint"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter \
+                          (send value exceeding 64bit unsigned int)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?start=18446744073709551616"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_start_less_than_one"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter \
+                          (send value less than 1)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?start=0"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_callid_typo"
+            description: "Validate 4xx error response for request with incorrect 'callid' parameter \
+                          (incorrect urn urn:emergency:uid:callidd:123456789qwerty:bcf.ng911.test)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?callid=urn%3Aemergency%3Auid%3Acallidd%3A123456789qwerty%3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_callid_string_id_below_10_chars"
+            description: "Validate 4xx error response for request with incorrect 'callid' parameter \
+                          (string ID below 10 characters urn:emergency:uid:callid:1:bcf.ng911.test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?callid=urn%3Aemergency%3Auid%3Acallid%3A1%3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_callid_string_id_exceed_36_chars"
+            description: "Validate 4xx error response for request with incorrect 'callid' parameter \
+                          (string ID exceeding 36 characters \
+                          urn:emergency:uid:callid:123456789qwertyuiop1234567890qwertyui:bcf.ng911.test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?callid=urn%3Aemergency%3Auid%3Acallid%3A123456789qwertyuiop\
+                            1234567890qwertyui%3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_callid_fqdn_double_period"
+            description: "Validate 4xx error response for request with incorrect 'callid' parameter \
+                          (incorrect FQDN urn:emergency:uid:callid:123456789qwerty:bcf.ng911..test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?callid=urn%3Aemergency%3Auid%3Acallid%3A123456789qwerty\
+                            %3Abcf%2Eng911%2E%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_callid_fqdn_double_colon"
+            description: "Validate 4xx error response for request with incorrect 'callid' parameter \
+                          (doubled ':' urn:emergency:uid:callid:123456789qwerty::bcf.ng911.test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?callid=urn%3Aemergency%3Auid%3Acallid%3A123456789qwerty\
+                            %3A%3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_incidentid_typo"
+            description: "Validate 4xx error response for request with incorrect 'incidentid' parameter \
+                        (incorrect urn urn:emergency:uid:incidentidd:123456789qwerty:bcf.ng911.test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?incidentid=urn%3Aemergency%3Auid%3Aincidentidd%3A123456789qwerty\
+                            %3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_incidentid_string_id_below_10_chars"
+            description: "Validate 4xx error response for request with incorrect 'incidentid' parameter \
+                          (string ID below 10 characters urn:emergency:uid:incidentid:1:bcf.ng911.test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A1%3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_incidentid_string_id_exceeding_36_chars"
+            description: "Validate 4xx error response for request with incorrect 'incidentid' parameter \
+                          (string ID exceeding 36 characters urn:emergency:uid:incidentid:123456789qwertyuiop\
+                          1234567890qwertyui:bcf.ng911.test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A123456789qwertyuiop\
+                            1234567890qwertyui%3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_incidentid_fqdn_double_period"
+            description: "Validate 4xx error response for request with incorrect 'incidentid' parameter \
+                          (incorrect FQDN urn:emergency:uid:incidentid:123456789qwerty:bcf.ng911..test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A123456789qwerty\
+                            %3Abcf%2Eng911%2E%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_incidentid_double_colon"
+            description: "Validate 4xx error response for request with incorrect 'incidentid' parameter \
+                          (doubled ':' urn:emergency:uid:incidentid:123456789qwerty::bcf.ng911.test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/LogEventIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A123456789qwerty\
+                            %3A%3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Correct_LogEventIds_request"
+            description: "Validate 200 OK + JSON response for any correct request"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/LogEventIds"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_LOG_039"
+            variations: [
+              "Request_with_incorrect_limit_send_string",
+              "Request_with_incorrect_limit_send_empty",
+              "Request_with_incorrect_limit_send_space",
+              "Request_with_incorrect_limit_exceed_64bit_uint",
+              "Request_with_incorrect_limit_negative_exceed_64bit",
+              "Request_with_incorrect_start_send_string",
+              "Request_with_incorrect_start_send_empty",
+              "Request_with_incorrect_start_send_space",
+              "Request_with_incorrect_start_exceed_64bit_uint",
+              "Request_with_incorrect_start_less_than_one",
+              "Request_with_incorrect_callid_typo",
+              "Request_with_incorrect_callid_string_id_below_10_chars",
+              "Request_with_incorrect_callid_string_id_exceed_36_chars",
+              "Request_with_incorrect_callid_fqdn_double_period",
+              "Request_with_incorrect_callid_fqdn_double_colon",
+              "Request_with_incorrect_incidentid_typo",
+              "Request_with_incorrect_incidentid_string_id_below_10_chars",
+              "Request_with_incorrect_incidentid_string_id_exceeding_36_chars",
+              "Request_with_incorrect_incidentid_fqdn_double_period",
+              "Request_with_incorrect_incidentid_double_colon"
+            ]
+          - name: "RQ_LOG_041"
+            variations: ["Correct_LogEventIds_request"]

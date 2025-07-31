@@ -1,0 +1,126 @@
+test_config:
+  global:
+    response_timeout: 30
+    type: "conformance"
+  report_files:
+    - type: "pdf"
+      path: "CTR.pdf"
+  log:
+    level: "DEBUG"
+    output_file: "test_files/logs/logger.log"w
+  conformance:
+    tests:
+      - name: "Test of BCF element"
+        requirements:
+          - name: "RQ_BCF_001"
+            variations:
+              - name: "Name of the variation 1"
+                description: "Description of the variation"
+                mode: "pcap"  # pcap/online
+                pcap_file: "pcaps/BCF_001/artem.fail-resource-priority.pcap"
+                filtering_options:
+                  stimulus_message:
+                    src_interface: "IF_OSP_O-BCF-1"
+                    dst_interface: "IF_O-BCF-1_OSP"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional
+                  output_message:
+                    src_interface: "IF_O-BCF-1_ESRP_1"
+                    dst_interface: "IF_ESRP-1_O-BCF-1"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional
+          - name: "RQ_BCF_002"
+            variations:
+              - name: "Name of the variation 1"
+                description: "Description of the variation"
+                mode: "pcap"  # pcap/online
+                pcap_file: "pcaps/BCF_001/artem.fail-resource-priority.pcap"
+                filtering_options:
+                  stimulus_message:
+                    src_interface: "IF_OSP_O-BCF-1"
+                    dst_interface: "IF_O-BCF-1_OSP"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional
+                  output_message:
+                    src_interface: "IF_O-BCF-1_ESRP_1"
+                    dst_interface: "IF_ESRP-1_O-BCF-1"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional
+              - name: "Name of the variation 2"
+                description: "Description of the variation"
+                mode: "online"  # pcap/online
+                online_config: "path"
+                filtering_options:
+                  stimulus_message:
+                    src_interface: "IF_OSP_O-BCF-1"
+                    dst_interface: "IF_O-BCF-1_OSP"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional
+                  output_message:
+                    src_interface: "IF_O-BCF-1_ESRP_1"
+                    dst_interface: "IF_ESRP-1_O-BCF-1"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional
+      - name: "Test of ESRP element"
+        requirements:
+          - name: "RQ_BCF_001"
+            variations:
+              - name: "Name of the variation 1"
+                description: "Description of the variation"
+                mode: "pcap"  # pcap/online
+                pcap_file: "pcaps/BCF_001/artem.fail-resource-priority.pcap"
+                filtering_options:
+                  stimulus_message:
+                    src_interface: "IF_OSP_O-BCF-1"
+                    dst_interface: "IF_O-BCF-1_OSP"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional
+                  output_message:
+                    src_interface: "IF_O-BCF-1_ESRP_1"
+                    dst_interface: "IF_ESRP-1_O-BCF-1"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional
+          - name: "RQ_BCF_002"
+            variations:
+              - name: "Name of the variation 1"
+                description: "Description of the variation"
+                mode: "pcap"  # pcap/online
+                pcap_file: "pcaps/BCF_001/artem.fail-resource-priority.pcap"
+                filtering_options:
+                  stimulus_message:
+                    src_interface: "IF_OSP_O-BCF-1"
+                    dst_interface: "IF_O-BCF-1_OSP"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional
+                  output_message:
+                    src_interface: "IF_O-BCF-1_ESRP_1"
+                    dst_interface: "IF_ESRP-1_O-BCF-1"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional
+              - name: "Name of the variation 2"
+                description: "Description of the variation"
+                mode: "online"  # pcap/online
+                online_config: "path"
+                filtering_options:
+                  stimulus_message:
+                    src_interface: "IF_OSP_O-BCF-1"
+                    dst_interface: "IF_O-BCF-1_OSP"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional
+                  output_message:
+                    src_interface: "IF_O-BCF-1_ESRP_1"
+                    dst_interface: "IF_ESRP-1_O-BCF-1"
+                    sip_method: "" #  optional
+                    http_request_method: "" #  optional
+                    response_status_code: "" #  optional

@@ -1,0 +1,47 @@
+test_config:
+  conformance:
+    tests:
+      - name: "ESRP_004"
+        variations:
+          - name: "SIP_OPTIONS.xml"
+            description: "Verify processing of SIP OPTIONS"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "OPTIONS"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_OPTIONS/SIP_OPTIONS.xml",
+                    kwargs: {},
+                    save_response_as: "ESRP_004_var1_SEND_response.log",
+                    save_log_as: "ESRP_004_var1_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_INVITE_with_CANCEL.xml"
+            description: "Verify processing of SIP CANCEL"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_with_CANCEL.xml",
+                    kwargs: {},
+                    save_response_as: "ESRP_004_var2_SEND_response.log",
+                    save_log_as: "ESRP_004_var2_SEND.log"
+                  }
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_ESRP_033"
+            variations: [ "SIP_INVITE_with_CANCEL.xml" ]
+          - name: "RQ_ESRP_034"
+            variations: [ "SIP_OPTIONS.xml" ]
