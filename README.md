@@ -1,17 +1,16 @@
 # Next Generation 9-1-1
 
-Repository Name:	ng911-exp
+Link to bookmark:	https://github.com/tamu-edu/ng911-dev
 
-**Revision: NENA-STA-010.3d-2021**
-
-**Release: 3**
-
-Link to bookmark:	https://github.com/tamu-edu/ng911-exp/tree/010.3d-2021/release_3
-
-This repository is managed by the Texas A&M University System (TAMUS) Center for Applied Communications and Networks (CACN).
+This repository is managed by the [Texas A&M Center for Applied Communications and Networks (CACN)](https://cacn.tamus.edu).
 
 ## Purpose
-This repo is used by the TAMU CACN development team to experiment with document templates, repository structure, workflow, and other components of the NG911 testing environment.  Once the details are worked out and documented, the appropriate content will be moved to the public repo.  This prevents confusing the public repo users with experimental changes.
+This repo is used by the Texas A&M Center for Applied Communications and Networks (CACN) development team to share the NG9-1-1 Conformance and Interoperability Testing program details with the general public.
+
+Currently, development is performed in a different (experimental) GitHub so that multiple (sometimes major) changes per day don't confuse the general public users.  Changes are pushed to this site on an as needed basis.  Once the initial versions of the code are ready for broader use, we expect to move development and maintenance of that code to this GitHub, where we can accept pull requests and "Issues" (bugs reports or feature requests). More specifics on this will be posted in the next few weeks.
+
+## Documentation
+Consult the [wiki](https://github.com/tamu-edu/ng911-dev/wiki) in this repository for background information and documentation of the software and ISO/IEC 17025 lab operations.
 
 ## Usage Policies
 
@@ -23,4 +22,4 @@ All users of this repository agree to abide by the following Texas A&M Universit
 In general, all users must take care not to:
 * Release any confidential information, such a passwords, secrets, HIPAA or FERPA-protected data
 * Release information that may be subject to Copyright
-* Conduct yourself in a way that may compromise the public’s trust and confidence in you or Texas A&M University
+* Conduct yourself in a way that may compromise the public’s trust and confidence in you or The Texas A&M University System
