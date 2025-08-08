@@ -1,3 +1,0 @@
-test_config: "test_files/configs/ESRP/ESRP_001/test_config.yaml"
-lab_config: "test_files/configs/_dev/ESRP_001_logan/lab_config_ESRP.yaml"
-run_config: "test_files/configs/_dev/ESRP_001_logan/run_generated.yaml"
