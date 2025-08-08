@@ -1,0 +1,50 @@
+"run_config":
+  "global":
+    "response_timeout": 30
+    "type": "conformance"
+    "report_files":
+    - "type": "pdf"
+      "path": "CTR.pdf"
+    - "type": "docx"
+      "path": "CTR.docx"
+    - "type": "xml"
+      "path": "CTR.xml"
+    - "type": "csv"
+      "path": "CTR.csv"
+    - "type": "json"
+      "path": "CTR.json"
+    "log":
+      "level": "DEBUG"
+      "output_file": "test_files/logs/logger.log"
+  "tests":
+  - "name": "PS_003"
+    "requirements":
+    - "name": "RQ_PS_013"
+      "variations":
+      - "all"
+    - "name": "RQ_PS_014"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "HTTP_GET_to_Versions_entrypoint"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "200"
+          "http_url": "/Versions"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_PS_PS"
+        "dst_interface": "IF_PS_PS"
+        "http_request_method": "GET"
+        "response_status_code": "200"
+        "header_contains":
+        "body_contains":

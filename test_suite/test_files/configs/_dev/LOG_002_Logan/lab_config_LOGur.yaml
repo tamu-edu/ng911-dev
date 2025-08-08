@@ -1,0 +1,60 @@
+lab_config:
+  global:
+    response_timeout: 30
+    type: "conformance"
+    report_files:
+      - type: "pdf"
+        path: "logan/LOG_00x/CTR.pdf"
+#      - type: "docx"
+#        path: "CTR.docx"
+#      - type: "xml"
+#        path: "CTR.xml"
+#      - type: "csv"
+#        path: "CTR.csv"
+#      - type: "json"
+#        path: "CTR.json"
+    log:
+      level: "DEBUG"
+      output_file: "logan/LOG_00x/LOG_00x.log"
+  pca_certificate_file: ""
+  pca_certificate_key: ""
+  test_suite_host_ip: "10.126.197.130"
+  entities:
+    # Test System
+    - name: "TS"
+      mode: "STUB_SERVER"
+      function: "BCF"
+      role: "SENDER"
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_TS_LOG"
+          fqdn: ""  # Optional
+          ip: "10.126.197.131"
+          mask: "255.255.255.224"
+          gateway: ""  # Optional
+          dns: [ ]  # Optional
+          port_mapping:
+            - protocol: "HTTP"
+              port: 80
+              transport_protocol: "TCP"
+    # Logging Service
+    - name: "LOG"
+      mode: "REAL_DEVICE"
+      function: "LOG"
+      role: "IUT"
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_LOG_TS"
+          fqdn: ""  # Optional
+          ip: "10.126.197.156"
+          mask: "255.255.255.224"
+          gateway: ""  # Optional
+          dns: []  # Optional
+          port_mapping:
+            - protocol: "HTTP"
+              port: 5064
+              transport_protocol: "TCP"

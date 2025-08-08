@@ -1,0 +1,93 @@
+"run_config":
+  "global":
+    "response_timeout": 30
+    "type": "conformance"
+    "report_files":
+    - "type": "pdf"
+      "path": "LIS_001.pdf"
+    "log":
+      "level": "DEBUG"
+      "output_file": "logan/LIS_001/LIS_001.log"
+  "tests":
+  - "name": "LIS_001"
+    "requirements":
+    - "name": "RQ_LIS_001"
+      "variations":
+      - "all"
+    - "name": "RQ_LIS_002"
+      "variations":
+      - "all"
+    - "name": "RQ_LIS_007"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "Location_URI_dereference_using_HTTP_HELD"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_files/HTTP_messages/HTTP_HELD/Location_request"
+              "param_name": "DEVICE_URI"
+              "value": "https://held-test.prd.ng911.inteliquent.net/held/tRZzc7KVajCciH-GQrKQECVQd1SRWaPqy3DJBUae1N4ZJumGsXICoBLb-s4c2ez-FSgBmjcx06zqwkWrwSYZGQ"
+              "output_file": "file./tmp/LIS_001/Location_request"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "200"
+          "http_url": "/held/tRZzc7KVajCciH-GQrKQECVQd1SRWaPqy3DJBUae1N4ZJumGsXICoBLb-s4c2ez-FSgBmjcx06zqwkWrwSYZGQ"
+          "body": "file./tmp/LIS_001/Location_request"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LIS"
+        "dst_interface": "IF_LIS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "200"
+        "header_contains": ""
+        "body_contains": ""
+      - "message_type": "output"
+        "src_interface": ""
+        "dst_interface": ""
+        "sip_method": ""
+        "http_request_method": ""
+        "response_status_code": ""
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Location_URI_dereference_using_SIP_Presence_Event_Package"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_FROM_LIS.xml"
+            "kwargs":
+              "-s": "sip://held-test.prd.ng911.inteliquent.net/held/tRZzc7KVajCciH-GQrKQECVQd1SRWaPqy3DJBUae1N4ZJumGsXICoBLb-s4c2ez-FSgBmjcx06zqwkWrwSYZGQ"
+            "save_response_as": "LIS_001_var2_SEND_response.log"
+            "save_log_as": "LIS_001_var2_SEND.log"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LIS"
+        "dst_interface": "IF_LIS_TS"
+        "sip_method": "SUBSCRIBE"
+        "header_contains": ""
+        "body_contains": ""
+      - "message_type": "output"
+        "src_interface": ""
+        "dst_interface": ""
+        "sip_method": ""
+        "http_request_method": ""
+        "response_status_code": ""
+        "header_contains": ""
+        "body_contains": ""

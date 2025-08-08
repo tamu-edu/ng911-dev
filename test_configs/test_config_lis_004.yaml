@@ -1,0 +1,395 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LIS_004"
+        variations:
+          - name: "SIP_SUBSCRIBE_from_LIS_min_rate_0.xml"
+            description: "Validate rejecting incorrect min-rate value=0"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file":
+                          "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_from_LIS_min_rate_0.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_min_rate_0.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "4xx"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_min_rate_0.xml",
+                    kwargs: { },
+                    save_response_as: "LIS_004_var1_SEND_response.log",
+                    save_log_as: "LIS_004_var1_SEND.log"
+                  }
+                  run_in_background: "True"
+          - name: "SIP_SUBSCRIBE_from_LIS_min_rate_100.xml"
+            description: "Validate rejecting incorrect min-rate value=100"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file":
+                          "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_from_LIS_min_rate_100.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_min_rate_100.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "4xx"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_min_rate_100.xml",
+                    kwargs: { },
+                    save_response_as: "LIS_004_var2_SEND_response.log",
+                    save_log_as: "LIS_004_var2_SEND.log"
+                  }
+                  run_in_background: "True"
+          - name: "SIP_SUBSCRIBE_from_LIS_max_rate_0.xml"
+            description: "Validate rejecting incorrect max-rate value=0"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file":
+                          "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_from_LIS_max_rate_0.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_max_rate_0.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "4xx"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_max_rate_0.xml",
+                    kwargs: { },
+                    save_response_as: "LIS_004_var3_SEND_response.log",
+                    save_log_as: "LIS_004_var3_SEND.log"
+                  }
+                  run_in_background: "True"
+          - name: "SIP_SUBSCRIBE_from_LIS_max_rate_100.xml"
+            description: "Validate rejecting incorrect max-rate value=100"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file":
+                          "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_from_LIS_max_rate_100.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_max_rate_100.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "4xx"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_max_rate_100.xml",
+                    kwargs: { },
+                    save_response_as: "LIS_004_var4_SEND_response.log",
+                    save_log_as: "LIS_004_var4_SEND.log"
+                  }
+                  run_in_background: "True"
+          - name: "SIP_SUBSCRIBE_from_LIS_adaptive_min_rate_0.xml"
+            description: "Validate rejecting incorrect adaptive-min-rate value=0"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/\
+                                      SIP_SUBSCRIBE_from_LIS_adaptive_min_rate_0.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_adaptive_min_rate_0.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "4xx"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_adaptive_min_rate_0.xml",
+                    kwargs: { },
+                    save_response_as: "LIS_004_var5_SEND_response.log",
+                    save_log_as: "LIS_004_var5_SEND.log"
+                  }
+                  run_in_background: "True"
+          - name: "SIP_SUBSCRIBE_from_LIS_adaptive_min_rate_100.xml"
+            description: "Validate rejecting incorrect adaptive-min-rate value=100"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/\
+                                      SIP_SUBSCRIBE_from_LIS_adaptive_min_rate_100.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_adaptive_min_rate_100.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "4xx"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_adaptive_min_rate_100.xml",
+                    kwargs: { },
+                    save_response_as: "LIS_004_var6_SEND_response.log",
+                    save_log_as: "LIS_004_var6_SEND.log"
+                  }
+                  run_in_background: "True"
+          - name: "SIP_SUBSCRIBE_from_LIS_adaptive_min_rate.xml"
+            description: "Validate sending SIP NOTIFY as min-rate defines"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/\
+                                      SIP_SUBSCRIBE_from_LIS_min_rate.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_min_rate.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_min_rate.xml",
+                    kwargs: { },
+                    save_response_as: "LIS_004_var7_SEND_response.log",
+                    save_log_as: "LIS_004_var7_SEND.log"
+                  }
+                  run_in_background: "True"
+          - name: "SIP_SUBSCRIBE_from_LIS_adaptive_max_rate.xml"
+            description: "Validate sending SIP NOTIFY as max-rate defines"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/\
+                                      SIP_SUBSCRIBE_from_LIS_max_rate.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_max_rate.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_max_rate.xml",
+                    kwargs: { },
+                    save_response_as: "LIS_004_var8_SEND_response.log",
+                    save_log_as: "LIS_004_var8_SEND.log"
+                  }
+                  run_in_background: "True"
+          - name: "SIP_SUBSCRIBE_from_LIS_adaptive_adaptive_min_rate.xml"
+            description: "Validate sending SIP NOTIFY as adaptive-min-rate defines"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/\
+                                      SIP_SUBSCRIBE_from_LIS_adaptive_min_rate.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_adaptive_min_rate.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file./tmp/LIS_004/SIP_SUBSCRIBE_from_LIS_adaptive_min_rate.xml",
+                    kwargs: { },
+                    save_response_as: "LIS_004_var9_SEND_response.log",
+                    save_log_as: "LIS_004_var9_SEND.log"
+                  }
+                  run_in_background: "True"
+        requirements:
+          - name: "RQ_LIS_009"
+            variations: ["all"]

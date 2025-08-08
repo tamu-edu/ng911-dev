@@ -1,0 +1,1179 @@
+"run_config":
+  "global":
+    "response_timeout": 30
+    "type": "conformance"
+    "report_files":
+    - "type": "pdf"
+      "path": "CTR.pdf"
+    - "type": "docx"
+      "path": "CTR.docx"
+    - "type": "xml"
+      "path": "CTR.xml"
+    - "type": "csv"
+      "path": "CTR.csv"
+    - "type": "json"
+      "path": "CTR.json"
+    "log":
+      "level": "DEBUG"
+      "output_file": "test_files/logs/logger.log"
+  "tests":
+  - "name": "PS_002"
+    "requirements":
+    - "name": "RQ_PS_010"
+      "variations":
+      - "PolicyObject_without_policyOwner"
+      - "PolicyObject_with_incorrect_policyOwner_send_fqdn_not_allowed_chars"
+      - "PolicyObject_with_incorrect_policyOwner_send_fqdn_missing_at"
+      - "PolicyObject_with_incorrect_policyOwner_send_fqdn_double_at"
+      - "PolicyObject_with_incorrect_policyOwner_send_fqdn_leading_period"
+      - "PolicyObject_with_incorrect_policyOwner_send_fqdn_long_string"
+      - "PolicyObject_with_policyType_missing"
+      - "PolicyObject_with_policyType_OtherRoutePolicyy"
+      - "PolicyObject_policyRules_missing"
+      - "PolicyObject_with_policyId_missing_for_policyType_OtherRoutePolicy"
+      - "PolicyObject_with_policyId_integer_for_policyType_OtherRoutePolicy"
+      - "PolicyObject_with_policyId_newline_for_policyType_OtherRoutePolicy"
+      - "PolicyObject_with_policyId_quote_for_policyType_OtherRoutePolicy"
+      - "PolicyObject_with_policyId_parenthesis_for_policyType_OtherRoutePolicy"
+      - "PolicyObject_with_policyId_test_123_for_policyType_OriginationRoutePolicy"
+      - "PolicyObject_missing_policyQueueName_with_Origination_or_NormalNextHop"
+      - "PolicyObject_policyQueueName_test_with_policyType_OtherRoutePolicy"
+      - "PolicyObject_policyExpirationTime_invalid_year"
+      - "PolicyObject_policyExpirationTime_invalid_month"
+      - "PolicyObject_policyExpirationTime_invalid_day"
+      - "PolicyObject_policyExpirationTime_invalid_hour"
+      - "PolicyObject_policyExpirationTime_invalid_minute"
+      - "PolicyObject_policyExpirationTime_invalid_second"
+      - "PolicyObject_policyExpirationTime_invalid_offset"
+      - "PolicyObject_policyExpirationTime_invalid_feb_day"
+      - "PolicyObject_description_invalid_integer"
+      - "PolicyObject_description_with_newline"
+      - "PolicyObject_description_with_single_quote"
+      - "PolicyObject_description_with_parenthesis"
+    - "name": "RQ_PS_025"
+      "variations":
+      - "PolicyObject_policyExpirationTime_past_date"
+    "variations":
+    - "name": "PolicyObject_without_policyOwner"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "remove_json_parameter"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyOwner"
+              "output_file": "file./tmp/PS_002/PolicyObject_without_policyOwner.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_without_policyOwner.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_incorrect_policyOwner_send_fqdn_not_allowed_chars"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyOwner"
+              "value": "tester@ng911.te$t"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_incorrect_policyOwner_send_fqdn_not_allowed_chars.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_incorrect_policyOwner_send_fqdn_not_allowed_chars.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_incorrect_policyOwner_send_fqdn_missing_at"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyOwner"
+              "value": "testerng911.test"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_incorrect_policyOwner_send_fqdn_missing_at.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_incorrect_policyOwner_send_fqdn_missing_at.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_incorrect_policyOwner_send_fqdn_double_at"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyOwner"
+              "value": "tester@@ng911.test"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_incorrect_policyOwner_send_fqdn_double_at.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_incorrect_policyOwner_send_fqdn_double_at.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_incorrect_policyOwner_send_fqdn_leading_period"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyOwner"
+              "value": ".tester@ng911.test"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_incorrect_policyOwner_send_fqdn_leading_period.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_incorrect_policyOwner_send_fqdn_leading_period.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_incorrect_policyOwner_send_fqdn_long_string"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyOwner"
+              "value": "tester@ng911.testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttestt"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_incorrect_policyOwner_send_fqdn_long_string.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_incorrect_policyOwner_send_fqdn_long_string.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_policyType_missing"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "remove_json_parameter"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyType"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyType_missing.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_policyType_missing.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_policyType_OtherRoutePolicyy"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyType"
+              "value": "OtherRoutePolicyy"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyType_OtherRoutePolicyy.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_policyType_OtherRoutePolicyy.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_policyRules_missing"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "remove_json_parameter"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyRules"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyRules_missing.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_policyRules_missing.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_policyId_missing_for_policyType_OtherRoutePolicy"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyType"
+              "value": "OtherRoutePolicy"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_missing_for_policyType_OtherRoutePolicy.json"
+          - "method_name": "remove_json_parameter"
+            "kwargs":
+              "json_input_file": "file./tmp/PS_002/PolicyObject_with_policyId_missing_for_policyType_OtherRoutePolicy.json"
+              "param_name": "policyId"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_missing_for_policyType_OtherRoutePolicy_2.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_policyId_missing_for_policyType_OtherRoutePolicy_2.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_policyId_integer_for_policyType_OtherRoutePolicy"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyType"
+              "value": "OtherRoutePolicy"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_integer_for_policyType_OtherRoutePolicy.json"
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file./tmp/PS_002/PolicyObject_with_policyId_integer_for_policyType_OtherRoutePolicy.json"
+              "param_name": "policyId"
+              "value": 123
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_integer_for_policyType_OtherRoutePolicy_2.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_policyId_integer_for_policyType_OtherRoutePolicy_2.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_policyId_newline_for_policyType_OtherRoutePolicy"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyType"
+              "value": "OtherRoutePolicy"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_newline_for_policyType_OtherRoutePolicy.json"
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file./tmp/PS_002/PolicyObject_with_policyId_newline_for_policyType_OtherRoutePolicy.json"
+              "param_name": "policyId"
+              "value": "\n"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_newline_for_policyType_OtherRoutePolicy_2.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_policyId_newline_for_policyType_OtherRoutePolicy_2.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "201"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_policyId_quote_for_policyType_OtherRoutePolicy"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyType"
+              "value": "OtherRoutePolicy"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_quote_for_policyType_OtherRoutePolicy.json"
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file./tmp/PS_002/PolicyObject_with_policyId_quote_for_policyType_OtherRoutePolicy.json"
+              "param_name": "policyId"
+              "value": "'"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_quote_for_policyType_OtherRoutePolicy_2.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_policyId_quote_for_policyType_OtherRoutePolicy_2.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "201"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_policyId_parenthesis_for_policyType_OtherRoutePolicy"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyType"
+              "value": "OtherRoutePolicy"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_parenthesis_for_policyType_OtherRoutePolicy.json"
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file./tmp/PS_002/PolicyObject_with_policyId_parenthesis_for_policyType_OtherRoutePolicy.json"
+              "param_name": "policyId"
+              "value": "("
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_parenthesis_for_policyType_OtherRoutePolicy.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_policyId_parenthesis_for_policyType_OtherRoutePolicy.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "201"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_with_policyId_test_123_for_policyType_OriginationRoutePolicy"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyType"
+              "value": "OriginationRoutePolicy"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_test_123_for_policyType_OriginationRoutePolicy.json"
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file./tmp/PS_002/PolicyObject_with_policyId_test_123_for_policyType_OriginationRoutePolicy.json"
+              "param_name": "policyId"
+              "value": "test_123"
+              "output_file": "file./tmp/PS_002/PolicyObject_with_policyId_test_123_for_policyType_OriginationRoutePolicy.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_with_policyId_test_123_for_policyType_OriginationRoutePolicy.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_missing_policyQueueName_with_Origination_or_NormalNextHop"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyType"
+              "value": "OriginationRoutePolicy"
+              "output_file": "file./tmp/PS_002/PolicyObject_missing_policyQueueName.json"
+          - "method_name": "remove_json_parameter"
+            "kwargs":
+              "json_input_file": "file./tmp/PS_002/PolicyObject_missing_policyQueueName.json"
+              "param_name": "policyQueueName"
+              "output_file": "file./tmp/PS_002/PolicyObject_missing_policyQueueName.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_missing_policyQueueName.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_policyQueueName_test_with_policyType_OtherRoutePolicy"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyType"
+              "value": "OtherRoutePolicy"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyQueueName_test_with_policyType_OtherRoutePolicy.json"
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file./tmp/PS_002/PolicyObject_policyQueueName_test_with_policyType_OtherRoutePolicy.json"
+              "param_name": "policyQueueName"
+              "value": "test"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyQueueName_test_with_policyType_OtherRoutePolicy.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_policyQueueName_test_with_policyType_OtherRoutePolicy.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_policyExpirationTime_invalid_year"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyExpirationTime"
+              "value": "21155-08-21T12:58:03.01-05:00"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_year.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_year.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_policyExpirationTime_invalid_month"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyExpirationTime"
+              "value": "2115-13-21T12:58:03.01-05:00"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_month.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_month.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_policyExpirationTime_invalid_day"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyExpirationTime"
+              "value": "2115-12-32T12:58:03.01-05:00"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_day.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_day.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_policyExpirationTime_invalid_hour"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyExpirationTime"
+              "value": "2115-12-21T24:58:03.01-05:00"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_hour.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_hour.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_policyExpirationTime_invalid_minute"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyExpirationTime"
+              "value": "2115-12-21T12:60:03.01-05:00"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_minute.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_minute.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_policyExpirationTime_invalid_second"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyExpirationTime"
+              "value": "2115-12-21T12:58:61.01-05:00"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_second.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_second.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_policyExpirationTime_invalid_offset"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyExpirationTime"
+              "value": "2115-12-21T12:58:03.01-13:00"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_offset.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_offset.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_policyExpirationTime_invalid_feb_day"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyExpirationTime"
+              "value": "2115-02-30T12:58:03.01-05:00"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_feb_day.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_policyExpirationTime_invalid_feb_day.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_policyExpirationTime_past_date"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "policyExpirationTime"
+              "value": "2015-04-30T12:58:03.01-05:00"
+              "output_file": "file./tmp/PS_002/PolicyObject_policyExpirationTime_past_date.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_policyExpirationTime_past_date.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_description_invalid_integer"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "description"
+              "value": 123
+              "output_file": "file./tmp/PS_002/PolicyObject_description_invalid_integer.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_description_invalid_integer.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_description_with_newline"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "description"
+              "value": "\n"
+              "output_file": "file./tmp/PS_002/PolicyObject_description_with_newline.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_description_with_newline.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "201"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_description_with_single_quote"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "description"
+              "value": "'"
+              "output_file": "file./tmp/PS_002/PolicyObject_description_with_single_quote.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_description_with_single_quote.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "201"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+    - "name": "PolicyObject_description_with_parenthesis"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "add_or_replace_json_parameter_value"
+            "kwargs":
+              "json_input_file": "file.test_files/JSON/Policy_object_example_v010.3f.3.0.1.json"
+              "param_name": "description"
+              "value": "("
+              "output_file": "file./tmp/PS_002/PolicyObject_description_with_parenthesis.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "json_source": "file./tmp/PS_002/PolicyObject_description_with_parenthesis.json"
+              "cert_path": "var.lab_config['entities'][0]['certificate_file']"
+              "key_path": "var.lab_config['entities'][0]['certificate_key']"
+            "save_result_as": "file./tmp/jws_body"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "201"
+          "http_url": "/Policies"
+          "body": "file./tmp/jws_body"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_PS"
+        "dst_interface": "IF_PS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""

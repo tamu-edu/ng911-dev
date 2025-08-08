@@ -1,0 +1,125 @@
+"run_config":
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": "logan/LIS_001"
+      "filename": "LIS_001"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "TAMUS CACN ISO LAB"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "Department of Homeland Security"
+        "addr_line_1": "1501 Texas Ave S"
+        "addr_line_2": "ATTN: Logan Freeman"
+        "city": "College Station"
+        "state": "Texas"
+        "country": "US"
+        "zip": "77840"
+        "url": "https://cacn.tamus.edu"
+        "eng_name": "Logan Freeman"
+      "supplier":
+        "name": "Foo"
+        "addr_line_1": "1 Foo Rd"
+        "addr_line_2": "Suite 1234"
+        "city": "Bryan"
+        "state": "Texas"
+        "country": "US"
+        "zip": "77801"
+        "url": "https://www.foo.com"
+      "iut":
+        "type": "LOG"
+        "name": "IUT_LOG"
+        "version": "0.0.0.1"
+        "test_period": "20250617"
+        "date_of_receipt": "20250615"
+        "location": "n/a"
+        "cs_id": "00001"
+      "test_env":
+        "ixit_id": "00001-ixit"
+        "spec_name": "i3"
+        "spec_version": "v3revF"
+        "ts_version": "0.5"
+        "test_period_start": "20250616"
+        "test_period_end": "20250617"
+        "log_ref": "1234567"
+        "log_ret_date": "20250617"
+    "log":
+      "level": "DEBUG"
+      "output_file": "logan/LIS_001/LIS_001.log"
+    "comments":
+    - "author": "X"
+      "comment": "This is test comment X."
+    - "author": "Y"
+      "comment": "I am the Y comment."
+  "tests":
+  - "name": "LIS_001"
+    "requirements":
+    - "name": "RQ_LIS_001"
+      "variations":
+      - "all"
+    - "name": "RQ_LIS_002"
+      "variations":
+      - "all"
+    - "name": "RQ_LIS_007"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "Location_URI_dereference_using_HTTP_HELD"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_files/HTTP_messages/HTTP_HELD/Location_request"
+              "param_name": "DEVICE_URI"
+              "value": "tel:2390482374892374"
+              "output_file": "file./tmp/LIS_001/Location_request"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "200"
+          "http_url": "/tst"
+          "body": "file./tmp/LIS_001/Location_request"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LIS"
+        "dst_interface": "IF_LIS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "200"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Location_URI_dereference_using_SIP_Presence_Event_Package"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_FROM_LIS.xml"
+            "kwargs":
+              "-s": "1289478912njeknkjefwn"
+            "save_response_as": "LIS_001_var2_SEND_response.log"
+            "save_log_as": "LIS_001_var2_SEND.log"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LIS"
+        "dst_interface": "IF_LIS_TS"
+        "sip_method": "SUBSCRIBE"
+        "header_contains": ""
+        "body_contains": ""

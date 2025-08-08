@@ -1,0 +1,42 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LOG_008"
+        variations:
+          - name: "Basic_call_logging_by_call_stateful_FE"
+            description: "Validate if call stateful FE for basic call logs\
+                          CallStartLogEvent, CallSignallingMessageLogEvent, CallEndLogEvent"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/CALLS/SIP_basic_call.xml",
+                    kwargs: {},
+                    save_response_as: "LOG_008_SEND_response.log",
+                    save_log_as: "LOG_008_SEND.log"
+                  }
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_LOG_053"
+            variations: [ "all" ]
+          - name: "RQ_LOG_056"
+            variations: [ "all" ]
+          - name: "RQ_LOG_057"
+            variations: [ "all" ]
+          - name: "RQ_LOG_103"
+            variations: [ "all" ]

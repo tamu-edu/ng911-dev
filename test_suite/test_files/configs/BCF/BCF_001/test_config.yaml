@@ -1,0 +1,292 @@
+test_config:
+  conformance:
+    tests:
+      - name: "BCF_001"
+        variations:
+          - name: "SIP_INVITE_from_OSP.xml"
+            description: "Simple SIP INVITE sent from OSP"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var1_RECEIVE_response.log",
+                    save_log_as: "BCF_001_var1_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_from_OSP.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var1_SEND_response.log",
+                    save_log_as: "BCF_001_var1_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_INVITE_from_OSP_incorrect_1.xml"
+            description: "Simple SIP INVITE sent from OSP with incorrect header fields"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var2_RECEIVE_response.log",
+                    save_log_as: "BCF_001_var2_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_from_OSP_incorrect_1.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var2_SEND_response.log",
+                    save_log_as: "BCF_001_var2_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_INVITE_from_OSP_incorrect_2.xml"
+            description: "Simple SIP INVITE sent from OSP with incorrect header fields"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var3_RECEIVE_response.log",
+                    save_log_as: "BCF_001_var3_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_from_OSP_incorrect_2.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var3_SEND_response.log",
+                    save_log_as: "BCF_001_var3_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_INVITE_from_OSP_incorrect_3.xml"
+            description: "Simple SIP INVITE sent from OSP with incorrect header fields"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var4_RECEIVE_response.log",
+                    save_log_as: "BCF_001_var4_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_from_OSP_incorrect_3.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var4_SEND_response.log",
+                    save_log_as: "BCF_001_var4_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_MESSAGE_from_OSP.xml"
+            description: "Simple SIP MESSAGE sent from OSP"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "MESSAGE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_RECEIVE/SIP_MESSAGE_RECEIVE.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var5_RECEIVE_response.log",
+                    save_log_as: "BCF_001_var5_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "MESSAGE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_MESSAGE/SIP_MESSAGE_from_OSP.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var5_SEND_response.log",
+                    save_log_as: "BCF_001_var5_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_MESSAGE_from_OSP_incorrect_1.xml"
+            description: "Simple SIP MESSAGE sent from OSP with incorrect header fields"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "MESSAGE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_RECEIVE/SIP_MESSAGE_RECEIVE.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var6_RECEIVE_response.log",
+                    save_log_as: "BCF_001_var6_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "MESSAGE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_MESSAGE/SIP_MESSAGE_from_OSP_incorrect_1.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var6_SEND_response.log",
+                    save_log_as: "BCF_001_var6_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_MESSAGE_from_OSP_incorrect_2.xml"
+            description: "Simple SIP MESSAGE sent from OSP with incorrect header fields"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "MESSAGE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_RECEIVE/SIP_MESSAGE_RECEIVE.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var7_RECEIVE_response.log",
+                    save_log_as: "BCF_001_var7_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "MESSAGE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_MESSAGE/SIP_MESSAGE_from_OSP_incorrect_2.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var7_SEND_response.log",
+                    save_log_as: "BCF_001_var7_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_MESSAGE_from_OSP_incorrect_3.xml"
+            description: "Simple SIP MESSAGE sent from OSP with incorrect header fields"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "MESSAGE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_RECEIVE/SIP_MESSAGE_RECEIVE.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var8_RECEIVE_response.log",
+                    save_log_as: "BCF_001_var8_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "MESSAGE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_MESSAGE/SIP_MESSAGE_from_OSP_incorrect_3.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_001_var8_SEND_response.log",
+                    save_log_as: "BCF_001_var8_SEND.log"
+                  }
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_BCF_001"
+            variations: ["all"]
+          - name: "RQ_BCF_002"
+            variations: ["all"]
+          - name: "RQ_BCF_003"
+            variations: ["all"]
+          - name: "RQ_BCF_005"
+            variations: ["all"]
+          - name: "RQ_BCF_007"
+            variations: ["all"]
+          - name: "RQ_BCF_009"
+            variations: [
+              "SIP_INVITE_from_OSP_incorrect_1.xml",
+              "SIP_INVITE_from_OSP_incorrect_2.xml",
+              "SIP_INVITE_from_OSP_incorrect_3.xml",
+              "SIP_MESSAGE_from_OSP_incorrect_1.xml",
+              "SIP_MESSAGE_from_OSP_incorrect_2.xml",
+              "SIP_MESSAGE_from_OSP_incorrect_3.xml"
+            ]
+          - name: "RQ_BCF_010"
+            variations: [
+              "SIP_INVITE_from_OSP_incorrect_1.xml",
+              "SIP_INVITE_from_OSP_incorrect_2.xml",
+              "SIP_INVITE_from_OSP_incorrect_3.xml",
+              "SIP_MESSAGE_from_OSP_incorrect_1.xml",
+              "SIP_MESSAGE_from_OSP_incorrect_2.xml",
+              "SIP_MESSAGE_from_OSP_incorrect_3.xml"
+            ]
+
+

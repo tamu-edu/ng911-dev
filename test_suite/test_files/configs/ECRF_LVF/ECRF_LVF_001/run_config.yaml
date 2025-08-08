@@ -1,0 +1,97 @@
+"run_config":
+  "global":
+    "response_timeout": 30
+    "type": "conformance"
+    "report_files":
+    - "type": "pdf"
+      "path": "CTR.pdf"
+    - "type": "docx"
+      "path": "CTR.docx"
+    - "type": "xml"
+      "path": "CTR.xml"
+    - "type": "csv"
+      "path": "CTR.csv"
+    - "type": "json"
+      "path": "CTR.json"
+    "log":
+      "level": "DEBUG"
+      "output_file": "test_files/logs/logger.log"
+  "tests":
+  - "name": "ECRF_LVF_001"
+    "requirements":
+    - "name": "RQ_ECRF_LVF_009"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "Self-signed_certificate"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "generate_random_certificate"
+            "kwargs":
+              "output_certificate_file": "file./tmp/temp.crt"
+              "output_key_file": "file./tmp/temp.key"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": ""
+          "http_url": ""
+          "body": "file.test_suite/test_files/HTTP_messages/HTTP_LoST/listServices_urn-service-sos"
+          "sipp_scenario": {}
+          "certificate_file": "file./tmp/temp.crt"
+          "certificate_key": "file./tmp/temp.key"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_ECRF-LVF"
+        "dst_interface": "IF_ECRF-LVF_TS"
+        "http_request_method": "POST"
+        "response_status_code": ""
+        "header_contains": ""
+        "body_contains": ""
+      - "message_type": "output"
+        "src_interface": ""
+        "dst_interface": ""
+    - "name": "PCA-signed_certificate"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "TS"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.cert"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "TS"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.key"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": ""
+          "http_url": ""
+          "body": "file.test_suite/test_files/HTTP_messages/HTTP_LoST/listServices_urn-service-sos"
+          "sipp_scenario": {}
+          "certificate_file": "var.cert"
+          "certificate_key": "var.key"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_ECRF-LVF"
+        "dst_interface": "IF_ECRF-LVF_TS"
+        "http_request_method": "POST"
+        "response_status_code": ""
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+        "dst_interface": ""

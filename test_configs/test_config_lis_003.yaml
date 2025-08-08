@@ -1,0 +1,268 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LIS_003"
+        variations:
+          - name: "Distance_filter"
+            description: "Validate sending SIP NOTIFY only when distance (in meters) changed by a higher value\
+                          than set in filter"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "manual"
+                  if_name: ""
+                  type: ""
+                  method: ""
+                  instead: ""
+                  prompt: "MANUAL ACTION REQUIRED - wait 10 seconds then please simulate movement of the subscribed\
+                          object first by 100 meters and then by 300 meters\ 
+                           press any key to continue when ready..."
+                  next_action: "send_subscribe_distance_filter"
+                - action: "send"
+                  id: "send_subscribe_distance_filter"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/\
+                                      SIP_SUBSCRIBE_distance_filter_with_NOTIFY_receive.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_003/SIP_SUBSCRIBE_distance_filter_with_NOTIFY_receive.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "200"
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/LIS_003/SIP_SUBSCRIBE_distance_filter_with_NOTIFY_receive.xml",
+                    kwargs: {},
+                    save_response_as: "LIS_003_var1_SEND_response.log",
+                    save_log_as: "LIS_003_var1_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "Speed_filter"
+            description: "Validate sending SIP NOTIFY only when speed value change is higher than set in the filter"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "manual"
+                  if_name: ""
+                  type: ""
+                  method: ""
+                  instead: ""
+                  prompt: "MANUAL ACTION REQUIRED - wait 10 seconds then please simulate speed change of the subscribed\
+                          object first by 1 meter/second and then by 3 meters/second\ 
+                           press any key to continue when ready..."
+                  next_action: "send_subscribe_speed_filter"
+                - action: "send"
+                  id: "send_subscribe_speed_filter"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/\
+                                      SIP_SUBSCRIBE_speed_filter_with_NOTIFY_receive.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_003/SIP_SUBSCRIBE_speed_filter_with_NOTIFY_receive.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "200"
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/LIS_003/SIP_SUBSCRIBE_speed_filter_with_NOTIFY_receive.xml",
+                    kwargs: {},
+                    save_response_as: "LIS_003_var2_SEND_response.log",
+                    save_log_as: "LIS_003_var2_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "Element_value_change_filter"
+            description: "Validate sending SIP NOTIFY only when specified element of geolocation value has changed"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "manual"
+                  if_name: ""
+                  type: ""
+                  method: ""
+                  instead: ""
+                  prompt: "MANUAL ACTION REQUIRED - wait 10 seconds then please simulate change of country to FR in\
+                          the subscribed object civic address and then to PL\ 
+                           press any key to continue when ready..."
+                  next_action: "send_subscribe_civic_address_filter"
+                - action: "send"
+                  id: "send_subscribe_civic_address_filter"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/\
+                                      SIP_SUBSCRIBE_civic_address_filter_with_NOTIFY_receive.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_003/SIP_SUBSCRIBE_civic_address_filter_with_NOTIFY_receive.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "200"
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/LIS_003/SIP_SUBSCRIBE_civic_address_filter_with_NOTIFY_receive.xml",
+                    kwargs: {},
+                    save_response_as: "LIS_003_var3_SEND_response.log",
+                    save_log_as: "LIS_003_var3_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "Entering_area_filter"
+            description: "Validate sending SIP NOTIFY only when subscribed object entered defined area"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "manual"
+                  if_name: ""
+                  type: ""
+                  method: ""
+                  instead: ""
+                  prompt: "MANUAL ACTION REQUIRED - wait 10 seconds then please simulate change of subscribed object \
+                          geolocation to 39.10238720701651, -76.8652199152211 and then to \
+                          39.08170952274149, -76.85188316111969, press any key to continue when ready..."
+                  next_action: "send_subscribe_enter_area_filter"
+                - action: "send"
+                  id: "send_subscribe_enter_area_filter"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "var.sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/\
+                                      SIP_SUBSCRIBE_enter_area_filter_with_NOTIFY_receive.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_003/SIP_SUBSCRIBE_enter_area_filter_with_NOTIFY_receive.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "200"
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/LIS_003/SIP_SUBSCRIBE_enter_area_filter_with_NOTIFY_receive.xml",
+                    kwargs: {},
+                    save_response_as: "LIS_003_var4_SEND_response.log",
+                    save_log_as: "LIS_003_var4_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "Location_type_filter"
+            description: "Validate sending SIP NOTIFY only with civic location type"
+            interfaces:
+              - name: "IF_ESRP_LIS"
+                port_names: []
+            params:
+              messages:
+                - action: "manual"
+                  if_name: ""
+                  type: ""
+                  method: ""
+                  instead: ""
+                  prompt: "MANUAL ACTION REQUIRED - wait 10 seconds then please simulate change of subscribed object \
+                          geolocation, then change its location type to civic, press any key to continue when ready..."
+                  next_action: "send_subscribe_location_type_filter"
+                - action: "send"
+                  id: "send_subscribe_location_type_filter"
+                  if_name: "IF_ESRP_LIS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "LIS"
+                        extract_field: "api"
+                      "save_result_as": "var.lis_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.lis_api"
+                        extract_field: "sip_uri_user"
+                      "save_result_as": "var.sip_uri_user"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/\
+                                      SIP_SUBSCRIBE_location_type_filter_with_NOTIFY_receive.xml"
+                        "param_name": "[service]"
+                        "value": "var.sip_uri_user"
+                        "output_file": "file./tmp/LIS_003/SIP_SUBSCRIBE_location_type_filter_with_NOTIFY_receive.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "200"
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/LIS_003/SIP_SUBSCRIBE_location_type_filter_with_NOTIFY_receive.xml",
+                    kwargs: {},
+                    save_response_as: "LIS_003_var5_SEND_response.log",
+                    save_log_as: "LIS_003_var5_SEND.log"
+                  }
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_LIS_003"
+            variations: ["all"]

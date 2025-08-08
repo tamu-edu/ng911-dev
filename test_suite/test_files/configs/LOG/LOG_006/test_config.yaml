@@ -1,0 +1,532 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LOG_006"
+        variations:
+          - name: "Request_with_incorrect_limit_send_string"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter (send string)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?limit=test"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_limit_send_empty"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter (send empty)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?limit="  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_limit_send_space"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter (send space)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?limit=%20"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_limit_exceed_64bit_uint"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter \
+                          (send value exceeding 64bit unsigned int)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?limit=18446744073709551616"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_limit_negative_exceed_64bit"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter \
+                          (send negative value exceeding 64bit int)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?limit=-9223372036854775809"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_start_send_string"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter (send string)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?start=test"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_start_send_empty"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter (send empty)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?start="  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_start_send_space"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter (send space)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?start=%20"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_start_exceed_64bit_uint"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter \
+                          (send value exceeding 64bit unsigned int)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?start=18446744073709551616"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_start_less_than_one"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter \
+                          (send value less than 1)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?start=0"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_incidentid_typo"
+            description: "Validate 4xx error response for request with incorrect 'incidentid' parameter \
+                        (incorrect urn urn:emergency:uid:incidentidd:123456789qwerty:bcf.ng911.test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?incidentid=urn%3Aemergency%3Auid%3Aincidentidd%3A123456789qwerty\
+                            %3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_incidentid_string_id_below_10_chars"
+            description: "Validate 4xx error response for request with incorrect 'incidentid' parameter \
+                          (string ID below 10 characters urn:emergency:uid:incidentid:1:bcf.ng911.test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A1%3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_incidentid_string_id_exceeding_36_chars"
+            description: "Validate 4xx error response for request with incorrect 'incidentid' parameter \
+                          (string ID exceeding 36 characters urn:emergency:uid:incidentid:123456789qwertyuiop\
+                          1234567890qwertyui:bcf.ng911.test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A123456789qwertyuiop\
+                            1234567890qwertyui%3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_incidentid_fqdn_double_period"
+            description: "Validate 4xx error response for request with incorrect 'incidentid' parameter \
+                          (incorrect FQDN urn:emergency:uid:incidentid:123456789qwerty:bcf.ng911..test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A123456789qwerty\
+                            %3Abcf%2Eng911%2E%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_incidentid_double_colon"
+            description: "Validate 4xx error response for request with incorrect 'incidentid' parameter \
+                          (doubled ':' urn:emergency:uid:incidentid:123456789qwerty::bcf.ng911.test)."
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A123456789qwerty\
+                            %3A%3Abcf%2Eng911%2Etest"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_startTime_send_space"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter (send space)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?startTime=%20"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_startTime_bad_year"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect year '20155-08-21T12:58:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?startTime=20155-08-21T12%3A58%3A03.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_startTime_bad_month"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect month '2015-13-21T12:58:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?startTime=2015-13-21T12%3A58%3A03.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_startTime_bad_day"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect day '2015-12-32T12:58:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?startTime=2015-12-32T12%3A58%3A03.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_startTime_bad_hour"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect hour '2015-12-21T24:58:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?startTime=2015-12-21T24%3A58%3A03.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_startTime_bad_minutes"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect minutes '2015-12-21T12:60:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?startTime=2015-12-21T12%3A60%3A03.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_startTime_bad_seconds"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect seconds '2015-12-21T12:58:61.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?startTime=2015-12-21T12%3A58%3A61.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_startTime_offset_exceeded"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with exceeded time offset '2015-12-21T12:58:03.01-13:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?startTime=2015-12-21T12%3A58%3A61.01%2D13%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_startTime_february_day"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send incorrect day in February '2015-02-30T12:58:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?startTime=2015-02-30T12%3A58%3A61.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_endTime_send_space"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter (send space)"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?endTime=%20"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_endTime_bad_year"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect year '20155-08-21T12:58:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?endTime=20155-08-21T12%3A58%3A03.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_endTime_bad_month"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect month '2015-13-21T12:58:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?endTime=2015-13-21T12%3A58%3A03.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_endTime_bad_day"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect day '2015-12-32T12:58:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?endTime=2015-12-32T12%3A58%3A03.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_endTime_bad_hour"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect hour '2015-12-21T24:58:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?endTime=2015-12-21T24%3A58%3A03.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_endTime_bad_minutes"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect minutes '2015-12-21T12:60:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?endTime=2015-12-21T12%3A60%3A03.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_endTime_bad_seconds"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect seconds '2015-12-21T12:58:61.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?endTime=2015-12-21T12%3A58%3A61.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_endTime_offset_exceeded"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with exceeded time offset '2015-12-21T12:58:03.01-13:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?endTime=2015-12-21T12%3A58%3A61.01%2D13%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_endTime_february_day"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send incorrect day in February '2015-02-30T12:58:03.01-05:00')"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?endTime=2015-02-30T12%3A58%3A61.01%2D05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Request_with_incorrect_area"
+            description: "Validate 4xx error response for request with incorrect 'area' parameter. \
+                          Send request with 'area' which is a string without PIDF-LO object"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/CallIds?area=test"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Correct_CallIds_request"
+            description: "Validate 200 OK + JSON response for any correct request. \
+                          Send request without optional parameters"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/CallIds"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_LOG_042"
+            variations: [
+              "Request_with_incorrect_limit_send_string",
+              "Request_with_incorrect_limit_send_empty",
+              "Request_with_incorrect_limit_send_space",
+              "Request_with_incorrect_limit_exceed_64bit_uint",
+              "Request_with_incorrect_limit_negative_exceed_64bit",
+              "Request_with_incorrect_start_send_string",
+              "Request_with_incorrect_start_send_empty",
+              "Request_with_incorrect_start_send_space",
+              "Request_with_incorrect_start_exceed_64bit_uint",
+              "Request_with_incorrect_start_less_than_one",
+              "Request_with_incorrect_incidentid_typo",
+              "Request_with_incorrect_incidentid_string_id_below_10_chars",
+              "Request_with_incorrect_incidentid_string_id_exceeding_36_chars",
+              "Request_with_incorrect_incidentid_fqdn_double_period",
+              "Request_with_incorrect_incidentid_double_colon",
+              "Request_with_incorrect_startTime_send_space",
+              "Request_with_incorrect_startTime_bad_year",
+              "Request_with_incorrect_startTime_bad_month",
+              "Request_with_incorrect_startTime_bad_day",
+              "Request_with_incorrect_startTime_bad_hour",
+              "Request_with_incorrect_startTime_bad_minutes",
+              "Request_with_incorrect_startTime_bad_seconds",
+              "Request_with_incorrect_startTime_offset_exceeded",
+              "Request_with_incorrect_startTime_february_day",
+              "Request_with_incorrect_endTime_send_space",
+              "Request_with_incorrect_endTime_bad_year",
+              "Request_with_incorrect_endTime_bad_month",
+              "Request_with_incorrect_endTime_bad_day",
+              "Request_with_incorrect_endTime_bad_hour",
+              "Request_with_incorrect_endTime_bad_minutes",
+              "Request_with_incorrect_endTime_bad_seconds",
+              "Request_with_incorrect_endTime_offset_exceeded",
+              "Request_with_incorrect_endTime_february_day",
+              "Request_with_incorrect_area"
+            ]
+          - name: "RQ_LOG_044"
+            variations: ["Correct_CallIds_request"]

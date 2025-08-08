@@ -1,0 +1,509 @@
+"run_config":
+  "global":
+    "response_timeout": 30
+    "type": "conformance"
+    "report_files":
+    - "type": "pdf"
+      "path": "CTR.pdf"
+    - "type": "docx"
+      "path": "CTR.docx"
+    - "type": "xml"
+      "path": "CTR.xml"
+    - "type": "csv"
+      "path": "CTR.csv"
+    - "type": "json"
+      "path": "CTR.json"
+    "log":
+      "level": "DEBUG"
+      "output_file": "test_files/logs/logger.log"
+  "tests":
+  - "name": "LOG_005"
+    "requirements":
+    - "name": "RQ_LOG_039"
+      "variations":
+      - "Request_with_incorrect_limit_send_string"
+      - "Request_with_incorrect_limit_send_empty"
+      - "Request_with_incorrect_limit_send_space"
+      - "Request_with_incorrect_limit_exceed_64bit_uint"
+      - "Request_with_incorrect_limit_negative_exceed_64bit"
+      - "Request_with_incorrect_start_send_string"
+      - "Request_with_incorrect_start_send_string"
+      - "Request_with_incorrect_start_send_space"
+      - "Request_with_incorrect_start_exceed_64bit_uint"
+      - "Request_with_incorrect_start_less_than_one"
+      - "Request_with_incorrect_callid_typo"
+      - "Request_with_incorrect_callid_string_id_below_10_chars"
+      - "Request_with_incorrect_callid_string_id_exceed_36_chars"
+      - "Request_with_incorrect_callid_fqdn_double_period"
+      - "Request_with_incorrect_callid_fqdn_double_colon"
+      - "Request_with_incorrect_incidentid_typo"
+      - "Request_with_incorrect_incidentid_string_id_below_10_chars"
+      - "Request_with_incorrect_incidentid_string_id_exceeding_36_chars"
+      - "Request_with_incorrect_incidentid_fqdn_double_period"
+      - "Request_with_incorrect_incidentid_double_colon"
+    - "name": "RQ_LOG_041"
+      "variations":
+      - "Correct_LogEventIds_request"
+    "variations":
+    - "name": "Request_with_incorrect_limit_send_string"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?limit=test"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_limit_send_empty"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?limit="
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_limit_send_space"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?limit=%20"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_limit_exceed_64bit_uint"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?limit=18446744073709551616"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_limit_negative_exceed_64bit"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?limit=-9223372036854775809"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_start_send_string"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?start=test"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_start_send_string"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?start="
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_start_send_space"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?start=%20"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_start_exceed_64bit_uint"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?start=18446744073709551616"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_start_less_than_one"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?start=0"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_callid_typo"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?callid=urn%3Aemergency%3Auid%3Acallidd%3A123456789qwerty%3Abcf%2Eng911%2Etest"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_callid_string_id_below_10_chars"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?callid=urn%3Aemergency%3Auid%3Acallid%3A1%3Abcf%2Eng911%2Etest"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_callid_string_id_exceed_36_chars"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?callid=urn%3Aemergency%3Auid%3Acallid%3A123456789qwertyuiop1234567890qwertyui%3Abcf%2Eng911%2Etest"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_callid_fqdn_double_period"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?callid=urn%3Aemergency%3Auid%3Acallid%3A123456789qwerty%3Abcf%2Eng911%2E%2Etest"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_callid_fqdn_double_colon"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?callid=urn%3Aemergency%3Auid%3Acallid%3A123456789qwerty%3A%3Abcf%2Eng911%2Etest"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_incidentid_typo"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?incidentid=urn%3Aemergency%3Auid%3Aincidentidd%3A123456789qwerty%3Abcf%2Eng911%2Etest"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_incidentid_string_id_below_10_chars"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A1%3Abcf%2Eng911%2Etest"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_incidentid_string_id_exceeding_36_chars"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A123456789qwertyuiop1234567890qwertyui%3Abcf%2Eng911%2Etest"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_incidentid_fqdn_double_period"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A123456789qwerty%3Abcf%2Eng911%2E%2Etest"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Request_with_incorrect_incidentid_double_colon"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEventIds?incidentid=urn%3Aemergency%3Auid%3Aincidentid%3A123456789qwerty%3A%3Abcf%2Eng911%2Etest"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains":
+        "body_contains":
+    - "name": "Correct_LogEventIds_request"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "200"
+          "http_url": "/LogEventIds"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "200"
+        "header_contains":
+        "body_contains":

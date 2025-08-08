@@ -1,0 +1,87 @@
+lab_config:
+  global:
+    response_timeout: 30
+    type: "conformance"
+    report_files:
+      - type: "xml"
+        path: "CTR.xml"
+      - type: "docx"
+        path: "CTR.docx"
+      - type: "pdf"
+        path: "CTR.pdf"
+      - type: "csv"
+        path: "CTR.csv"
+      - type: "json"
+        path: "CTR.json"
+    log:
+      level: "DEBUG"
+      output_file: "test_files/logs/logger.log"
+  # SW: add following fields:
+  pca_certificate_file: ""
+  pca_certificate_key: ""
+  test_suite_host_ip: "192.168.68.122"
+  entities:
+    - name: "OSP"
+      mode: "STUB_SERVER"
+      function: "OSP"
+      role: "SENDER"
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_OSP_O-BCF-1"
+          fqdn: ""
+          ip: "10.108.0.4"
+          mask: ""  # Leave empty if not required
+          gateway: ""  #  Leave empty if not required
+          dns: [ ]  #  Leave empty if not required
+          port_mapping:
+            - protocol: "SIP"
+              port: 5061
+              transport_protocol: "TCP"
+    - name: "O-BCF-1"
+      mode: "REAL_DEVICE"
+      function: "BCF"
+      role: "IUT"
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_O-BCF-1_OSP"
+          fqdn: ""
+          ip: "10.108.0.3"
+          mask: ""  # Leave empty if not required
+          gateway: ""  #  Leave empty if not required
+          dns: []  #  Leave empty if not required
+          port_mapping:
+            - protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_O-BCF-1_ESRP_1"
+          fqdn: ""
+          ip: "10.108.0.3"
+          mask: ""  # Leave empty if not required
+          gateway: ""  #  Leave empty if not required
+          dns: []  #  Leave empty if not required
+          port_mapping:
+            - protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+    - name: "ESRP-1"
+      mode: "STUB_SERVER"
+      function: "ESRP"
+      role: "RECEIVER"
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_ESRP-1_O-BCF-1"
+          fqdn: ""  # optional
+          ip: "10.108.0.4"
+          mask: ""  # Optional
+          gateway: ""  # Optional
+          dns: []  # Optional
+          port_mapping:
+            - protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"

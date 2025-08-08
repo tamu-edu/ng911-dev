@@ -1,0 +1,15 @@
+{
+  "clientAssignedIdentifier": "test",
+  "logEventType": "CallStateChangeLogEvent",
+  "timestamp": "2025-03-10T10:00:00-05:00",
+  "elementId": "bcf.ng911.test",
+  "agencyId": "ng911.test",
+  "agencyPositionId": "test",
+  "callId": "urn:emergency:uid:callid:123456789qwerty:bcf.ng911.test",
+  "incidentId": "urn:emergency:uid:incidentid:123456789qwerty:bcf.ng911.test",
+  "callIdSIP": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6@osp.test",
+  "ipAddressPort": "192.168.64.15:8080",
+  "extension": "+123456789"
+  "state": "emergency",
+  "direction": "incoming"
+}

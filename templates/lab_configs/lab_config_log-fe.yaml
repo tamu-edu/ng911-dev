@@ -1,0 +1,76 @@
+lab_config:
+  pca_certificate_file: ""
+  pca_certificate_key: ""
+  test_suite_host_ip: ""
+  entities:
+    # Test System
+    - name: "BCF"
+      mode: "STUB_SERVER"
+      function: "BCF"
+      role: "SENDER"
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_BCF_FE"
+          fqdn: ""
+          ip: ""
+          mask: ""
+          gateway: ""  #  Leave empty if not required
+          dns: [ ]  #  Leave empty if not required
+          port_mapping:
+            - name: "IF_BCF_FE_SIP_5060_TCP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+    # All call stateful functional elements
+    - name: "FE"
+      mode: "REAL_DEVICE"
+      function: "BCF"
+      role: "IUT"
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_FE_BCF"
+          fqdn: ""
+          ip: ""
+          mask: ""
+          gateway: ""  #  Leave empty if not required
+          dns: []  #  Leave empty if not required
+          port_mapping:
+            - name: "IF_FE_BCF_SIP_5060_TCP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_FE_LOG"
+          fqdn: ""
+          ip: ""
+          mask: ""
+          gateway: ""  #  Leave empty if not required
+          dns: []  #  Leave empty if not required
+          port_mapping:
+            - name: "IF_FE_LOG_HTTP_8080_TCP"
+              protocol: "HTTP"
+              port: 8080
+              transport_protocol: "TCP"
+    # Test System
+    - name: "LOG"
+      mode: "STUB_SERVER"
+      function: "LOG"
+      role: "SENDER"
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_LOG_FE"
+          fqdn: ""
+          ip: ""
+          mask: ""
+          gateway: ""  #  Leave empty if not required
+          dns: [ ]  #  Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG_FE_HTTP_8080_TCP"
+              protocol: "HTTP"
+              port: 8080
+              transport_protocol: "TCP"

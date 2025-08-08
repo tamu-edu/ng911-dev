@@ -1,0 +1,12 @@
+lab_info:
+  name: "Test LAB"
+  accred_status: "Accredited"
+  accred_ref: "123412"
+  accred_auth: "12344"
+  addr_line_1: "1"
+  addr_line_2: "2"
+  city: "Web"
+  state: "Internet"
+  country: "Earth"
+  zip: "001001"
+  url: "www"
