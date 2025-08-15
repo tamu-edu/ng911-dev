@@ -1,0 +1,133 @@
+test_config:
+  conformance:
+    tests:
+      - name: "ECRF_LVF_004"
+        variations:
+          - name: "listServices_urn-service-sos"
+            description: "Validate HTTP 200 OK + JSON response on listServices request with urn:service:sos"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ECRF-LVF"
+                        extract_field: "api"
+                      "save_result_as": "var.ecrf_lvf_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.ecrf_lvf_api"
+                        extract_field: "http_url_suffix_lost"
+                      "save_result_as": "var.http_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.http_url"   # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/listServices_urn-service-sos"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "listServices_urn-emergency-service-sos"
+            description: "Validate HTTP 200 OK + JSON response on listServices request with urn:emergency:service:sos"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ECRF-LVF"
+                        extract_field: "api"
+                      "save_result_as": "var.ecrf_lvf_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.ecrf_lvf_api"
+                        extract_field: "http_url_suffix_lost"
+                      "save_result_as": "var.http_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.http_url"  # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/listServices_urn-emergency-service-sos"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "listServicesByLocation_urn-service-sos"
+            description: "Validate HTTP 200 OK + JSON response on listServicesByLocation request with urn:service:sos"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ECRF-LVF"
+                        extract_field: "api"
+                      "save_result_as": "var.ecrf_lvf_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.ecrf_lvf_api"
+                        extract_field: "http_url_suffix_lost"
+                      "save_result_as": "var.http_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.http_url"  # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/listServicesByLocation_urn-service-sos"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "listServicesByLocation_urn-emergency-service-sos"
+            description: "Validate HTTP 200 OK + JSON response on listServicesByLocation request with \
+                          urn:emergency:service:sos"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ECRF-LVF"
+                        extract_field: "api"
+                      "save_result_as": "var.ecrf_lvf_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.ecrf_lvf_api"
+                        extract_field: "http_url_suffix_lost"
+                      "save_result_as": "var.http_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.http_url"  # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_LoST/listServicesByLocation_urn-emergency-service-sos"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_ECRF_051"
+            variations: [ "listServices_urn-service-sos", "listServicesByLocation_urn-service-sos" ]
+          - name: "RQ_ECRF_052"
+            variations: ["all"]
+          - name: "RQ_ECRF-LVF_054"
+            variations: ["all"]

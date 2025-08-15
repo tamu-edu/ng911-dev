@@ -1,0 +1,3 @@
+test_config: "test_files/configs/CHE_001_pcap_test/test_config.yaml"
+lab_config: "test_files/configs/CHE_001_pcap_test/lab_config.yaml"
+run_config: "test_files/configs/CHE_001_pcap_test/run_config.yaml"

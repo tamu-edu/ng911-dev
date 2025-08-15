@@ -1,0 +1,65 @@
+test_config:
+  conformance:
+    tests:
+      - name: "ECRF_LVF_004"
+        variations:
+          - name: "listServices_urn-service-sos"
+            description: "Validate HTTP 200 OK + JSON response on listServices request with urn:service:sos"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "# to be manually filled in run_config"   # part after f.e. http://IP:PORT
+                  body: "file.test_files/HTTP_messages/HTTP_LoST/listServices_urn-service-sos"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "listServices_urn-emergency-service-sos"
+            description: "Validate HTTP 200 OK + JSON response on listServices request with urn:emergency:service:sos"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "# to be manually filled in run_config"  # part after f.e. http://IP:PORT
+                  body: "file.test_files/HTTP_messages/HTTP_LoST/listServices_urn-emergency-service-sos"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "listServicesByLocation_urn-service-sos"
+            description: "Validate HTTP 200 OK + JSON response on listServicesByLocation request with urn:service:sos"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "# to be manually filled in run_config"  # part after f.e. http://IP:PORT
+                  body: "file.test_files/HTTP_messages/HTTP_LoST/listServicesByLocation_urn-service-sos"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "listServicesByLocation_urn-emergency-service-sos"
+            description: "Validate HTTP 200 OK + JSON response on listServicesByLocation request with \
+                          urn:emergency:service:sos"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "# to be manually filled in run_config"  # part after f.e. http://IP:PORT
+                  body: "file.test_files/HTTP_messages/HTTP_LoST/listServicesByLocation_urn-emergency-service-sos"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_ECRF-LVF_051"
+            variations: [ "listServices_urn-service-sos", "listServicesByLocation_urn-service-sos" ]
+          - name: "RQ_ECRF-LVF_052"
+            variations: ["all"]
+          - name: "RQ_ECRF-LVF_054"
+            variations: ["all"]

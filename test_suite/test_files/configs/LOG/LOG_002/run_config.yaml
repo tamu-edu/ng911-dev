@@ -1,0 +1,702 @@
+"run_config":
+  "global":
+    "type": "conformance"
+    "id_summary":
+      "lab":
+        "name": ""
+        "addr_line_1": ""
+        "addr_line_2": ""
+        "city": ""
+        "state": ""
+        "country": ""
+        "zip": ""
+        "url": ""
+        "eng_name": ""
+        "accred_status": ""
+        "accred_ref": ""
+        "accred_auth": ""
+      "supplier":
+        "name": ""
+        "addr_line_1": ""
+        "addr_line_2": ""
+        "city": ""
+        "state": ""
+        "country": ""
+        "zip": ""
+        "url": ""
+      "iut":
+        "type": ""
+        "name": ""
+        "version": ""
+        "test_period": ""
+        "date_of_receipt": ""
+        "location": ""
+        "cs_id": ""
+        "test_env": ""
+      "test_env":
+        "ixit_id": ""
+        "spec_name": ""
+        "spec_version": ""
+        "ts_version": ""
+        "test_period_start": ""
+        "test_period_end": ""
+        "log_ref": ""
+        "log_ret_date": ""
+    "comments":
+    - "author": ""
+      "comment": ""
+    "report_files":
+      "output_folder_path": ""
+      "filename": "test_report"
+      "types":
+      - "pdf"
+      - "docx"
+    "log":
+      "level": "DEBUG"
+      "output_file": "test_files/logs/logger.log"
+    "response_timeout": 30
+  "tests":
+  - "name": "LOG_002"
+    "requirements":
+    - "name": "RQ_LOG_028"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "Request_with_incorrect_limit_send_string"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?limit=test"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_limit_send_empty"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?limit="
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_limit_send_space"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?limit=%20"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_limit_exceed_64bit_uint"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?limit=18446744073709551616"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_limit_negative_exceed_64bit"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?limit=-9223372036854775809"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_start_send_string"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?start=test"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_start_send_empty"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?start="
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_start_send_space"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?start=%20"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_start_exceed_64bit_uint"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?start=18446744073709551616"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_start_less_than_one"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?start=0"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_logEventType_typo"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?logEventType=CallProcessLogEventt"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_startTime_send_space"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=%20"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_startTime_bad_year"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=20155-08-21T12%3A58%3A03.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_startTime_bad_month"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-13-21T12%3A58%3A03.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_startTime_bad_day"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-12-32T12%3A58%3A03.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_startTime_bad_hour"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-12-21T24%3A58%3A03.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_startTime_bad_minutes"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-12-21T12%3A60%3A03.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_startTime_bad_seconds"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-12-21T12%3A58%3A61.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_startTime_offset_exceeded"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-12-21T12%3A58%3A61.01-13%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_startTime_february_day"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?startTime=2015-02-30T12%3A58%3A61.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_endTime_send_space"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=%20"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_endTime_bad_year"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=20155-08-21T12%3A58%3A03.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_endTime_bad_month"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-13-21T12%3A58%3A03.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_endTime_bad_day"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-12-32T12%3A58%3A03.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_endTime_bad_hour"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-12-21T24%3A58%3A03.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_endTime_bad_minutes"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-12-21T12%3A60%3A03.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_endTime_bad_seconds"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-12-21T12%3A58%3A61.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_endTime_offset_exceeded"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-12-21T12%3A58%3A61.01-13%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Request_with_incorrect_endTime_february_day"
+      "mode": "# pcap/online to be manually filled"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/LogEvents?endTime=2015-02-30T12%3A58%3A61.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""

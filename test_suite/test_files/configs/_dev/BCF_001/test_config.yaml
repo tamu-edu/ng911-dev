@@ -1,0 +1,86 @@
+test_config:
+  conformance:
+    tests:
+      - name: "Test of BCF element"
+        variations:
+          - name: "BCF pass"
+            description: "Test variation which would be played from pcap with success result"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "test_files/configs/_dev/BCF_001_Artem/SIP_INVITE_RECEIVE.xml",
+                    kwargs: { },
+                    save_response_as: "BCF_001_var1_RECEIVE_response.log",
+                    save_log_as: "BCF_001_var1_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "test_files/configs/_dev/BCF_001_Artem/SIP_INVITE_from_OSP.xml",
+                    kwargs: { },
+                    save_response_as: "BCF_001_var1_SEND_response.log",
+                    save_log_as: "BCF_001_var1_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "BCF fail"
+            description: "Test variation which would be played from pcap with success result"
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "test_files/configs/_dev/BCF_001_Artem/SIP_INVITE_RECEIVE.xml",
+                    kwargs: { },
+                    save_response_as: "BCF_001_var1_RECEIVE_response.log",
+                    save_log_as: "BCF_001_var1_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "test_files/configs/_dev/BCF_001_Artem/SIP_INVITE_from_OSP.xml",
+                    kwargs: { },
+                    save_response_as: "BCF_001_var1_SEND_response.log",
+                    save_log_as: "BCF_001_var1_SEND.log"
+                  }
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_BCF_001"
+            variations: ["BCF pass", "BCF fail"]
+          - name: "RQ_BCF_002"
+            variations: ["BCF pass", "BCF fail"]
+          - name: "RQ_BCF_003"
+            variations: ["BCF pass", "BCF fail"]
+          - name: "RQ_BCF_005"
+            variations: ["BCF pass", "BCF fail"]
+          - name: "RQ_BCF_007"
+            variations: ["BCF pass", "BCF fail"]
+          - name: "RQ_BCF_009"
+            variations: ["BCF pass", "BCF fail"]
+          - name: "RQ_BCF_010"
+            variations: ["BCF pass", "BCF fail"]
+
+

@@ -1,0 +1,137 @@
+run_config:
+  global:
+    response_timeout: 30
+    type: "conformance"
+    report_files:
+      - type: "xml"
+        path: "CTR.xml"
+      - type: "docx"
+        path: "CTR.docx"
+      - type: "pdf"
+        path: "CTR.pdf"
+      - type: "csv"
+        path: "CTR.csv"
+      - type: "json"
+        path: "CTR.json"
+    log:
+      level: "DEBUG"
+      output_file: "test_files/logs/logger.log"
+  tests:
+    - name: "Test of BCF element"
+      requirements:
+        - name: "RQ_BCF_001"
+          variations: ["BCF pass", "BCF fail"]
+        - name: "RQ_BCF_002"
+          variations: ["BCF pass", "BCF fail"]
+        - name: "RQ_BCF_003"
+          variations: ["BCF pass", "BCF fail"]
+        - name: "RQ_BCF_005"
+          variations: ["BCF pass", "BCF fail"]
+        - name: "RQ_BCF_007"
+          variations: ["BCF pass", "BCF fail"]
+        - name: "RQ_BCF_009"
+          variations: ["BCF pass", "BCF fail"]
+        - name: "RQ_BCF_010"
+          variations: ["BCF pass", "BCF fail"]
+      variations:
+        - name: "BCF pass"
+          mode: "pcap" # pcap / online
+          pcap_file: "pcaps/BCF_001/artem.success.pcap" # optiona
+          params:
+            messages:
+              - action: "receive"
+                prep_steps: [ ]
+                type: "SIP"
+                method: "INVITE"
+                response_code: ""
+                http_url: ""
+                body: ""
+                sipp_scenario: {
+                  scenario_file_path: "test_files/configs/_dev/BCF_001_Artem/SIP_INVITE_RECEIVE.xml",
+                  kwargs: { },
+                  save_response_as: "BCF_001_var1_RECEIVE_response.log",
+                  save_log_as: "BCF_001_var1_RECEIVE.log"
+                }
+                run_in_background: "True"
+              - action: "send"
+                prep_steps: [ ]
+                type: "SIP"
+                method: "INVITE"
+                response_code: ""
+                http_url: ""
+                body: ""
+                sipp_scenario: {
+                  scenario_file_path: "test_files/configs/_dev/BCF_001_Artem/SIP_INVITE_from_OSP.xml",
+                  kwargs: { },
+                  save_response_as: "BCF_001_var1_SEND_response.log",
+                  save_log_as: "BCF_001_var1_SEND.log"
+                }
+                run_in_background: "False"
+          filtering_options: # optional
+            - message_type: "stimulus" # stimulus/output/other
+              src_interface: "IF_OSP_O-BCF-1"
+              dst_interface: "IF_O-BCF-1_OSP"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+              header_contains: "To: urn:service:911"
+              body_contains: ""
+            - message_type: "output" # stimulus/output/other
+              src_interface: "IF_O-BCF-1_ESRP_1"
+              dst_interface: "IF_ESRP-1_O-BCF-1"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+              header_contains: "To: urn:service:911"
+              body_contains: ""
+        - name: "BCF fail"
+          mode: "pcap" # pcap / online
+          pcap_file: "pcaps/BCF_001/artem.fail-resource-priority.pcap" # optiona
+          params:
+            messages:
+              - action: "receive"
+                prep_steps: [ ]
+                type: "SIP"
+                method: "INVITE"
+                response_code: ""
+                http_url: ""
+                body: ""
+                sipp_scenario: {
+                  scenario_file_path: "test_files/configs/_dev/BCF_001_Artem/SIP_INVITE_RECEIVE.xml",
+                  kwargs: { },
+                  save_response_as: "BCF_001_var1_RECEIVE_response.log",
+                  save_log_as: "BCF_001_var1_RECEIVE.log"
+                }
+                run_in_background: "True"
+              - action: "send"
+                prep_steps: [ ]
+                type: "SIP"
+                method: "INVITE"
+                response_code: ""
+                http_url: ""
+                body: ""
+                sipp_scenario: {
+                  scenario_file_path: "test_files/configs/_dev/BCF_001_Artem/SIP_INVITE_from_OSP.xml",
+                  kwargs: { },
+                  save_response_as: "BCF_001_var1_SEND_response.log",
+                  save_log_as: "BCF_001_var1_SEND.log"
+                }
+                run_in_background: "False"
+          filtering_options: # optional
+            - message_type: "stimulus" # stimulus/output/other
+              src_interface: "IF_OSP_O-BCF-1"
+              dst_interface: "IF_O-BCF-1_OSP"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+              header_contains: "To: urn:service:911"
+              body_contains: ""
+            - message_type: "output" # stimulus/output/other
+              src_interface: "IF_O-BCF-1_ESRP_1"
+              dst_interface: "IF_ESRP-1_O-BCF-1"
+              sip_method: "INVITE" #  leave empty if not needed
+              http_request_method: "" #  leave empty if not needed
+              response_status_code: "" #  leave empty if not needed
+              header_contains: "To: urn:service:911"
+              body_contains: ""
+

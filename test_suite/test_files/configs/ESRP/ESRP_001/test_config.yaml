@@ -1,0 +1,68 @@
+test_config:
+  conformance:
+    tests:
+      - name: "ESRP_001"
+        variations:
+          - name: "QueueState update after changing ServiceState"
+            description: "Verify QueueState update after changing ServiceState"
+            params:
+              messages:
+                - action: "send"
+                  id: "send_subscribe_servicestate"
+                  next_action: "send_subscribe_queuestate"
+                  prep_steps:
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_ServiceState.xml"
+                        "param_name": "[service]"
+                        "value": "ESRP"
+                        "output_file": "file./tmp/ESRP_001/SIP_SUBSCRIBE_ServiceState.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/ESRP_001/SIP_SUBSCRIBE_ServiceState.xml",
+                    kwargs: {},
+                    save_response_as: "ESRP_001_ServiceState_response.log",
+                    save_log_as: "ESRP_001_ServiceState.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  id: "send_subscribe_queuestate"
+                  prep_steps:
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_QueueState.xml"
+                        "param_name": "[service]"
+                        "value": "# Queue URI to be manually filled in run_config"
+                        "output_file": "file./tmp/ESRP_001/SIP_SUBSCRIBE_QueueState.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/ESRP_001/SIP_SUBSCRIBE_QueueState.xml",
+                    kwargs: {},
+                    save_response_as: "ESRP_001_QueueState_response.log",
+                    save_log_as: "ESRP_001_QueueState.log"
+                  }
+                  run_in_background: "True"
+                - action: "manual"
+                  instead: ""
+                  type: ""
+                  method: ""
+                  prompt: "MANUAL ACTION REQUIRED - please simulate change of ServiceState to 'Down' 
+                                    and press any key to continue..."
+                  next_action: "send_subscribe_servicestate"
+        requirements:
+          - name: "RQ_ESRP_005"
+            variations: ["all"]
+          - name: "RQ_ESRP_006"
+            variations: ["all"]
+          - name: "RQ_ESRP_007"
+            variations: ["all"]
+          - name: "RQ_ESRP_008"
+            variations: ["all"]

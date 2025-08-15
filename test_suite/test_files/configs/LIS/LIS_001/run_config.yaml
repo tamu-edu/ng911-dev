@@ -1,0 +1,85 @@
+"run_config":
+  "global":
+    "response_timeout": 30
+    "type": "conformance"
+    "report_files":
+    - "type": "pdf"
+      "path": "CTR.pdf"
+    - "type": "docx"
+      "path": "CTR.docx"
+    - "type": "xml"
+      "path": "CTR.xml"
+    - "type": "csv"
+      "path": "CTR.csv"
+    - "type": "json"
+      "path": "CTR.json"
+    "log":
+      "level": "DEBUG"
+      "output_file": "test_files/logs/logger.log"
+  "tests":
+  - "name": "LIS_001"
+    "requirements":
+    - "name": "RQ_LIS_001"
+      "variations":
+      - "all"
+    - "name": "RQ_LIS_002"
+      "variations":
+      - "all"
+    - "name": "RQ_LIS_007"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "Location_URI_dereference_using_HTTP_HELD"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "200"
+          "http_url": "# to be manually filled in run_config"
+          "body": "file.test_files/HTTP_messages/HTTP_HELD/Location_request"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LIS"
+        "dst_interface": "IF_LIS_TS"
+        "http_request_method": "POST"
+        "response_status_code": "200"
+        "header_contains": ""
+        "body_contains": ""
+      - "message_type": "output"
+        "src_interface": ""
+        "dst_interface": ""
+    - "name": "Location_URI_dereference_using_SIP_Presence_Event_Package"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_FROM_LIS.xml"
+            "kwargs":
+              "-s": "# DEVICE_URI to be manually filled in run_config"
+            "save_response_as": "LIS_001_var2_SEND_response.log"
+            "save_log_as": "LIS_001_var2_SEND.log"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LIS"
+        "dst_interface": "IF_LIS_TS"
+        "sip_method": "SUBSCRIBE"
+        "header_contains": ""
+        "body_contains": ""
+      - "message_type": "output"
+        "src_interface": ""
+        "dst_interface": ""

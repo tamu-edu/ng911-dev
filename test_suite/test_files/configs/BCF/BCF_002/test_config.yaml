@@ -1,0 +1,23 @@
+test_config:
+  conformance:
+    tests:
+      - name: "BCF_002"
+        variations:
+          - name: "TCP"
+            description: "Validate Discrepancy Report function support"
+            params:
+              messages:
+                - action: "send"
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/Reports"  # part after f.e. http://IP:PORT
+                  body: "file.test_files/JSON/discrepancy_report/discrepancy_report_example_v010.3f.3.0.1.json"
+                  certificate_file: ""
+                  certificate_key: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_BCF_009"
+            variations: ["all"]

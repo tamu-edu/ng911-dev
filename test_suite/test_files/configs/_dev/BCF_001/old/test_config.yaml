@@ -1,0 +1,84 @@
+test_config:
+  test_case_name: "Test TestCase"
+  global:
+    response_timeout: 30
+  report_files:
+    - type: "xml"
+      path: "CTR.xml"
+    - type: "docx"
+      path: "CTR.docx"
+    - type: "pdf"
+      path: "CTR.pdf"
+    - type: "csv"
+      path: "CTR.csv"
+    - type: "json"
+      path: "CTR.json"
+  log:
+    level: "DEBUG"
+    output_file: "test_files/logs/logger.log"
+  scenarios:
+    - name: "BCF_001 pass"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/BCF_001/artem.success.pcap"
+      tests:
+        - name: "BCF_001"
+          test_id: "BCF_001"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_OSP_O-BCF-1"
+            dst_interface: "IF_O-BCF-1_OSP"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+#            parallel_execution: []
+          output_message:
+            src_interface: "IF_O-BCF-1_ESRP_1"
+            dst_interface: "IF_ESRP-1_O-BCF-1"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+#            parallel_execution: [ ]
+    - name: "BCF_001 fail"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/BCF_001/artem.fail-resource-priority.pcap"
+      tests:
+        - name: "BCF_001"
+          test_id: "BCF_001"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_OSP_O-BCF-1"
+            dst_interface: "IF_O-BCF-1_OSP"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+#            parallel_execution: []
+          output_message:
+            src_interface: "IF_O-BCF-1_ESRP_1"
+            dst_interface: "IF_ESRP-1_O-BCF-1"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+#            parallel_execution: [ ]
+#    - name: "BCF_001 partial"
+#      mode: "pcap"  # pcap/capture
+#      pcap_file: "pcaps/BCF_001/artem.success.pcap"
+#      tests:
+#        - name: "BCF_001"
+#          test_id: "BCF_001"
+#          subtests: ["Stimulus and Output messages comparison", "Emergency Call Identifier header"]
+#          ixit_file_path: ""
+#          stimulus_message:
+#            src_interface: "IF_OSP_O-BCF-1"
+#            dst_interface: "IF_O-BCF-1_OSP"
+#            sip_method: "" #  leave empty if not needed
+#            http_request_method: "" #  leave empty if not needed
+#            response_status_code: "" #  leave empty if not needed
+#          #            parallel_execution: []
+#          output_message:
+#            src_interface: "IF_O-BCF-1_ESRP_1"
+#            dst_interface: "IF_ESRP-1_O-BCF-1"
+#            sip_method: "" #  leave empty if not needed
+#            http_request_method: "" #  leave empty if not needed
+#            response_status_code: "" #  leave empty if not needed
+#          #  parallel_execution: [ ]
+

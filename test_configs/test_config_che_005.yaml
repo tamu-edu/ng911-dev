@@ -1,0 +1,310 @@
+test_config:
+  conformance:
+    tests:
+      - name: "CHE_005"
+        variations:
+          - name: "SIP_INVITE_to_test_interface_with_g711alaw_audio"
+            description: "Validate CHE response for SIP INVITE with 'urn:service:test.sos' with g711alaw \
+                          audio media type in SDP offer"
+            interfaces:
+              - name: "IF_BCF_CHE"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_BCF_CHE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHE"
+                        extract_field: "api"
+                      "save_result_as": "var.che_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.che_api"
+                        extract_field: "sender_tel_number"
+                      "save_result_as": "var.sender_tel_number"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/\
+                                      SIP_INVITE_test_SDP_with_g711alaw_audio.xml"
+                        "param_name": "+12025551212"
+                        "value": "var.sender_tel_number"
+                        "output_file": "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_g711alaw_audio.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_g711alaw_audio.xml",
+                    kwargs: {},
+                    save_response_as: "CHE_005_var1_SEND_response.log",
+                    save_log_as: "CHE_005_var1_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_INVITE_to_test_interface_with_g711ulaw_audio"
+            description: "Validate CHE response for SIP INVITE with 'urn:service:test.sos' with g711ulaw \
+                          audio media type in SDP offer"
+            interfaces:
+              - name: "IF_BCF_CHE"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_BCF_CHE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHE"
+                        extract_field: "api"
+                      "save_result_as": "var.che_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.che_api"
+                        extract_field: "sender_tel_number"
+                      "save_result_as": "var.sender_tel_number"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/\
+                                      SIP_INVITE_test_SDP_with_g711ulaw_audio.xml"
+                        "param_name": "+12025551212"
+                        "value": "var.sender_tel_number"
+                        "output_file": "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_g711ulaw_audio.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_g711ulaw_audio.xml",
+                    kwargs: {},
+                    save_response_as: "CHE_005_var2_SEND_response.log",
+                    save_log_as: "CHE_005_var2_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_INVITE_to_test_interface_with_h264_video_1b"
+            description: "Validate CHE response for SIP INVITE with 'urn:service:test.sos' with H.264 video media \
+                          with baseline profile level 1b in SDP offer"
+            interfaces:
+              - name: "IF_BCF_CHE"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_BCF_CHE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHE"
+                        extract_field: "api"
+                      "save_result_as": "var.che_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.che_api"
+                        extract_field: "sender_tel_number"
+                      "save_result_as": "var.sender_tel_number"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/\
+                                      SIP_INVITE_test_SDP_with_H.264_video_level_1b.xml"
+                        "param_name": "+12025551212"
+                        "value": "var.sender_tel_number"
+                        "output_file": "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_H.264_video_level_1b.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_H.264_video_level_1b.xml",
+                    kwargs: {},
+                    save_response_as: "CHE_005_var3_SEND_response.log",
+                    save_log_as: "CHE_005_var3_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_INVITE_to_test_interface_with_h264_video_1.1"
+            description: "Validate CHE response for SIP INVITE with 'urn:service:test.sos' with H.264 video media \
+                          with baseline profile level 1.1 in SDP offer"
+            interfaces:
+              - name: "IF_BCF_CHE"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_BCF_CHE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHE"
+                        extract_field: "api"
+                      "save_result_as": "var.che_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.che_api"
+                        extract_field: "sender_tel_number"
+                      "save_result_as": "var.sender_tel_number"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/\
+                                      SIP_INVITE_test_SDP_with_H.264_video_level_1.1.xml"
+                        "param_name": "+12025551212"
+                        "value": "var.sender_tel_number"
+                        "output_file": "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_H.264_video_level_1.1.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_H.264_video_level_1.1.xml",
+                    kwargs: {},
+                    save_response_as: "CHE_005_var4_SEND_response.log",
+                    save_log_as: "CHE_005_var4_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_INVITE_to_test_interface_with_h264_video_2.0"
+            description: "Validate CHE response for SIP INVITE with 'urn:service:test.sos' with H.264 video media \
+                          with baseline profile level 2.0 in SDP offer"
+            interfaces:
+              - name: "IF_BCF_CHE"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_BCF_CHE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHE"
+                        extract_field: "api"
+                      "save_result_as": "var.che_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.che_api"
+                        extract_field: "sender_tel_number"
+                      "save_result_as": "var.sender_tel_number"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/\
+                                      SIP_INVITE_test_SDP_with_H.264_video_level_2.0.xml"
+                        "param_name": "+12025551212"
+                        "value": "var.sender_tel_number"
+                        "output_file": "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_H.264_video_level_2.0.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_H.264_video_level_2.0.xml",
+                    kwargs: {},
+                    save_response_as: "CHE_005_var5_SEND_response.log",
+                    save_log_as: "CHE_005_var5_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_INVITE_to_test_interface_with_h264_video_3.0"
+            description: "Validate CHE response for SIP INVITE with 'urn:service:test.sos' with H.264 video media \
+                          with baseline profile level 3.0 in SDP offer"
+            interfaces:
+              - name: "IF_BCF_CHE"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_BCF_CHE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHE"
+                        extract_field: "api"
+                      "save_result_as": "var.che_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.che_api"
+                        extract_field: "sender_tel_number"
+                      "save_result_as": "var.sender_tel_number"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/\
+                                      SIP_INVITE_test_SDP_with_H.264_video_level_3.0.xml"
+                        "param_name": "+12025551212"
+                        "value": "var.sender_tel_number"
+                        "output_file": "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_H.264_video_level_3.0.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_H.264_video_level_3.0.xml",
+                    kwargs: {},
+                    save_response_as: "CHE_005_var6_SEND_response.log",
+                    save_log_as: "CHE_005_var6_SEND.log"
+                  }
+                  run_in_background: "False"
+          - name: "SIP_INVITE_to_test_interface_with_text"
+            description: "Validate CHE response for SIP INVITE with 'urn:service:test.sos' with text media in SDP offer"
+            interfaces:
+              - name: "IF_BCF_CHE"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_BCF_CHE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHE"
+                        extract_field: "api"
+                      "save_result_as": "var.che_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.che_api"
+                        extract_field: "sender_tel_number"
+                      "save_result_as": "var.sender_tel_number"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/\
+                                      SIP_INVITE_test_SDP_with_text.xml"
+                        "param_name": "+12025551212"
+                        "value": "var.sender_tel_number"
+                        "output_file": "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_text.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHE_005/SIP_INVITE_test_SDP_with_text.xml",
+                    kwargs: {},
+                    save_response_as: "CHE_005_var7_SEND_response.log",
+                    save_log_as: "CHE_005_var7_SEND.log"
+                  }
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_CHE_033"
+            variations: ["all"]
+          - name: "RQ_CHE_034"
+            variations: ["all"]

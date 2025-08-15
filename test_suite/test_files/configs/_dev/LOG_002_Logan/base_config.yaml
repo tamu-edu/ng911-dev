@@ -1,0 +1,3 @@
+test_config: "test_files/configs/LOG_002/test_config.yaml"
+lab_config: "test_files/configs/_dev/LOG_002_Logan/lab_config_LOGur.yaml"
+run_config: "test_files/configs/_dev/LOG_002_Logan/run_config.yaml"

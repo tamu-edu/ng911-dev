@@ -1,0 +1,63 @@
+POST /Reports HTTP/1.1
+Host: 127.0.0.1
+Content-Type: application/json
+Content-Length: 1539
+Test-File-Version: 010.3d.2.0.1
+Test-File-Date: 2024.09.26
+
+{
+	"resolutionUri": "http://127.0.0.1/Resolutions",
+	"reportType": "PolicyStoreDiscrepancyReport",
+	"discrepancyReportSubmittalTimeStamp": "1718272348",
+	"discrepancyReportId": "1718272348_REPORT_ID",
+	"reportingAgencyName": "reporter.test.com",
+	"reportingContactJcard": {
+		"fn": "John Doe",
+		"email": [
+			{
+				"type": "work",
+				"value": "john.doe@test.com"
+			}
+		]
+	},
+	"problemService": "PolicyStore_INCORRECT",
+	"problemSeverity": "Moderate",
+	"problemComments": "Failed to verify signature",
+	"policyType": "OriginationRoutePolicy",
+	"policyId": "BB67m100",
+	"policyQueueName": "o_esrpURI",
+	"policyAgencyName": "ps.test.com",
+	"problem": "PolicyInvalid",
+	"retrievePolicyResponse": {
+			"description": [
+				"; -------------------------------------------------------",
+				"; If call requires language not supported natively,",
+				"; send to the translation approval queue:",
+				"; -------------------------------------------------------]",
+			],
+			"id": "BB67m100",
+			"priority": "-213ed",
+			"conditions":
+			[
+				{
+					"negation": true,
+					"conditionType": "SdpOfferCondition",
+					"langAudio": "en",
+					"langText": "en",
+					"langAudio": "fr",
+					"langText": "fr"
+				}
+			],
+			"actions":
+			[
+				{
+					"actionType": "routeAction",
+					"recipientUri": "sip:trans-approv@psap.example.gov"
+				},
+				{
+					"actionType": "logAction",
+					"message": "Call requires language not natively supported"
+				}
+			]
+		}
+}

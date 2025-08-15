@@ -1,0 +1,129 @@
+ixit_esrp_1:
+  name: "ESRP-1"
+  type: "ESRP"
+  vendor: "XYZ Software"
+  sw_version: "v0.1.1"
+  hw_version: "v0.1"
+  mac_address: "d0:70:89:93:de:bd"
+  login: "admin"
+  password: "admin1"
+  configuration_file: "xyz_vendor/esrp1.conf"
+  sw_file: "xyz_vendor/esrp_v0.1.1.bin"
+  provisioning:
+    dequeue_source: "o-bcf-1.test.example.com"
+    queues:
+      - sip_uri: "queue1@esrp-1.test.example.com"
+      - sip_uri: "queue2@esrp-1.test.example.com"
+    ecrf: "ecrf-1.test.example.com"
+    logging_service: "ls.test.example.com"
+    policy_store: "ps.test.example.com"
+    invoke_policy_action_maximum_counter_value: 3
+    default_locations:
+      - origination_domain: "test.example.com"
+        xml: | 
+        <?xml version="1.0" encoding="utf-8"?>
+        <presence
+            xmlns="urn:ietf:params:xml:ns:pidf"
+            xmlns:dm="urn:ietf:params:xml:ns:pidf:data-model"
+            xmlns:gp="urn:ietf:params:xml:ns:pidf:geopriv10"
+            xmlns:gml="http://www.opengis.net/gml"
+            xmlns:cl="urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr"
+                entity="pres:test@example.com">
+            <dm:device id="test">
+                <gp:geopriv>
+                    <gp:location-info>
+                        <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
+                            <gml:pos>-46.8123 16.12</gml:pos>
+                        </gml:Point>
+                        <cl:civicAddress>
+                            <cl:FLR>10</cl:FLR>
+                        </cl:civicAddress>
+                    </gp:location-info>
+                    <gp:method>Wiremap</gp:method>
+                </gp:geopriv>
+                <dm:deviceID>mac:9a514281aa3d</dm:deviceID>
+                <dm:timestamp>2024-10-30T20:00:00Z</dm:timestamp>
+            </dm:device>
+        </presence>
+      - origination_domain: ""
+        xml: | 
+        <?xml version="1.0" encoding="utf-8"?>
+        <presence
+            xmlns="urn:ietf:params:xml:ns:pidf"
+            xmlns:dm="urn:ietf:params:xml:ns:pidf:data-model"
+            xmlns:gp="urn:ietf:params:xml:ns:pidf:geopriv10"
+            xmlns:gml="http://www.opengis.net/gml"
+            xmlns:cl="urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr"
+                entity="pres:test@example.com">
+            <dm:device id="test">
+                <gp:geopriv>
+                    <gp:location-info>
+                        <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
+                            <gml:pos>-50.1111 40.11</gml:pos>
+                        </gml:Point>
+                    </gp:location-info>
+                    <gp:method>Wiremap</gp:method>
+                </gp:geopriv>
+                <dm:deviceID>mac:9a514281aa4d</dm:deviceID>
+                <dm:timestamp>2024-10-30T20:00:00Z</dm:timestamp>
+            </dm:device>
+        </presence>
+    numbers_mapping:
+      - number: "1234567890"
+        sip_uri: "123456789@test.example.com"
+      - number: "0987654321"
+        sip_uri: "another@test.example.com"
+    fatal_error_ruleset:
+      - json: |
+          {
+            "description": "
+              ; -------------------------------------------
+              ; If call receives translation approval, send to
+              ; the Policy Routing Rules queue:
+              ; -------------------------------------------",
+            "id": "AA56i222",
+            "priority": 10,
+            "conditions":
+            [
+              {
+                "conditionType": "LostServiceUrnCondition",
+                "urn": "urn:emergency:service:sos.psap"
+              }
+            ],
+            "actions":
+            [
+              {
+                "actionType": "InvokePolicyAction",
+                "policyType": "NormalNexthopRoutePolicy"
+              }
+            ]
+          }
+      - json: |
+          {
+            "description": "
+              ; -------------------------------------------------------
+              ; Can’t-get-here rule that should never be executed.
+              ;
+              ; If this rule executes, we have an error, since the
+              ; previous rules should have caught all cases. This rule
+              ; has no <conditions> element, hence is considered
+              ; to have a <conditions> that evaluates to true.
+              ; -------------------------------------------------------",
+            "id": "BB67m000",
+            "priority": 0,
+            "actions":
+            [
+              {
+                "actionType": "routeAction",
+                "recipientUri": "special-handling@psap.example.gov"
+              },
+              {
+                "actionType": "logAction",
+                "message": "ERROR: can’t-get-here rule triggered"
+              },
+              {
+                "actionType": "logAction",
+                "message": "====== File discrepancy report ======"
+              }
+            ]
+          }

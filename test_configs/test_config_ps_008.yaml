@@ -1,0 +1,193 @@
+test_config:
+  conformance:
+    tests:
+      - name: "PS_008"
+        variations:
+          - name: "Policy_with_large_ruleset"
+            description: "Verify if JWS objects are unaltered after fetching from Policy Store for policy \
+                          with large ruleset"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/Policy_object_with_large_ruleset_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_008/PS_008.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_008/PS_008.json"
+                        param_name: "policyId"
+                        value: "PS_008_Policy_with_large_ruleset"
+                        output_file: "file./tmp/PS_008/PS_008.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_008/PS_008.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&policyId=PS_008_Policy_with_large_ruleset"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Policy_with_extra_whitespaces"
+            description: "Verify if JWS objects are unaltered after fetching from Policy Store for policy \
+                          with extra whitespaces"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/Policy_object_with_extra_whitespaces_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_008/PS_008.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_008/PS_008.json"
+                        param_name: "policyId"
+                        value: "PS_008_Policy_with_extra_whitespaces"
+                        output_file: "file./tmp/PS_008/PS_008.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_008/PS_008.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&\
+                            policyId=PS_008_Policy_with_extra_whitespaces"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Policy_with_Windows_type_line_endings"
+            description: "Verify if JWS objects are unaltered after fetching from Policy Store for policy \
+                          with Windows-type line endings"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_Windows_type_line_endings_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_008/PS_008.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_008/PS_008.json"
+                        param_name: "policyId"
+                        value: "PS_008_Policy_with_Windows_type_line_endings"
+                        output_file: "file./tmp/PS_008/PS_008.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_008/PS_008.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&\
+                            policyId=PS_008_Policy_with_Windows_type_line_endings"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "Policy_with_Linux_type_line_endings"
+            description: "Verify if JWS objects are unaltered after fetching from Policy Store for policy \
+                          with Linux-type line endings"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/Policy_object_with_Linux_type_line_endings_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "TEST_SYSTEM_POLICY_OWNER"
+                        output_file: "file./tmp/PS_008/PS_008.json"
+                    - method_name: "add_or_replace_json_parameter_value"
+                      kwargs:
+                        json_input_file: "file./tmp/PS_008/PS_008.json"
+                        param_name: "policyId"
+                        value: "PS_008_Policy_with_Linux_type_line_endings"
+                        output_file: "file./tmp/PS_008/PS_008.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_008/PS_008.json"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                      save_result_as: "file./tmp/jws_body"
+                    - method_name: "send_HTTP"
+                      kwargs:
+                        method: "POST"
+                        cert_path: "var.lab_config['entities'][0]['certificate_file']"
+                        key_path: "var.lab_config['entities'][0]['certificate_key']"
+                        content-type: "application/json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "file./tmp/http_send"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/Policies?policyOwner=TEST_SYSTEM_POLICY_OWNER&\
+                            policyId=PS_008_Policy_with_Linux_type_line_endings"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_PS_039"
+            variations: [ "all" ]

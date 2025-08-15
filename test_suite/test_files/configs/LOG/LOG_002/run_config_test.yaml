@@ -1,0 +1,109 @@
+"run_config":
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": "logan/LOG_002"
+      "filename": "LOG_002"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "TAMUS CACN ISO LAB"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "Department of Homeland Security"
+        "addr_line_1": "1501 Texas Ave S"
+        "addr_line_2": "ATTN: Logan Freeman"
+        "city": "College Station"
+        "state": "Texas"
+        "country": "US"
+        "zip": "77840"
+        "url": "https://cacn.tamus.edu"
+        "eng_name": "Logan Freeman"
+      "supplier":
+        "name": "Foo"
+        "addr_line_1": "1 Foo Rd"
+        "addr_line_2": "Suite 1234"
+        "city": "Bryan"
+        "state": "Texas"
+        "country": "US"
+        "zip": "77801"
+        "url": "https://www.foo.com"
+      "iut":
+        "type": "LOG"
+        "name": "IUT_LOG"
+        "version": "0.0.0.1"
+        "test_period": "20250617"
+        "date_of_receipt": "20250615"
+        "location": "n/a"
+        "cs_id": "00001"
+      "test_env":
+        "ixit_id": "00001-ixit"
+        "spec_name": "i3"
+        "spec_version": "v3revF"
+        "ts_version": "0.5"
+        "test_period_start": "20250616"
+        "test_period_end": "20250617"
+        "log_ref": "1234567"
+        "log_ret_date": "20250617"
+    "log":
+      "level": "DEBUG"
+      "output_file": "logan/LOG_001/LOG_002.log"
+    "comments":
+    - "author": "X"
+      "comment": "This is test comment X."
+    - "author": "Y"
+      "comment": "I am the Y comment."
+  "tests":
+  - "name": "LOG_002"
+    "requirements":
+    - "name": "RQ_LOG_028"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "Request_with_incorrect_endTime_bad_year"
+      "mode": "pcap"
+      "pcap_file": "/Users/Sebastian/Downloads/LOG_002.20250626-1-FAIL/Request_with_incorrect_endTime_bad_year_capture_1e0f02a0-3aac-44c2-bdd6-111bbf8005b8.pcap"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "4xx"
+          "http_url": "/Logging/v1/LogEvents?startTime=1776-07-04T00:00:00&endTime=20155-08-21T12%3A58%3A03.01-05%3A00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "Affirmative_successful_lookup_for_baseline"
+      "mode": "pcap"
+      "pcap_file": "/Users/Sebastian/Downloads/LOG_002.20250626-1-FAIL/Affirmative_successful_lookup_for_baseline_capture_1e0f02a0-3aac-44c2-bdd6-111bbf8005b8.pcap"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "200"
+          "http_url": "/Logging/v1/LogEvents?startTime=1776-07-04T00:00:00&endTime=2276-07-04T00:00:00"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LOG"
+        "dst_interface": "IF_LOG_TS"
+        "http_request_method": "GET"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""

@@ -1,0 +1,163 @@
+run_config:
+  global:
+    response_timeout: 30
+    type: "conformance"
+  report_files:
+    - type: "pdf"
+      path: "CTR_BCF_001.pdf"
+  log:
+    level: "DEBUG"
+    output_file: "test_files/logs/BCF_001.log"
+  variations_paramters:
+    - name: "SIP_INVITE_FROM_OSP.xml"
+      mode: "pcap" # pcap / online
+      pcap_file: "" # optional
+      params: # optional
+        stimulus_message: "SIP_INVITE_FROM_OSP.xml"
+        headers: ["Call-Info", "Resource-Priority"]
+      filtering_options: # optional
+        stimulus_message:
+          src_interface: "IF_OSP_O-BCF-1"
+          dst_interface: "IF_O-BCF-1_OSP"
+          sip_method: "INVITE" #  leave empty if not needed
+          http_request_method: "" #  leave empty if not needed
+          response_status_code: "" #  leave empty if not needed
+          output_message:
+            src_interface: "IF_O-BCF-1_ESRP-1"
+            dst_interface: "IF_ESRP-1_O-BCF-1"
+            sip_method: "INVITE" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+    - name: "SIP_INVITE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field"
+      mode: "pcap" # pcap / online
+      pcap_file: "" # optional
+      params: # optional
+        stimulus_message: "SIP_INVITE_FROM_OSP_INCORRECT_1.xml"
+        headers: ["Call-Info", "Resource-Priority"]
+      filtering_options: # optional
+        stimulus_message:
+          src_interface: "IF_OSP_O-BCF-1"
+          dst_interface: "IF_O-BCF-1_OSP"
+          sip_method: "INVITE" #  leave empty if not needed
+          http_request_method: "" #  leave empty if not needed
+          response_status_code: "" #  leave empty if not needed
+          output_message:
+            src_interface: "IF_O-BCF-1_ESRP-1"
+            dst_interface: "IF_ESRP-1_O-BCF-1"
+            sip_method: "INVITE" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+    - name: "SIP_INVITE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field"
+      mode: "pcap" # pcap / online
+      pcap_file: "" # optional
+      params: # optional
+        stimulus_message: "SIP_INVITE_FROM_OSP_INCORRECT_2.xml"
+        headers: ["Call-Info", "Resource-Priority"]
+      filtering_options: # optional
+        stimulus_message:
+          src_interface: "IF_OSP_O-BCF-1"
+          dst_interface: "IF_O-BCF-1_OSP"
+          sip_method: "INVITE" #  leave empty if not needed
+          http_request_method: "" #  leave empty if not needed
+          response_status_code: "" #  leave empty if not needed
+          output_message:
+            src_interface: "IF_O-BCF-1_ESRP-1"
+            dst_interface: "IF_ESRP-1_O-BCF-1"
+            sip_method: "INVITE" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+    - name: "SIP_INVITE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field"
+      mode: "pcap" # pcap / online
+      pcap_file: "" # optional
+      params: # optional
+        stimulus_message: "SIP_INVITE_FROM_OSP_INCORRECT_3.xml"
+        headers: ["Call-Info", "Resource-Priority"]
+      filtering_options: # optional
+        stimulus_message:
+          src_interface: "IF_OSP_O-BCF-1"
+          dst_interface: "IF_O-BCF-1_OSP"
+          sip_method: "INVITE" #  leave empty if not needed
+          http_request_method: "" #  leave empty if not needed
+          response_status_code: "" #  leave empty if not needed
+          output_message:
+            src_interface: "IF_O-BCF-1_ESRP-1"
+            dst_interface: "IF_ESRP-1_O-BCF-1"
+            sip_method: "INVITE" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+    - name: "SIP_MESSAGE_FROM_OSP.xml"
+      mode: "pcap" # pcap / online
+      pcap_file: "" # optional
+      params: # optional
+        stimulus_message: "SIP_MESSAGE_FROM_OSP.xml"
+        headers: ["Call-Info", "Resource-Priority"]
+      filtering_options: # optional
+        stimulus_message:
+          src_interface: "IF_OSP_O-BCF-1"
+          dst_interface: "IF_O-BCF-1_OSP"
+          sip_method: "MESSAGE" #  leave empty if not needed
+          http_request_method: "" #  leave empty if not needed
+          response_status_code: "" #  leave empty if not needed
+          output_message:
+            src_interface: "IF_O-BCF-1_ESRP-1"
+            dst_interface: "IF_ESRP-1_O-BCF-1"
+            sip_method: "MESSAGE" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+    - name: "SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml - incorrect 'To' header field"
+      mode: "pcap" # pcap / online
+      pcap_file: "" # optional
+      params: # optional
+        stimulus_message: "SIP_MESSAGE_FROM_OSP_INCORRECT_1.xml"
+        headers: ["Call-Info", "Resource-Priority"]
+      filtering_options: # optional
+        stimulus_message:
+          src_interface: "IF_OSP_O-BCF-1"
+          dst_interface: "IF_O-BCF-1_OSP"
+          sip_method: "MESSAGE" #  leave empty if not needed
+          http_request_method: "" #  leave empty if not needed
+          response_status_code: "" #  leave empty if not needed
+          output_message:
+            src_interface: "IF_O-BCF-1_ESRP-1"
+            dst_interface: "IF_ESRP-1_O-BCF-1"
+            sip_method: "MESSAGE" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+    - name: "SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml - incorrect 'To' header field"
+      mode: "pcap" # pcap / online
+      pcap_file: "" # optional
+      params: # optional
+        stimulus_message: "SIP_MESSAGE_FROM_OSP_INCORRECT_2.xml"
+        headers: ["Call-Info", "Resource-Priority"]
+      filtering_options: # optional
+        stimulus_message:
+          src_interface: "IF_OSP_O-BCF-1"
+          dst_interface: "IF_O-BCF-1_OSP"
+          sip_method: "MESSAGE" #  leave empty if not needed
+          http_request_method: "" #  leave empty if not needed
+          response_status_code: "" #  leave empty if not needed
+          output_message:
+            src_interface: "IF_O-BCF-1_ESRP-1"
+            dst_interface: "IF_ESRP-1_O-BCF-1"
+            sip_method: "MESSAGE" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+    - name: "SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml - incorrect 'To' header field"
+      mode: "pcap" # pcap / online
+      pcap_file: "" # optional
+      params: # optional
+        stimulus_message: "SIP_MESSAGE_FROM_OSP_INCORRECT_3.xml"
+        headers: ["Call-Info", "Resource-Priority"]
+      filtering_options: # optional
+        stimulus_message:
+          src_interface: "IF_OSP_O-BCF-1"
+          dst_interface: "IF_O-BCF-1_OSP"
+          sip_method: "MESSAGE" #  leave empty if not needed
+          http_request_method: "" #  leave empty if not needed
+          response_status_code: "" #  leave empty if not needed
+          output_message:
+            src_interface: "IF_O-BCF-1_ESRP-1"
+            dst_interface: "IF_ESRP-1_O-BCF-1"
+            sip_method: "MESSAGE" #  leave empty if not needed
+            http_request_method: "" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed

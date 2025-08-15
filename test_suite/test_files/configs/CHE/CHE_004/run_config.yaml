@@ -1,0 +1,116 @@
+"run_config":
+  "global":
+    "response_timeout": 30
+    "type": "conformance"
+    "report_files":
+    - "type": "pdf"
+      "path": "CTR.pdf"
+    - "type": "docx"
+      "path": "CTR.docx"
+    - "type": "xml"
+      "path": "CTR.xml"
+    - "type": "csv"
+      "path": "CTR.csv"
+    - "type": "json"
+      "path": "CTR.json"
+    "log":
+      "level": "DEBUG"
+      "output_file": "test_files/logs/logger.log"
+  "tests":
+  - "name": "CHE_004"
+    "requirements":
+    - "name": "RQ_CHE_003"
+      "variations":
+      - "all"
+    - "name": "RQ_CHE_004"
+      "variations":
+      - "SIP_INVITE_for_callbacks"
+    - "name": "RQ_CHE_005"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "SIP_INVITE_for_callbacks"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps": []
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_SDP_with_g711alaw_audio.xml"
+            "kwargs": {}
+            "save_response_as": "CHE_004_var1_SEND_response.log"
+            "save_log_as": "CHE_004_var1_SEND.log"
+          "run_in_background": "False"
+        - "action": "receive"
+          "prep_steps": []
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml"
+            "kwargs": {}
+            "save_response_as": "CHE_004_var1_RECEIVE_response.log"
+            "save_log_as": "CHE_004_var1_RECEIVE.log"
+          "run_in_background": "True"
+        - action: "manual"
+          instead: ""
+          method: ""
+          type: ""
+          prompt: "MANUAL ACTION REQUIRED - please trigger callback on CHE and press any key to continue..."
+          next_action: ""
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_CHE"
+        "dst_interface": "IF_CHE_TS"
+        "sip_method": "INVITE"
+        "header_contains": ""
+        "body_contains": ""
+      - "message_type": "output"
+        "src_interface": ""
+        "dst_interface": ""
+        "sip_method": "INVITE"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "SIP_INVITE_for_outbound_calls"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "receive"
+          "prep_steps": []
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml"
+            "kwargs": {}
+            "save_response_as": "CHE_004_var2_RECEIVE_response.log"
+            "save_log_as": "CHE_004_var2_RECEIVE.log"
+          "run_in_background": "True"
+        - action: "manual"
+          "type": ""
+          "method": ""
+          instead: ""
+          prompt: "MANUAL ACTION REQUIRED - please trigger outbound call to Test System on CHE \
+                and press any key to continue..."
+          next_action: ""
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_CHE"
+        "dst_interface": "IF_CHE_TS"
+      - "message_type": "output"
+        "src_interface": ""
+        "dst_interface": ""
+        "sip_method": "INVITE"
+        "header_contains": ""
+        "body_contains": ""

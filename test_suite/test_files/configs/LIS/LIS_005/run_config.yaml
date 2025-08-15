@@ -1,0 +1,110 @@
+"run_config":
+  "global":
+    "response_timeout": 30
+    "type": "conformance"
+    "report_files":
+    - "type": "pdf"
+      "path": "CTR.pdf"
+    - "type": "docx"
+      "path": "CTR.docx"
+    - "type": "xml"
+      "path": "CTR.xml"
+    - "type": "csv"
+      "path": "CTR.csv"
+    - "type": "json"
+      "path": "CTR.json"
+    "log":
+      "level": "DEBUG"
+      "output_file": "test_files/logs/logger.log"
+  "tests":
+  - "name": "LIS_005"
+    "requirements":
+    - "name": "RQ_LIS_005"
+      "variations":
+      - "all"
+    - "name": "RQ_LIS_008"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "Self-signed_certificate"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "generate_random_certificate"
+            "kwargs":
+              "output_certificate_file": "file./tmp/temp.crt"
+              "output_key_file": "file./tmp/temp.key"
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_FROM_LIS.xml"
+            "kwargs":
+              "t": "l1"
+              "s": "service"
+              "tls_cert": "file./tmp/temp.crt"
+              "tls_key": "file./tmp/temp.key"
+            "save_response_as": "LIS_005_var1_SEND_response.log"
+            "save_log_as": "LIS_005_var1_SEND.log"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LIS"
+        "dst_interface": "IF_LIS_TS"
+        "sip_method": "SUBSCRIBE"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+        "dst_interface": ""
+    - "name": "PCA-signed_certificate"
+      "mode": "online"
+      "pcap_file": "# OPTIONAL"
+      "params":
+        "messages":
+        - "action": "send"
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "TS"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.cert"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "TS"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.key"
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_FROM_LIS.xml"
+            "kwargs":
+              "t": "l1"
+              "s": "service"
+              "tls_cert": "var.cert"
+              "tls_key": "var.key"
+            "save_response_as": "LIS_005_var2_SEND_response.log"
+            "save_log_as": "LIS_005_var2_SEND.log"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_TS_LIS"
+        "dst_interface": "IF_LIS_TS"
+        "sip_method": "SUBSCRIBE"
+        "header_contains":
+        "body_contains":
+      - "message_type": "output"
+        "src_interface": ""
+        "dst_interface": ""

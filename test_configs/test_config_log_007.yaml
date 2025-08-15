@@ -1,0 +1,3072 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LOG_007"
+        variations:
+          - name: "CallStartLogEvent_with_incorrect_direction_send_int"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect 'direction' \
+                        parameter (send integer): 'direction': 123"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                          method_name: "modify_json_file",
+                          kwargs: {
+                            json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                            param_name: "direction",
+                            value: 123,
+                            output_file: "file./tmp/CallStartLogEvent_1.json"
+                          }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_1.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallStartLogEvent_with_incorrect_direction_send_typo"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect 'direction' \
+                          parameter (send 'incomingg')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "direction",
+                        value: "incomingg",
+                        output_file: "file./tmp/CallStartLogEvent_direction_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_direction_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallStartLogEvent_missing_direction"
+            description: "Validate 4xx error response for CallStartLogEvent request without 'direction' parameter"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "remove_json_field_from_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "direction",
+                        output_file: "file./tmp/CallStartLogEvent_no_direction.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_no_direction.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallStartLogEvent_incorrect_standardPrimaryCallType_integer"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect \
+                          'standardPrimaryCallType' parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardPrimaryCallType",
+                        value: 123,
+                        output_file: "file./tmp/CallStartLogEvent_primary_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_primary_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+
+          - name: "CallStartLogEvent_incorrect_standardPrimaryCallType_typo"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect \
+                          'standardPrimaryCallType' parameter (send 'emergencyy')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardPrimaryCallType",
+                        value: "emergencyy",
+                        output_file: "file./tmp/CallStartLogEvent_primary_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_primary_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallStartLogEvent_incorrect_standardSecondaryCallType_integer"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect \
+                          'standardSecondaryCallType' parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardSecondaryCallType",
+                        value: 123,
+                        output_file: "file./tmp/CallStartLogEvent_secondary_int.json"
+                      },
+                      save_result_as: "var.json_body"
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_secondary_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallStartLogEvent_incorrect_standardSecondaryCallType_typo"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect \
+                          'standardSecondaryCallType' parameter (send 'emergencyy')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardSecondaryCallType",
+                        value: "emergencyy",
+                        output_file: "file./tmp/CallStartLogEvent_secondary_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_secondary_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallStartLogEvent_incorrect_localCallType_int"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect 'localCallType'\
+                          parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: 123,
+                        output_file: "file./tmp/CallStartLogEvent_localCallType_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_localCallType_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallStartLogEvent_localCallType_newline"
+            description: "Validate 201 Created response for CallStartLogEvent request with: 'localCallType': '\\n'"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "\\n",
+                        output_file: "file./tmp/CallStartLogEvent_localCallType_nl.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_localCallType_nl.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallStartLogEvent_localCallType_single_quote"
+            description: "Validate 201 Created response for CallStartLogEvent request with: 'localCallType': \"'\""
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "'",
+                        output_file: "file./tmp/CallStartLogEvent_localCallType_quote.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_localCallType_quote.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallStartLogEvent_localCallType_parenthesis"
+            description: "Validate 201 Created response for CallStartLogEvent request with: 'localCallType': '('"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "(",
+                        output_file: "file./tmp/CallStartLogEvent_localCallType_paren.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_localCallType_paren.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallStartLogEvent_localUse_integer"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect 'localUse' \
+                          parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localUse",
+                        value: 123,
+                        output_file: "file./tmp/CallStartLogEvent_localUse_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_localUse_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallStartLogEvent_localUse_invalid_json"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect 'localUse' \
+                          parameter (send invalid JSON)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localUse",
+                        value: '{"test": "test",',
+                        output_file: "file./tmp/CallStartLogEvent_localUse_invalid.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallStartLogEvent_localUse_invalid.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_with_incorrect_direction_send_int"
+            description: "Validate 4xx error response for CallEndLogEvent request with incorrect 'direction' \
+                        parameter (send integer): 'direction': 123"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "direction",
+                        value: 123,
+                        output_file: "file./tmp/CallEndLogEvent_1.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_1.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_with_incorrect_direction_send_typo"
+            description: "Validate 4xx error response for CallEndLogEvent request with incorrect 'direction' \
+                          parameter (send 'incomingg')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "direction",
+                        value: "incomingg",
+                        output_file: "file./tmp/CallEndLogEvent_direction_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_direction_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_missing_direction"
+            description: "Validate 4xx error response for CallEndLogEvent request without 'direction' parameter"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "remove_json_field_from_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "direction",
+                        output_file: "file./tmp/CallEndLogEvent_no_direction.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_no_direction.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_incorrect_standardPrimaryCallType_integer"
+            description: "Validate 4xx error response for CallEndLogEvent request with incorrect \
+                          'standardPrimaryCallType' parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardPrimaryCallType",
+                        value: 123,
+                        output_file: "file./tmp/CallEndLogEvent_primary_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_primary_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+
+          - name: "CallEndLogEvent_incorrect_standardPrimaryCallType_typo"
+            description: "Validate 4xx error response for CallEndLogEvent request with incorrect \
+                          'standardPrimaryCallType' parameter (send 'emergencyy')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardPrimaryCallType",
+                        value: "emergencyy",
+                        output_file: "file./tmp/CallEndLogEvent_primary_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_primary_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_incorrect_standardSecondaryCallType_integer"
+            description: "Validate 4xx error response for CallEndLogEvent request with incorrect \
+                          'standardSecondaryCallType' parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardSecondaryCallType",
+                        value: 123,
+                        output_file: "file./tmp/CallEndLogEvent_secondary_int.json"
+                      },
+                      save_result_as: "var.json_body"
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_secondary_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_incorrect_standardSecondaryCallType_typo"
+            description: "Validate 4xx error response for CallEndLogEvent request with incorrect \
+                          'standardSecondaryCallType' parameter (send 'emergencyy')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardSecondaryCallType",
+                        value: "emergencyy",
+                        output_file: "file./tmp/CallEndLogEvent_secondary_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_secondary_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_localCallType_integer"
+            description: "Validate 4xx error response for CallEndLogEvent request with incorrect 'localCallType' \
+                          parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localUse",
+                        value: 123,
+                        output_file: "file./tmp/CallEndLogEvent_localCallType_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_localCallType_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_localCallType_newline"
+            description: "Validate 201 Created response for CallEndLogEvent request with: 'localCallType': '\\n'"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "\\n",
+                        output_file: "file./tmp/CallEndLogEvent_localCallType_nl.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_localCallType_nl.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_localCallType_single_quote"
+            description: "Validate 201 Created response for CallEndLogEvent request with: 'localCallType': \"'\""
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "'",
+                        output_file: "file./tmp/CallEndLogEvent_localCallType_quote.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_localCallType_quote.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_localCallType_parenthesis"
+            description: "Validate 201 Created response for CallEndLogEvent request with: 'localCallType': '('"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "(",
+                        output_file: "file./tmp/CallEndLogEvent_localCallType_paren.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_localCallType_paren.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_localUse_integer"
+            description: "Validate 4xx error response for CallEndLogEvent request with incorrect 'localUse' \
+                          parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localUse",
+                        value: 123,
+                        output_file: "file./tmp/CallEndLogEvent_localUse_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_localUse_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "CallEndLogEvent_localUse_invalid_json"
+            description: "Validate 4xx error response for CallEndLogEvent request with incorrect 'localUse' \
+                          parameter (send invalid JSON)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localUse",
+                        value: '{"test": "test",',
+                        output_file: "file./tmp/CallEndLogEvent_localUse_invalid.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/CallEndLogEvent_localUse_invalid.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_with_incorrect_direction_send_int"
+            description: "Validate 4xx error response for RecCallStartLogEvent request with incorrect 'direction' \
+                        parameter (send integer): 'direction': 123"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "direction",
+                        value: 123,
+                        output_file: "file./tmp/RecCallStartLogEvent_1.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_1.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_with_incorrect_direction_send_typo"
+            description: "Validate 4xx error response for RecCallStartLogEvent request with incorrect 'direction' \
+                          parameter (send 'incomingg')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "direction",
+                        value: "incomingg",
+                        output_file: "file./tmp/RecCallStartLogEvent_direction_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_direction_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_missing_direction"
+            description: "Validate 4xx error response for RecCallStartLogEvent request without 'direction' parameter"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "remove_json_field_from_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "direction",
+                        output_file: "file./tmp/RecCallStartLogEvent_no_direction.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_no_direction.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_incorrect_standardPrimaryCallType_integer"
+            description: "Validate 4xx error response for RecCallStartLogEvent request with incorrect \
+                          'standardPrimaryCallType' parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardPrimaryCallType",
+                        value: 123,
+                        output_file: "file./tmp/RecCallStartLogEvent_primary_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_primary_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+
+          - name: "RecCallStartLogEvent_incorrect_standardPrimaryCallType_typo"
+            description: "Validate 4xx error response for RecCallStartLogEvent request with incorrect \
+                          'standardPrimaryCallType' parameter (send 'emergencyy')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardPrimaryCallType",
+                        value: "emergencyy",
+                        output_file: "file./tmp/RecCallStartLogEvent_primary_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_primary_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_incorrect_standardSecondaryCallType_integer"
+            description: "Validate 4xx error response for RecCallStartLogEvent request with incorrect \
+                          'standardSecondaryCallType' parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardSecondaryCallType",
+                        value: 123,
+                        output_file: "file./tmp/RecCallStartLogEvent_secondary_int.json"
+                      },
+                      save_result_as: "var.json_body"
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_secondary_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_incorrect_standardSecondaryCallType_typo"
+            description: "Validate 4xx error response for RecCallStartLogEvent request with incorrect \
+                          'standardSecondaryCallType' parameter (send 'emergencyy')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardSecondaryCallType",
+                        value: "emergencyy",
+                        output_file: "file./tmp/RecCallStartLogEvent_secondary_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_secondary_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_incorrect_localCallType_int"
+            description: "Validate 4xx error response for RecCallStartLogEvent request with incorrect 'localCallType'\
+                          parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file:
+                          "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: 123,
+                        output_file: "file./tmp/RecCallStartLogEvent_localCallType_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_localCallType_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_localCallType_newline"
+            description: "Validate 201 Created response for RecCallStartLogEvent request with: 'localCallType': '\\n'"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "\\n",
+                        output_file: "file./tmp/RecCallStartLogEvent_localCallType_nl.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_localCallType_nl.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_localCallType_single_quote"
+            description: "Validate 201 Created response for RecCallStartLogEvent request with: 'localCallType': \"'\""
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "'",
+                        output_file: "file./tmp/RecCallStartLogEvent_localCallType_quote.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_localCallType_quote.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_localCallType_parenthesis"
+            description: "Validate 201 Created response for RecCallStartLogEvent request with: 'localCallType': '('"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "(",
+                        output_file: "file./tmp/RecCallStartLogEvent_localCallType_paren.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_localCallType_paren.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_localUse_integer"
+            description: "Validate 4xx error response for RecCallStartLogEvent request with incorrect 'localUse' \
+                          parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localUse",
+                        value: 123,
+                        output_file: "file./tmp/RecCallStartLogEvent_localUse_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_localUse_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallStartLogEvent_localUse_invalid_json"
+            description: "Validate 4xx error response for RecCallStartLogEvent request with incorrect 'localUse' \
+                          parameter (send invalid JSON)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localUse",
+                        value: '{"test": "test",',
+                        output_file: "file./tmp/RecCallStartLogEvent_localUse_invalid.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallStartLogEvent_localUse_invalid.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_with_incorrect_direction_send_int"
+            description: "Validate 4xx error response for RecCallEndLogEvent request with incorrect 'direction' \
+                        parameter (send integer): 'direction': 123"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "direction",
+                        value: 123,
+                        output_file: "file./tmp/RecCallEndLogEvent_1.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_1.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_with_incorrect_direction_send_typo"
+            description: "Validate 4xx error response for RecCallEndLogEvent request with incorrect 'direction' \
+                          parameter (send 'incomingg')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "direction",
+                        value: "incomingg",
+                        output_file: "file./tmp/RecCallEndLogEvent_direction_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_direction_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_missing_direction"
+            description: "Validate 4xx error response for RecCallEndLogEvent request without 'direction' parameter"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "remove_json_field_from_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "direction",
+                        output_file: "file./tmp/RecCallEndLogEvent_no_direction.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_no_direction.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_incorrect_standardPrimaryCallType_integer"
+            description: "Validate 4xx error response for RecCallEndLogEvent request with incorrect \
+                          'standardPrimaryCallType' parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardPrimaryCallType",
+                        value: 123,
+                        output_file: "file./tmp/RecCallEndLogEvent_primary_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_primary_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+
+          - name: "RecCallEndLogEvent_incorrect_standardPrimaryCallType_typo"
+            description: "Validate 4xx error response for RecCallEndLogEvent request with incorrect \
+                          'standardPrimaryCallType' parameter (send 'emergencyy')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardPrimaryCallType",
+                        value: "emergencyy",
+                        output_file: "file./tmp/RecCallEndLogEvent_primary_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_primary_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_incorrect_standardSecondaryCallType_integer"
+            description: "Validate 4xx error response for RecCallEndLogEvent request with incorrect \
+                          'standardSecondaryCallType' parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardSecondaryCallType",
+                        value: 123,
+                        output_file: "file./tmp/RecCallEndLogEvent_secondary_int.json"
+                      },
+                      save_result_as: "var.json_body"
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_secondary_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_incorrect_standardSecondaryCallType_typo"
+            description: "Validate 4xx error response for RecCallEndLogEvent request with incorrect \
+                          'standardSecondaryCallType' parameter (send 'emergencyy')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "standardSecondaryCallType",
+                        value: "emergencyy",
+                        output_file: "file./tmp/RecCallEndLogEvent_secondary_typo.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_secondary_typo.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_localCallType_integer"
+            description: "Validate 4xx error response for RecCallEndLogEvent request with incorrect 'localCallType' \
+                          parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localUse",
+                        value: 123,
+                        output_file: "file./tmp/RecCallEndLogEvent_localCallType_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_localCallType_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_localCallType_newline"
+            description: "Validate 201 Created response for RecCallEndLogEvent request with: 'localCallType': '\\n'"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "\\n",
+                        output_file: "file./tmp/RecCallEndLogEvent_localCallType_nl.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_localCallType_nl.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_localCallType_single_quote"
+            description: "Validate 201 Created response for RecCallEndLogEvent request with: 'localCallType': \"'\""
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "'",
+                        output_file: "file./tmp/RecCallEndLogEvent_localCallType_quote.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_localCallType_quote.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_localCallType_parenthesis"
+            description: "Validate 201 Created response for RecCallEndLogEvent request with: 'localCallType': '('"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localCallType",
+                        value: "(",
+                        output_file: "file./tmp/RecCallEndLogEvent_localCallType_paren.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_localCallType_paren.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_localUse_integer"
+            description: "Validate 4xx error response for RecCallEndLogEvent request with incorrect 'localUse' \
+                          parameter (send integer)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localUse",
+                        value: 123,
+                        output_file: "file./tmp/RecCallEndLogEvent_localUse_int.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_localUse_int.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+          - name: "RecCallEndLogEvent_localUse_invalid_json"
+            description: "Validate 4xx error response for RecCallEndLogEvent request with incorrect 'localUse' \
+                          parameter (send invalid JSON)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "modify_json_file",
+                      kwargs: {
+                        json_input_file: "file.test_suite/test_files/JSON/log_event/RecCallEndLogEvent_object_example_v010.3f.3.0.1.json",
+                        param_name: "localUse",
+                        value: '{"test": "test",',
+                        output_file: "file./tmp/RecCallEndLogEvent_localUse_invalid.json"
+                      }
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file./tmp/RecCallEndLogEvent_localUse_invalid.json",
+                        cert_path: "var.esrp_certificate_file",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "file./tmp/jws_body"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+
+        requirements:
+          - name: "RQ_LOG_054"
+            variations: [
+              "CallStartLogEvent_with_incorrect_direction_send_int",
+              "CallStartLogEvent_with_incorrect_direction_send_typo",
+              "CallStartLogEvent_missing_direction",
+              "CallStartLogEvent_incorrect_standardPrimaryCallType_integer",
+              "CallStartLogEvent_incorrect_standardPrimaryCallType_typo",
+              "CallStartLogEvent_incorrect_standardSecondaryCallType_integer",
+              "CallStartLogEvent_incorrect_standardSecondaryCallType_typo",
+              "CallStartLogEvent_localCallType_newline",
+              "CallStartLogEvent_localCallType_single_quote",
+              "CallStartLogEvent_localCallType_parenthesis",
+              "CallStartLogEvent_localUse_integer",
+              "CallStartLogEvent_localUse_invalid_json"
+            ]
+          - name: "RQ_LOG_055"
+            variations: [
+              "CallEndLogEvent_with_incorrect_direction_send_int",
+              "CallEndLogEvent_with_incorrect_direction_send_typo",
+              "CallEndLogEvent_missing_direction",
+              "CallEndLogEvent_incorrect_standardPrimaryCallType_integer",
+              "CallEndLogEvent_incorrect_standardPrimaryCallType_typo",
+              "CallEndLogEvent_incorrect_standardSecondaryCallType_integer",
+              "CallEndLogEvent_incorrect_standardSecondaryCallType_typo",
+              "CallEndLogEvent_localCallType_newline",
+              "CallEndLogEvent_localCallType_single_quote",
+              "CallEndLogEvent_localCallType_parenthesis",
+              "CallEndLogEvent_localUse_integer",
+              "CallEndLogEvent_localUse_invalid_json"
+            ]
+          - name: "RQ_LOG_058"
+            variations: [
+              "RecCallStartLogEvent_with_incorrect_direction_send_int",
+              "RecCallStartLogEvent_with_incorrect_direction_send_typo",
+              "RecCallStartLogEvent_missing_direction",
+              "RecCallStartLogEvent_incorrect_standardPrimaryCallType_integer",
+              "RecCallStartLogEvent_incorrect_standardPrimaryCallType_typo",
+              "RecCallStartLogEvent_incorrect_standardSecondaryCallType_integer",
+              "RecCallStartLogEvent_incorrect_standardSecondaryCallType_typo",
+              "RecCallStartLogEvent_localCallType_newline",
+              "RecCallStartLogEvent_localCallType_single_quote",
+              "RecCallStartLogEvent_localCallType_parenthesis",
+              "RecCallStartLogEvent_localUse_integer",
+              "RecCallStartLogEvent_localUse_invalid_json"
+            ]
+          - name: "RQ_LOG_059"
+            variations: [
+              "RecCallEndLogEvent_with_incorrect_direction_send_int",
+              "RecCallEndLogEvent_with_incorrect_direction_send_typo",
+              "RecCallEndLogEvent_missing_direction",
+              "RecCallEndLogEvent_incorrect_standardPrimaryCallType_integer",
+              "RecCallEndLogEvent_incorrect_standardPrimaryCallType_typo",
+              "RecCallEndLogEvent_incorrect_standardSecondaryCallType_integer",
+              "RecCallEndLogEvent_incorrect_standardSecondaryCallType_typo",
+              "RecCallEndLogEvent_localCallType_newline",
+              "RecCallEndLogEvent_localCallType_single_quote",
+              "RecCallEndLogEvent_localCallType_parenthesis",
+              "RecCallEndLogEvent_localUse_integer",
+              "RecCallEndLogEvent_localUse_invalid_json"
+            ]

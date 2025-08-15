@@ -1,0 +1,50 @@
+launch_config:
+  output_folder: "/results/1/"
+  global_config:
+    lab_info: "templates/lab_configs/lab__info.yaml"
+    type: "conformance"
+    report_files:
+      prefix: "TAMU"
+      suffix: "test" # optional
+      output_folder_path: "" # empty if you want to have reports in TS root dir or absolute path to the FOLDER
+      detailed_view: true
+      types:
+        - "docx"
+        - "pdf"
+    id_summary:
+      eng_name: "Arty"
+      supplier:
+        name: "Arty"
+        addr_line_1: "1"
+        addr_line_2: "2"
+        city: "Web"
+        state: "Internet"
+        country: "Earth"
+        zip: "001001"
+        url: "www"
+      test_env:
+        ts_version: "1111"
+        ixit_id: "11111"
+        test_period_start: "15.06.2025" # ?
+        test_period_end: "15.06.2025" # ?
+        log_ref: "123412" # ?
+        log_ret_date: "1234124" # ?
+    log:
+      level: "DEBUG"
+      output_file: "BCF_001_logger.log"
+    comments:
+      - author: "Lab"
+        comment: "this is test env"
+      - author: "Arty"
+        comment: "This is my own test env"
+  tests:
+   - iut:
+       type: "BCF"
+       name: "IUT_BCF"
+       version: "0.0.0.1"
+       test_period: "Sun 15 Jun"
+       date_of_receipt: "15.06.2025"
+       location: "Web"
+       cs_id: "11111"
+     lab_config: "templates/lab_configs/lab_config_bcf.yaml"
+     requirements: ["RQ_BCF_001","RQ_BCF_002","RQ_BCF_003","RQ_BCF_005","RQ_BCF_007","RQ_BCF_009","RQ_BCF_010",]

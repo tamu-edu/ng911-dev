@@ -1,0 +1,3 @@
+test_config: "test_files/configs/ECRF_LVF/ECRF_LVF_004/test_config.yaml"
+lab_config: "test_files/configs/ECRF_LVF/ECRF_LVF_004/lab_config.yaml"
+run_config: "test_files/configs/ECRF_LVF/ECRF_LVF_004/run_config.yaml"
