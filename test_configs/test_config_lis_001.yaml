@@ -30,7 +30,7 @@ test_config:
                   method: "POST"
                   response_code: "200"
                   http_url: "var.http_url"  # part after f.e. http://IP:PORT
-                  body: "file.test_files/HTTP_messages/HTTP_HELD/Location_request"
+                  body: "file.test_suite/test_files/HTTP_messages/HTTP_HELD/Location_request"
                   sipp_scenario: {}
                   run_in_background: "False"
           - name: "Location_URI_dereference_using_SIP_Presence_Event_Package"
@@ -62,7 +62,7 @@ test_config:
                   http_url: ""  # part after f.e. http://IP:PORT
                   body: ""
                   sipp_scenario: {
-                    scenario_file_path: "file.test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_FROM_LIS.xml",
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_FROM_LIS.xml",
                     kwargs: {
                               "-s": "var.sip_uri_user"
                     },
