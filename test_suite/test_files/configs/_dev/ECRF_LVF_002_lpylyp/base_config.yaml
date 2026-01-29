@@ -1,3 +1,0 @@
-test_config: "test_files/configs/_dev/ECRF_LVF_002_lpylyp/test_config.yaml"
-lab_config: "test_files/configs/_dev/ECRF_LVF_002_lpylyp/lab_config.yaml"
-run_config: "test_files/configs/_dev/ECRF_LVF_002_lpylyp/run_config.yaml"

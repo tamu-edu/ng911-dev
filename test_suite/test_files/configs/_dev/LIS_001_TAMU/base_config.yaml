@@ -1,3 +1,0 @@
-test_config: "test_files/configs/LIS/LIS_001/test_config.yaml"
-lab_config: "test_files/configs/_dev/LIS_001_TAMU/lab_config_LIS.yaml"
-run_config: "test_files/configs/_dev/LIS_001_TAMU/run_config_LIS_001.yaml"

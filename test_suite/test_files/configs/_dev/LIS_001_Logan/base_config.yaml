@@ -1,3 +1,0 @@
-test_config: "test_files/configs/LIS_001/test_config.yaml"
-lab_config: "test_files/configs/_dev/LIS_001_Logan/lab_config_logan.yaml"
-run_config: "test_files/configs/_dev/LIS_001_Logan/run_config_logan.yaml"
