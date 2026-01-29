@@ -1,0 +1,98 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LOG-FE_001"
+        variations:
+          - name: "Basic_call_logging_by_call_stateful_FE"
+            description: "Validate if call stateful FE for basic call logs\
+                          CallStartLogEvent, CallSignallingMessageLogEvent, CallEndLogEvent"
+            interfaces:
+              - name: "IF_OSP_FE"
+                port_names: []
+              - name: "IF_LOG_FE"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "lab_config['lab_config']['entities']",
+                             where_field: "name",
+                             where_value: "LOG",
+                             extract_field: 'interfaces'
+                      }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "var.log_interfaces",
+                             where_field: "name",
+                             where_value: "IF_LOG_FE",
+                             extract_field: 'fqdn'
+                      }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                             identifier_type: "logid",
+                             fqdn: "var.log_fqdn"
+                      }
+                      save_result_as: "var.logid"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: '{"logEventId": "{0}"}'
+                        variables: "list.[var.logid]"
+                      save_result_as: "var.logid_json"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: "var.logid_json"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                - action: "send"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call.xml",
+                    kwargs: {},
+                    save_response_as: "LOG_008_SEND_response.log",
+                    save_log_as: "LOG_008_SEND.log"
+                  }
+                  run_in_background: "False"
+        requirements:
+          - name: "RQ_BCF_128"
+            variations: [ "all" ]
+          - name: "RQ_BCF_136"
+            variations: [ "all" ]
+          - name: "RQ_BCF_137"
+            variations: [ "all" ]
+          - name: "RQ_BCF_138"
+            variations: [ "all" ]
+          - name: "RQ_BRG_092"
+            variations: [ "all" ]
+          - name: "RQ_BRG_100"
+            variations: [ "all" ]
+          - name: "RQ_BRG_101"
+            variations: [ "all" ]
+          - name: "RQ_BRG_102"
+            variations: [ "all" ]
+          - name: "RQ_CHFE_312"
+            variations: [ "all" ]
+          - name: "RQ_CHFE_318"
+            variations: [ "all" ]
+          - name: "RQ_CHFE_319"
+            variations: [ "all" ]
+          - name: "RQ_CHFE_320"
+            variations: [ "all" ]
+          - name: "RQ_ESRP_116"
+            variations: [ "all" ]
+          - name: "RQ_ESRP_124"
+            variations: [ "all" ]
+          - name: "RQ_ESRP_125"
+            variations: [ "all" ]
+          - name: "RQ_ESRP_126"
+            variations: [ "all" ]

@@ -1,0 +1,20 @@
+{
+  "recordId": "123456",
+  "serviceAgencyName": "Discrepancy Reporting Service",
+  "serviceAgencyId": "DR1",
+  "serviceAgencyJcard": [
+    "vcard",
+    [
+      ["version", {}, "text", "4.0"],
+      ["fn", {}, "text", "Discrepancy Reporting Service"],
+      ["org", {}, "text", "example.com"],
+      ["tel", { "type": ["work", "voice"] }, "uri", "tel:+1-523-111-1234"],
+      ["email", { "type": "work" }, "text", "dr@example.com"],
+      ["adr", {}, "text", ["", "", "1 St", "Example", "IL", "62704", "USA"]],
+      ["url", {}, "uri", "TEST_SYSTEM_DR_URI"]
+    ]
+  ],
+  "serviceAgencyTypes": ["DiscrepancyReporting"],
+  "loggerUri": "TEST_SYSTEM_DR_URI",
+  "dscRptUri": "TEST_SYSTEM_DR_URI"
+}

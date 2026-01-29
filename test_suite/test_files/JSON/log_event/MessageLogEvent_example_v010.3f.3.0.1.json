@@ -1,0 +1,11 @@
+{
+  "logEventType": "MessageLogEvent",
+  "timestamp": "2025-03-10T10:02:00Z",
+  "elementId": "bcf.ng911.test",
+  "agencyId": "ng911.test",
+  "direction": "incoming",
+  "callId": "urn:emergency:uid:callid:987654321asdfgh:bcf.ng911.test",
+  "incidentId": "urn:emergency:uid:incidentid:987654321asdfgh:bcf.ng911.test",
+  "callIdSIP": "c81d4fae-7dec-11d0-a765-00a0c91e6bf6@osp.test",
+  "ipAddressPort": "192.168.64.15:5061"
+}

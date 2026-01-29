@@ -1,0 +1,182 @@
+lab_config:
+  pca_certificate_file: ""  # TLS certificate file for secure connections
+  pca_certificate_key: ""   # TLS private key matching the certificate
+  test_suite_host_ip: "10.140.140.253"    # IP of the machine running the test suite
+  entities:
+    - name: "OSP"           # Stimulus generator
+      mode: "STUB_SERVER"   # Simulated server for test stimulus generation
+      function: "OSP"       # Emergency services originating point function
+      role: ["SENDER"]        # Initiates emergency calls in test scenarios
+      fqdn: ""              # Fully qualified domain name for routing
+      certificate_file: ""  # X.509 certificate for TLS
+      certificate_key: ""   # Private key for TLS
+      interfaces:
+        - name: "IF_OSP_BCF"  # Interface between OSP and BCF
+          fqdn: ""
+          ip: "10.140.140.130"            # Interface IP address
+          mask: "255.255.255.128"          # Network mask
+          gateway: ""       # Default gateway (Leave empty if not required)
+          dns: [ ]          # DNS servers (Leave empty if not required)
+          port_mapping:     # Protocol and port mappings for tests
+#            - name: "IF_OSP_BCF_SIP_5061_TLSv1.2"
+#              protocol: "SIP"
+#              port: 5061
+#              transport_protocol: "TLSv1.2"
+            - name: "IF_OSP_BCF_SIP_5060_TCP"
+              protocol: "SIP"  # For call signaling
+              port: 5060       # Standard SIP port
+              transport_protocol: "TCP"
+            - name: "IF_OSP_BCF_SIP_5060_UDP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "UDP"
+#            - name: "IF_OSP_BCF_SIP_5060_SCTP"
+#              protocol: "SIP"
+#              port: 5060
+#              transport_protocol: "SCTP"
+            - name: "IF_OSP_BCF_HTTP_8080_TCP"
+              protocol: "HTTP" # Web protocol for metadata or location data
+              port: 8080       # Common alternative HTTP port
+              transport_protocol: "TCP"
+    - name: "SAL"           # Supporting/auxiliary service provider
+      mode: "STUB_SERVER"
+      function: "OSP"
+      role: ["SENDER"]
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_SAL_BCF"
+          fqdn: ""
+          ip: "10.140.140.131"           # Interface IP address
+          mask: "255.255.255.128"
+          gateway: ""   # Leave empty if not required
+          dns: [ ]      # Leave empty if not required
+          port_mapping:
+            - name: "IF_OSP_BCF_HTTP_8080_TCP"
+              protocol: "HTTP"
+              port: 8080
+              transport_protocol: "TCP"
+    - name: "BCF"           # BCF under test
+      mode: "REAL_DEVICE"
+      function: "BCF"
+      role: ["IUT"]           # Implementation Under Test
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_BCF_OSP"
+          fqdn: ""
+          ip: "192.168.49.102"            # Interface IP address
+          mask: "255.255.255.0"
+          gateway: ""   # Leave empty if not required
+          dns: [ ]      # Leave empty if not required
+          port_mapping:
+#            - name: "IF_BCF_OSP_SIP_5061_TLSv1.2"
+#              protocol: "SIP"
+#              port: 5061
+#              transport_protocol: "TLSv1.2"
+            - name: "IF_BCF_OSP_SIP_5060_TCP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+            - name: "IF_BCF_OSP_SIP_5060_UDP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "UDP"
+            - name: "IF_BCF_OSP_SIP_5060_SCTP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "SCTP"  # Stream Control Transmission Protocol
+            - name: "IF_BCF_OSP_HTTP_8080_TCP"
+              protocol: "HTTP"
+              port: 8080
+              transport_protocol: "TCP"
+        - name: "IF_BCF_SAL"
+          fqdn: ""
+          ip: "192.168.49.102"
+          mask: "255.255.255.0"
+          gateway: ""   # Leave empty if not required
+          dns: [ ]      # Leave empty if not required
+          port_mapping:
+            - name: "IF_BCF_OSP_HTTP_8080_TCP"
+              protocol: "HTTP"
+              port: 8080
+              transport_protocol: "TCP"
+        - name: "IF_BCF_ESRP"
+          fqdn: ""
+          ip: "192.168.49.102"
+          mask: "255.255.255.0"
+          gateway: "" # Leave empty if not required
+          dns: [ ]# Leave empty if not required
+          port_mapping:
+#            - name: "IF_BCF_ESRP_SIP_5061_TLSv1.2"
+#              protocol: "SIP"
+#              port: 5061
+#              transport_protocol: "TLSv1.2"
+            - name: "IF_BCF_ESRP_SIP_5060_TCP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+            - name: "IF_BCF_ESRP_HTTP_8080_TCP"
+              protocol: "HTTP"
+              port: 8080
+              transport_protocol: "TCP"
+        - name: "IF_BCF_LOG"   # Interface between BCF and LOG
+          fqdn: ""
+          ip: "192.168.49.102"
+          mask: "255.255.255.0"
+          gateway: ""         # Leave empty if not required
+          dns: [ ]            # Leave empty if not required
+          port_mapping:
+            - name: "IF_BCF_LOG_HTTP_8080_TCP"
+              protocol: "HTTP" # For HTTP-based log transfer
+              port: 8080       # Common alternative HTTP port
+              transport_protocol: "TCP"
+    - name: "ESRP"          # Final receiver - Emergency Services Routing Proxy
+      mode: "STUB_SERVER"
+      function: "ESRP"
+      role: ["RECEIVER"]
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_ESRP_BCF"
+          fqdn: ""
+          ip: "10.140.140.132"
+          mask: "255.255.255.128"
+          gateway: ""   # Leave empty if not required
+          dns: [ ]      # Leave empty if not required
+          port_mapping:
+#            - name: "IF_ESRP_BCF_SIP_5061_TLSv1.2"
+#              protocol: "SIP"
+#              port: 5061
+#              transport_protocol: "TLSv1.2"
+            - name: "IF_ESRP_BCF_SIP_5060_TCP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+            - name: "IF_ESRP_BCF_HTTP_8080_TCP"
+              protocol: "HTTP"
+              port: 8080
+              transport_protocol: "TCP"
+    # Test System LOG
+    - name: "LOG"             # Simulated log service
+      mode: "STUB_SERVER"     # Acts as a stub server for HTTP requests
+      function: "LOG"
+      role: ["RECEIVER"]          # Sends HTTP messages
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_LOG_BCF"   # Interface between LOG and BCF
+          fqdn: ""
+          ip: "10.140.140.133"
+          mask: "255.255.255.128"
+          gateway: ""         # Leave empty if not required
+          dns: [ ]            # Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG_BCF_HTTP_8080_TCP"
+              protocol: "HTTP"
+              port: 8080
+              transport_protocol: "TCP"

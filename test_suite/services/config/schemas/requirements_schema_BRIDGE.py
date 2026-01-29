@@ -1,0 +1,947 @@
+REQUIREMENTS_SCHEMA = {
+    "RQ_BRG_001": {
+        "requirement_text": "Bridges MUST be multimedia capable (voice, video, text).",
+        "document_section": "4.7",
+        "description": "Bridges must be capable of handling all multimedia types, including voice, video, and text communication.",
+        "test_id": "BRIDGE_001",
+        "subtests": []
+    },
+    "RQ_BRG_002": {
+        "requirement_text": "If the calling device does not support the Replaces header field, then a B2BUA in the path MUST be present which does support the Replaces header field in an ESInet supporting ad hoc bridging.",
+        "document_section": "4.7.1",
+        "description": "For ad hoc bridging, if a calling device lacks support for the Replaces header field, a B2BUA that does support it must be present in the call path.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_004": {
+        "requirement_text": "All Bridges in the ESInet/NGCS MUST implement the Session Recording Client interface defined by SIPREC (RFC 7866).",
+        "document_section": "4.7.1",
+        "description": "All Bridges in the ESInet/NGCS are required to implement the Session Recording Client (SRC) interface as defined by SIPREC (RFC 7866).",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_005": {
+        "requirement_text": "When the bridge is used to transfer the call, the location of the caller and any Additional Data included (or retrieved in conjunction) with the call MUST be transferred to the transfer target.",
+        "document_section": "4.7.1",
+        "description": "When a bridge transfers a call, the caller's location and any associated Additional Data must also be transferred to the new recipient.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_006": {
+        "requirement_text": "The emergency-Call Identifier and the emergency-Incident Tracking Identifier MUST be copied from the REFER to the outgoing INVITE.",
+        "document_section": "4.7.1",
+        "description": "The emergency-Call Identifier and the emergency-Incident Tracking Identifier must be copied from the REFER message and included in the outgoing INVITE message.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_009": {
+        "requirement_text": "When the INVITE is created by the bridge to the secondary PSAP, the INVITE MUST contain the service URN in the Request-URI, with a Route header field containing the URI (which should include the \"lr\" parameter to avoid Request-URI rewriting) found in the Refer-To header field...",
+        "document_section": "4.7.1",
+        "description": "The INVITE sent by the bridge to a secondary PSAP must include the service URN in the Request-URI and a Route header field containing the URI from the Refer-To header field (ideally with the 'lr' parameter).",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_010": {
+        "requirement_text": "...and MUST contain a Referred-By header field with the URI of the primary PSAP per RFC 3892.",
+        "document_section": "4.7.1",
+        "description": "The INVITE must also include a Referred-By header field with the URI of the primary PSAP, as specified by RFC 3892.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_012": {
+        "requirement_text": "The bridge is a service: each element of the bridge MUST implement the server-side of ElementState and the set of bridge elements MUST implement the server-side of ServiceState.",
+        "document_section": "4.7.1",
+        "description": "Since the bridge is a service, each individual bridge element must implement the server-side of ElementState, and the collection of bridge elements must implement the server-side of ServiceState.",
+        "test_id": "BRIDGE_002",
+        "subtests": []
+    },
+    "RQ_BRG_018": {
+        "requirement_text": "Once the REFER is successfully acknowledged with a 200 OK, the recipient of the REFER will send notifications of the status of the adding the target participant. It MAY send a notification containing a 100 Trying to indicate the transfer is pending. It MAY also send additional provisional messages, e.g. 183 Session Progress. It MUST send a 200 OK indicating that the party was successfully added.",
+        "document_section": "4.7.2",
+        "description": "After a successful 200 OK for a REFER, the recipient must send status notifications while adding the participant. It must conclude with a 200 OK to confirm the party was successfully added.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_021": {
+        "requirement_text": "...When an emergency call is transferred, the transferring PSAP will request that the bridge insert a reference to the EIDO via an embedded Call-Info header field with a URI that points to the EIDO data structure in the REFER method sent to the bridge, and a purpose parameter of \"emergency-eido\". See the example of the associated header fields in 4.7.1 above. The bridge MUST subsequently include this Call-Info header field in the INVITE it sends to the transfer target.",
+        "document_section": "4.7.4",
+        "description": "When an emergency call is transferred, the PSAP must request the bridge insert an Emergency Incident Data Object (EIDO) reference via a Call-Info header with purpose 'emergency-eido' in the REFER. The bridge must then include this Call-Info header in the INVITE sent to the transfer target.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_029": {
+        "requirement_text": "Because some user devices do not currently support CPIM, the NG9-1-1 conference bridge MUST emulate what a CPIM-enabled device would do to appropriately interwork (e.g., label) text from other participants.",
+        "document_section": "4.7.6",
+        "description": "Because some user devices do not support CPIM, the NG9-1-1 conference bridge must emulate a CPIM-enabled device to correctly interwork, such as labeling text, from other participants.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_031": {
+        "requirement_text": "SIP/MSRP session setup with CPIM is specified within the SDP of an INVITE message in the initial conference setup. All endpoints and media intermediaries within an ESInet/NGCS MUST support CPIM.",
+        "document_section": "4.7.6",
+        "description": "SIP/MSRP session setup involving CPIM is defined in the SDP of the initial INVITE message for conference setup. All endpoints and media intermediaries in the ESInet/NGCS must support CPIM.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_032": {
+        "requirement_text": "The RTCP SDES report SHOULD contain identification of the source represented by the CSRC identifier. This identification MUST contain the CNAME field and MAY contain the NAME field and other defined fields of the SDES report.",
+        "document_section": "4.8",
+        "description": "The RTCP SDES report should identify the source using the CSRC identifier. This identification must include the **CNAME** field and may include the **NAME** field.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_033": {
+        "requirement_text": "All NG9-1-1 implementations MUST supply identity information in this manner to the bridge.",
+        "document_section": "4.8",
+        "description": "All NG9-1-1 implementations are required to supply identity information to the bridge in the specified format.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_034": {
+        "requirement_text": "The bridge MUST convey SDES information received from the sources of the session members.",
+        "document_section": "4.8",
+        "description": "The bridge is required to relay the SDES (Source Description) information it receives from the sources of the session members.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_035": {
+        "requirement_text": "When such information is not available, the focus UA MUST compose CSRC, CNAME, and NAME information from available information from the SIP session (From and P-A-I) with the participant.",
+        "document_section": "4.8",
+        "description": "If SDES information is unavailable, the focus User Agent (UA) must compose the CSRC, CNAME, and NAME fields using available SIP session information, such as the **From** and **P-A-I** headers.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_036": {
+        "requirement_text": "Transport of real-time text is originally specified in RFC 4103 [85]. Multi-party handling for real-time text is described in RFC 9071 [219], which updates RFC 4103. The Mixer function of the Bridge MUST implement these mechanisms for both multi-party aware and multi-party unaware end devices.",
+        "document_section": "4.8.1",
+        "description": "The Bridge's Mixer function must implement real-time text transport mechanisms from RFC 4103 and multi-party handling mechanisms from RFC 9071 for both multi-party aware and unaware devices.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_037": {
+        "requirement_text": "Negotiation of multi-party awareness SHALL be performed by mixers and endpoints at session initiation and modification.",
+        "document_section": "4.8.1",
+        "description": "Mixers and endpoints must negotiate multi-party awareness capabilities when a session is initiated or modified.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_038": {
+        "requirement_text": "If both parties declare multi-party capability awareness, the mixer SHALL apply the mixing procedures for multi-party awareness as defined in RFC 9071 [219].",
+        "document_section": "4.8.1",
+        "description": "If both parties in a session declare multi-party awareness, the mixer must use the corresponding multi-party mixing procedures defined in RFC 9071.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_039": {
+        "requirement_text": "In all other cases, the mixer SHALL apply the limited functionality mixing procedures for multi-party unaware participants as defined in RFC 9071 [219].",
+        "document_section": "4.8.1",
+        "description": "In all other scenarios, the mixer must apply the limited functionality mixing procedures from RFC 9071 for participants that are unaware of multi-party capability.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_041": {
+        "requirement_text": "For the case when the multi-party awareness negotiation was unsuccessful, the mixer SHALL compose a simulated limited multi-party RTT view suitable for presentation.",
+        "document_section": "4.8.1",
+        "description": "If multi-party awareness negotiation fails, the mixer must create a simulated, limited multi-party Real-Time Text (RTT) view that is suitable for presentation.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_042": {
+        "requirement_text": "Mixers SHALL be capable of handling both multi-party aware and multi-party unaware endpoints in the same multi-party session.",
+        "document_section": "4.8.1",
+        "description": "Mixers must be able to manage endpoints that are both multi-party aware and multi-party unaware simultaneously within the same multi-party session.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_043": {
+        "requirement_text": "The downstream bridge MUST release the upstream bridge resources when no active call legs in the Upstream ESInet remain.",
+        "document_section": "4.9.3",
+        "description": "The downstream bridge is required to release the resources of the upstream bridge once all active call legs in the Upstream ESInet are terminated.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_046": {
+        "requirement_text": "SIP/MSRP session setup with CPIM is specified within the SDP of an INVITE message in the initial conference setup. All endpoints and media intermediaries within an ESInet/NGCS MUST support CPIM.",
+        "document_section": "4.7.6",
+        "description": "SIP/MSRP session setup involving CPIM is defined in the SDP of the initial INVITE message for conference setup. All endpoints and media intermediaries in the ESInet/NGCS must support CPIM.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_048": {
+        "requirement_text": "Bridges MUST be able to receive a REFER.",
+        "document_section": "3.1.1.2",
+        "description": "Bridges are required to have the capability to receive and process a SIP REFER request.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_050": {
+        "requirement_text": "SIP entities implementing REFER MUST implement RFC 4508 [38] and the Replaces Header Field, RFC 3891 [27].",
+        "document_section": "3.1.1.2",
+        "description": "SIP entities that implement the REFER method must also implement RFC 4508 and the Replaces Header Field (RFC 3891).",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_053": {
+        "requirement_text": "The bridge is a service: each element of the bridge MUST implement the server-side of ElementState and the set of bridge elements MUST implement the server-side of ServiceState.",
+        "document_section": "4.7.1",
+        "description": "Since the bridge is a service, each individual bridge element must implement the server-side of ElementState, and the collection of bridge elements must implement the server-side of ServiceState.",
+        "test_id": "BRIDGE_002",
+        "subtests": []
+    },
+    "RQ_BRG_054": {
+        "requirement_text": "A REFER request implicitly establishes a subscription to the refer event as defined in RFC 3515 [19], but not regarding the conference as a whole. Once the REFER is successfully acknowledged with a 200 OK, the recipient of the REFER will send notifications of the status of the adding the target participant. It MAY send a notification containing a 100 Trying to indicate the transfer is pending. It MAY also send additional provisional messages, e.g. 183 Session Progress. It MUST send a 200 OK indicating that the party was successfully added.",
+        "document_section": "4.7.3",
+        "description": "A REFER request implicitly establishes a subscription for the refer event, but not for the entire conference. The recipient must send status notifications after a 200 OK acknowledgment, ending with a 200 OK for a successful participant addition.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_055": {
+        "requirement_text": "All endpoints and media intermediaries within an ESInet/NGCS MUST support CPIM.",
+        "document_section": "4.7.6",
+        "description": "All endpoints and media intermediaries within the ESInet/NGCS must support the Common Presence and Instant Messaging (CPIM) protocol.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_056": {
+        "requirement_text": "The Mixer function of the Bridge MUST implement these mechanisms for both multi-party aware and multi-party unaware end devices.",
+        "document_section": "4.8.1",
+        "description": "The Bridge's Mixer function must implement multi-party handling mechanisms for both multi-party aware and multi-party unaware end devices.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_065": {
+        "requirement_text": "NG9-1-1 elements that process 9-1-1 calls MUST accept calls that do not strictly follow the SIP standards. As long as the messages can be parsed, and the method discerned, at least the first SIP element (the BCF) MUST be able to accept the call and forward the call onward (see Section 4.1)  Support for the following SIP Methods is summarized and specified in the following table: (See underlying table)",
+        "document_section": "3.1.1",
+        "description": "NG9-1-1 elements, including the BCF, must accept and forward calls that do not strictly follow SIP standards, provided the messages can be parsed and the method is understood.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_066": {
+        "requirement_text": "All SIP proxy servers in the ESInet/NGCS MUST implement Resource-Priority and process calls in priority order when a queue of calls is waiting for service at the proxy server and, when needed, preempt lower priority calls",
+        "document_section": "3.1.7",
+        "description": "All SIP proxy servers in the ESInet/NGCS must implement Resource-Priority to process queued calls in priority order and preempt lower-priority calls when necessary.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_067": {
+        "requirement_text": "All endpoints and media intermediaries within an ESInet/NGCS MUST support CPIM.",
+        "document_section": "4.7.6",
+        "description": "All endpoints and media intermediaries within the ESInet/NGCS must support the Common Presence and Instant Messaging (CPIM) protocol.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_068": {
+        "requirement_text": "Negotiation of multi-party awareness SHALL be performed by mixers and endpoints at session initiation and modification.",
+        "document_section": "4.8.1",
+        "description": "Mixers and endpoints must negotiate multi-party awareness capabilities when a session is initiated or modified.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_069": {
+        "requirement_text": "request (If the discrepancy concerns a dialog, the initial INVITE that initiated the dialog )",
+        "document_section": "3.7.6",
+        "description": "If a discrepancy concerns a dialog, the discrepancy report must include the initial INVITE message that began the dialog.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_070": {
+        "requirement_text": "problem (One of the following tokens: InitialTrafficBlocked MidTrafficBlocked BadSDP BadSIP MediaLoss TrafficNotBlockedBadActor TrafficNotBlocked QoS BadCDR TTY Firewall OtherBCF)",
+        "document_section": "3.7.6",
+        "description": "The discrepancy report must specify the 'problem' using one of the defined tokens, such as **BadSIP**, **MediaLoss**, or **Firewall**.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_071": {
+        "requirement_text": "sosSource (The emergency-source parameter of the dialog request (i.e., the initial INVITE))",
+        "document_section": "3.7.6",
+        "description": "The discrepancy report must include the **sosSource** parameter, which is found in the initial INVITE of the dialog request.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_072": {
+        "requirement_text": "EventTimestamp (Timestamp of event being reported)",
+        "document_section": "3.7.6",
+        "description": "The discrepancy report must include the **EventTimestamp**, recording the exact time of the event being reported.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_073": {
+        "requirement_text": "packetHeader (For InitialTrafficBlocked, MidTrafficBlocked, TrafficNotBlockedBadActor, TrafficNotBlocked, or Firewall, contains the packet's header, encoded using base64)",
+        "document_section": "3.7.6",
+        "description": "For traffic-related problems like **InitialTrafficBlocked** or **Firewall** issues, the discrepancy report must include the base64-encoded packet header.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_074": {
+        "requirement_text": "packetHeader (For InitialTrafficBlocked, MidTrafficBlocked, TrafficNotBlockedBadActor, TrafficNotBlocked, or Firewall, contains the packet's header, encoded using base64)",
+        "document_section": "3.7.6",
+        "description": "For traffic-related problems like **InitialTrafficBlocked** or **Firewall** issues, the discrepancy report must include the base64-encoded packet header.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_075": {
+        "requirement_text": "All endpoints and media intermediaries within an ESInet/NGCS MUST support CPIM.",
+        "document_section": "4.7.6",
+        "description": "All endpoints and media intermediaries within the ESInet/NGCS must support the Common Presence and Instant Messaging (CPIM) protocol.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_076": {
+        "requirement_text": "Bridges MUST be multimedia capable (voice, video, text).",
+        "document_section": "4.6.20",
+        "description": "Bridges must be capable of handling all multimedia types, including voice, video, and text communication.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_077": {
+        "requirement_text": "All Bridges in the ESInet/NGCS MUST implement the Session Recording Client interface defined by SIPREC (RFC 7866) [116].",
+        "document_section": "4.7.1",
+        "description": "All Bridges in the ESInet/NGCS are required to implement the Session Recording Client (SRC) interface as defined by SIPREC (RFC 7866).",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_078": {
+        "requirement_text": "When the bridge is used to transfer the call, the location of the caller and any Additional Data included (or retrieved in conjunction) with the call MUST be transferred to the transfer target.",
+        "document_section": "4.7.1",
+        "description": "When a bridge transfers a call, the caller's location and any associated Additional Data must also be transferred to the new recipient.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_079": {
+        "requirement_text": "The emergency-Call Identifier and the emergency-Incident Tracking Identifier MUST be copied from the REFER to the outgoing INVITE.",
+        "document_section": "4.7.1",
+        "description": "The emergency-Call Identifier and the emergency-Incident Tracking Identifier must be copied from the REFER message and included in the outgoing INVITE message.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_080": {
+        "requirement_text": "When the INVITE is created by the bridge to the secondary PSAP, the INVITE MUST contain the service URN in the Request-URI, with a Route header field containing the URI (which should include the \"lr\" parameter to avoid Request-URI rewriting) found in the Refer-To header field, and MUST contain a Referred-By header field with the URI of the primary PSAP per RFC 3892.",
+        "document_section": "4.7.1",
+        "description": "The INVITE sent by the bridge to a secondary PSAP must include the service URN, the URI from the Refer-To header in the Route header field, and the primary PSAP's URI in a Referred-By header field (per RFC 3892).",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_081": {
+        "requirement_text": "The bridge is a service: each element of the bridge MUST implement the server-side of ElementState and the set of bridge elements MUST implement the server-side of ServiceState.",
+        "document_section": "4.7.1",
+        "description": "Since the bridge is a service, each individual bridge element must implement the server-side of ElementState, and the collection of bridge elements must implement the server-side of ServiceState.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_082": {
+        "requirement_text": "Because some user devices do not currently support CPIM, the NG9 1 1 conference bridge MUST emulate what a CPIM-enabled device would do to appropriately interwork (e.g., label) text from other participants.",
+        "document_section": "4.7.6",
+        "description": "Because some user devices do not support CPIM, the NG9-1-1 conference bridge must emulate a CPIM-enabled device to correctly interwork, such as labeling text, from other participants.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_083": {
+        "requirement_text": "All SIP proxy servers in the ESInet/NGCS MUST implement Resource-Priority and process calls in priority order when a queue of calls is waiting for service at the proxy server and, when needed, preempt lower priority calls",
+        "document_section": "3.1.7",
+        "description": "All SIP proxy servers in the ESInet/NGCS must implement Resource-Priority to process queued calls in priority order and preempt lower-priority calls when necessary.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_084": {
+        "requirement_text": "MediaStartLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the MediaStartLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_085": {
+        "requirement_text": "NonRtpMediaMessageLogEvent: An element MUST always log messages it receives (with \"direction\" set to \"incoming\").",
+        "document_section": "4.12.3.7",
+        "description": "An element must always log incoming messages using NonRtpMediaMessageLogEvent with the 'direction' parameter set to 'incoming'.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_086": {
+        "requirement_text": "NonRtpMediaMessageLogEvent: An element MUST log outgoing messages it originates.",
+        "document_section": "4.12.3.7",
+        "description": "An element must log all outgoing messages it originates using the NonRtpMediaMessageLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_087": {
+        "requirement_text": "NonRtpMediaMessageLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the NonRtpMediaMessageLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_088": {
+        "requirement_text": "MediaEndLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the MediaEndLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_089": {
+        "requirement_text": "DiscrepancyReportLogEvent members.",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the DiscrepancyReportLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_090": {
+        "requirement_text": "DiscrepancyReportLogEvent members.",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the DiscrepancyReportLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_091": {
+        "requirement_text": "ElementStateChangeLogEvent: When an element sends a notification of state change as described in the Element State section of this document, it MUST log the ElementStateChangeLogEvent.",
+        "document_section": "4.12.3.7",
+        "description": "When an element sends a notification of a state change, it must log the event using the ElementStateChangeLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_092": {
+        "requirement_text": "CallSignalingMessageLogEvent: An element MUST always log messages it receives (with \"direction\" set to \"incoming\").",
+        "document_section": "4.12.3.7",
+        "description": "An element must always log messages it receives using CallSignalingMessageLogEvent, with the 'direction' parameter set to 'incoming'.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_093": {
+        "requirement_text": "CallSignalingMessageLogEvent: An element MUST log outgoing messages it originates.",
+        "document_section": "4.12.3.7",
+        "description": "An element must log all outgoing messages it originates using the CallSignalingMessageLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_094": {
+        "requirement_text": "CallSignalingMessageLogEvent members.",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the CallSignalingMessageLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_095": {
+        "requirement_text": "MalformedMessageLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the MalformedMessageLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_096": {
+        "requirement_text": "Clients to the Logging Service MUST support logging to at least two Logging Services",
+        "document_section": "4.12.1",
+        "description": "Clients of the Logging Service must support logging to at least two Logging Services for redundancy.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_097": {
+        "requirement_text": "ServiceStateChangeLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the ServiceStateChangeLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_098": {
+        "requirement_text": "ServiceStateChangeLogEvent: When a Service sends a notification of state change as described in the Service State section of this document, which includes Security Posture, it MUST log the ServiceStateChangeLogEvent.",
+        "document_section": "4.12.3.7",
+        "description": "When a Service notifies of a state change, including security posture, it must log the event using the ServiceStateChangeLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_099": {
+        "requirement_text": "All agencies and NG9 1 1 functional elements MUST have access to a conformant Logging Service and log all relevant events in that service.",
+        "document_section": "4.12.4",
+        "description": "All agencies and NG9-1-1 functional elements must have access to and log all relevant events in a conformant Logging Service.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_100": {
+        "requirement_text": "Each element that is call stateful logs the beginning and end of its processing of a call, including non-interactive calls, with Start Call and End Call events. Elements that log CallStartLogEvent/CallEndLogEvent MUST also log the actual SIP message with CallSignalingMessageLogEvent for SIP parts of a call and GatewayCallLogEvent for TDM parts of a call. For CallStartLogEvent and CallEndLogEvent, the Timestamp MUST be the time the INVITE, MESSAGE, BYE or equivalents to these messages, or the final status code was received or sent by the element logging the event.",
+        "document_section": "4.12.3.7",
+        "description": "Call-stateful elements must log CallStart and CallEnd events for the beginning and end of call processing. They must also log the actual SIP message using CallSignalingMessageLogEvent, with the timestamp set to the time the relevant SIP message (INVITE, BYE, etc.) was received or sent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_101": {
+        "requirement_text": "CallStartLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the CallStartLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_102": {
+        "requirement_text": "CallEndLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the CallEndLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_103": {
+        "requirement_text": "RecMediaStartLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the RecMediaStartLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_104": {
+        "requirement_text": "RecordingFailedLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the RecordingFailedLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_105": {
+        "requirement_text": "ElementStateChangeLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the ElementStateChangeLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_106": {
+        "requirement_text": "(common LogEvent prologue (base object/header) table)",
+        "document_section": "4.12.3.1",
+        "description": "Refers to the table defining the common prologue (base object/header) that must be present in all LogEvents.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_107": {
+        "requirement_text": "KeepAliveFailureLogEvent: Malformed, invalid, or responses not received from the other element MUST be logged in a \"responseStatus\" member that contains text and a status code from the Status Codes Registry (Section 10.29). There is a TimeOut status in that registry that is used for a timeout failure of OPTIONS.",
+        "document_section": "4.12.3.7",
+        "description": "KeepAliveFailureLogEvent must log malformed, invalid, or missing responses in the 'responseStatus' member. This includes a status code and text, such as 'TimeOut' for OPTIONS failures.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_108": {
+        "requirement_text": "KeepAliveFailureLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the KeepAliveFailureLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_109": {
+        "requirement_text": "Clients to the Logging Service MUST support logging to at least two Logging Services for redundancy purposes",
+        "document_section": "4.12.1",
+        "description": "Clients of the Logging Service must support logging to at least two Logging Services to ensure redundancy.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_110": {
+        "requirement_text": "All protocol operations MUST be integrity-protected with TLS, using SHA-256 [62] or stronger. SHA-256 MUST be supported by all implementations.",
+        "document_section": "5.7",
+        "description": "All protocol operations must be protected for integrity using TLS with at least **SHA-256**. SHA-256 is a mandatory feature for all implementations.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_111": {
+        "requirement_text": "All protocol operations MUST be integrity-protected with TLS, using SHA-256 [62] or stronger. SHA-256 MUST be supported by all implementations.",
+        "document_section": "5.7",
+        "description": "All protocol operations must be protected for integrity using TLS with at least **SHA-256**. SHA-256 is a mandatory feature for all implementations.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_112": {
+        "requirement_text": "All protocol operations MUST be privacy protected via TLS, preferably using Advanced Encryption Standard (AES) [63] with a minimum key length of 256 bits (AES-256). Shorter key length MUST NOT be used. Systems currently using Data Encryption Standard (DES) or triple-DES MUST be upgraded to at least AES-256. Alternate encryption algorithms are acceptable as long as they are at least as strong as AES.",
+        "document_section": "5.8",
+        "description": "All protocol operations must use TLS for privacy, preferably with **AES-256** or a stronger encryption algorithm. Shorter key lengths are not permitted, and older systems using DES/3DES must be upgraded.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_113": {
+        "requirement_text": "KeepAliveFailureLogEvent: Malformed, invalid, or responses not received from the other element MUST be logged in a \"responseStatus\" member that contains text and a status code from the Status Codes Registry (Section 10.29). There is a TimeOut status in that registry that is used for a timeout failure of OPTIONS.",
+        "document_section": "4.12.3.7",
+        "description": "KeepAliveFailureLogEvent must log malformed, invalid, or missing responses in the 'responseStatus' member, including text and a status code from the Status Codes Registry, such as 'TimeOut' for OPTIONS failures.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_114": {
+        "requirement_text": "KeepAliveFailureLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the KeepAliveFailureLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_115": {
+        "requirement_text": "All protocol operations MUST be integrity-protected with TLS, using SHA-256 [62] or stronger. SHA-256 MUST be supported by all implementations.",
+        "document_section": "5.7",
+        "description": "All protocol operations must be protected for integrity using TLS with at least **SHA-256**. SHA-256 is a mandatory feature for all implementations.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_116": {
+        "requirement_text": "Clients to the Logging Service MUST support logging to at least two Logging Services for redundancy purposes",
+        "document_section": "4.12.1",
+        "description": "Clients of the Logging Service must support logging to at least two Logging Services to ensure redundancy.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_117": {
+        "requirement_text": "All protocol operations MUST be privacy protected via TLS, preferably using Advanced Encryption Standard (AES) [63] with a minimum key length of 256 bits (AES-256). Shorter key length MUST NOT be used. Systems currently using Data Encryption Standard (DES) or triple-DES MUST be upgraded to at least AES-256. Alternate encryption algorithms are acceptable as long as they are at least as strong as AES.",
+        "document_section": "5.8",
+        "description": "All protocol operations must use TLS for privacy, preferably with **AES-256** or a stronger encryption algorithm. Shorter key lengths are not permitted, and older systems using DES/3DES must be upgraded.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_118": {
+        "requirement_text": "FEs that use a Logging Service MUST NOT depend on a Logging Service accepting an extension to provide services conformant to this document.",
+        "document_section": "4.12.3.1",
+        "description": "Functional Elements (FEs) using a Logging Service must not rely on that service accepting an extension to maintain compliance with this document's services.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_119": {
+        "requirement_text": "Logging Services MUST be capable of verifying the signature of a signed LogEvent during the processing of the LogEvent request (i.e., before returning the response). The currently in force policy of the agency operating the Logging Service determines if the Logging Service does so. If the signature verification fails, it MUST return a \"Signature Verification Failed\" status code as a warning and SHOULD generate (subject to throttling) a Signature/Certificate Discrepancy Report (Section 3.7.22) to the logging entity. This is a warning, not an error; the LogEvent MUST be recorded, and the client MUST NOT retry the request.",
+        "document_section": "4.12.3.1",
+        "description": "Logging Services must be capable of verifying the signature of a signed LogEvent before responding. A failed verification is a warning, returning a 'Signature Verification Failed' status, but the LogEvent must still be recorded, and the client should not retry the request.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_120": {
+        "requirement_text": "(LogEvents POST parameters)",
+        "document_section": "4.12.3.1.2",
+        "description": "Refers to the required parameters for a LogEvents POST request.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_121": {
+        "requirement_text": "Logging Services MUST be capable of verifying the signature of a signed LogEvent during the processing of the LogEvent request (i.e., before returning the response). The currently in force policy of the agency operating the Logging Service determines if the Logging Service does so. If the signature verification fails, it MUST return a \"Signature Verification Failed\" status code as a warning and SHOULD generate (subject to throttling) a Signature/Certificate Discrepancy Report (Section 3.7.22) to the logging entity. This is a warning, not an error; the LogEvent MUST be recorded, and the client MUST NOT retry the request.",
+        "document_section": "4.12.3.1",
+        "description": "Logging Services must be capable of verifying the signature of a signed LogEvent before responding. A failed verification is a warning, returning a 'Signature Verification Failed' status, but the LogEvent must still be recorded, and the client should not retry the request.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_122": {
+        "requirement_text": "RecCallStartLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the RecCallStartLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_123": {
+        "requirement_text": "RecCallEndLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the RecCallEndLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_124": {
+        "requirement_text": "All forms of media described in this document MUST be logged (see the Media section for details)",
+        "document_section": "4.12",
+        "description": "All forms of media described in this document, including voice, video, and text, must be logged.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_125": {
+        "requirement_text": "The call MUST still be recorded if it is bridged by the SRC.",
+        "document_section": "4.12.2.3",
+        "description": "The call is required to continue being recorded by the Session Recording Client (SRC) even when it is bridged.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_126": {
+        "requirement_text": "Elements that implement the SRC interface MUST be capable of supporting redundant implementations of the SRS (RFC 7866) [116] and MUST insert the Call Identifier and Incident Tracking Identifier (Call-Info header fields) defined in this document into the INVITE sent to the Logging Service.",
+        "document_section": "4.12.2",
+        "description": "SRC-implementing elements must support redundant Session Recording Servers (SRS) and include the Call Identifier and Incident Tracking Identifier in the INVITE sent to the Logging Service.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_127": {
+        "requirement_text": "When an SRC sends SIPREC Metadata, it MUST generate a SiprecMetadata LogEvent to the Logging Service.",
+        "document_section": "4.12.2",
+        "description": "When a Session Recording Client (SRC) sends SIPREC Metadata, it must generate an accompanying SiprecMetadata LogEvent to the Logging Service.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_128": {
+        "requirement_text": "The SRC MUST include the CallId and IncidentId for the emergency call being recorded in the SIPREC INVITE it generates and when generating an associated SiprecMetadata LogEvent.",
+        "document_section": "4.12.2",
+        "description": "The SRC must include the CallId and IncidentId for the emergency call in both the generated SIPREC INVITE and the associated SiprecMetadata LogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_129": {
+        "requirement_text": "Elements that implement the SRC interface MUST be capable of supporting redundant implementations of the SRS (RFC 7866) [116]",
+        "document_section": "4.12.2",
+        "description": "Elements that implement the SRC interface must be capable of supporting redundant implementations of the Session Recording Server (SRS).",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_130": {
+        "requirement_text": "SRCs MUST support recording of media to at least two SRSes.",
+        "document_section": "4.12.2",
+        "description": "Session Recording Clients (SRCs) must support recording media to a minimum of two Session Recording Servers (SRSes) for redundancy.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_131": {
+        "requirement_text": "All SRCs and SRSes MUST implement RTCP on the recording session.",
+        "document_section": "4.12.2",
+        "description": "All Session Recording Clients (SRCs) and Session Recording Servers (SRSes) must implement RTCP on the recording session.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_132": {
+        "requirement_text": "The SRC MUST send wall clock time in sender reports.",
+        "document_section": "4.12.2",
+        "description": "The Session Recording Client (SRC) must include the wall clock time in its RTCP sender reports.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_133": {
+        "requirement_text": "All Bridge elements (Section 5.7), Gateway elements (Section 7), BCF elements that anchor media, and PSAP Call Handling elements, MUST implement the SRC interface.",
+        "document_section": "4.12.2",
+        "description": "All Bridge, Gateway, media-anchoring BCF, and PSAP Call Handling elements must implement the Session Recording Client (SRC) interface.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_134": {
+        "requirement_text": "The call MUST still be recorded while the third party is being added as well as when all three parties are on the call.",
+        "document_section": "4.12.2.2",
+        "description": "The emergency call must be continuously recorded while a third party is being added and when all three parties are actively connected.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_135": {
+        "requirement_text": "The call MUST still be recorded by the SRC.",
+        "document_section": "4.12.2.5",
+        "description": "The call is required to continue being recorded by the Session Recording Client (SRC).",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_136": {
+        "requirement_text": "The Logging Recorder MUST be able to provide a clean shut down by sending a BYE as specified in Section 3.1.1.3, for example when one SRS in a redundant pair is going out of service. The SRC MUST respond with a 200 OK.",
+        "document_section": "4.12.2.6",
+        "description": "The Logging Recorder must be able to perform a clean shutdown by sending a BYE, and the SRC must respond with a 200 OK to acknowledge the shutdown.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_137": {
+        "requirement_text": "CallStateChangeLogEvent MUST be logged by all elements that change the state of the call, which would include a bridge and all entities within the ESInet that request bridge actions when an emergency call is on a bridge.",
+        "document_section": "4.12.3.7",
+        "description": "The CallStateChangeLogEvent must be logged by all elements, including the bridge, that change the state of a call.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_138": {
+        "requirement_text": "CallStateChangeLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the CallStateChangeLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_139": {
+        "requirement_text": "SubscribeLogEvent: The Server MUST log this event",
+        "document_section": "4.12.3.7",
+        "description": "The Server is required to log the SubscribeLogEvent whenever a subscription request is processed.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_140": {
+        "requirement_text": "SubscribeLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the SubscribeLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_141": {
+        "requirement_text": "SubscribeLogEvent: The Server MUST log this event",
+        "document_section": "4.12.3.7",
+        "description": "The Server is required to log the SubscribeLogEvent whenever a subscription request is processed.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_142": {
+        "requirement_text": "SubscribeLogEvent members",
+        "document_section": "4.12.3.7",
+        "description": "Describes the required members for the SubscribeLogEvent.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_143": {
+        "requirement_text": "All DRs MUST contain common data elements (a prolog) that include: [see list]",
+        "document_section": "3.7",
+        "description": "All Discrepancy Reports (DRs) must contain a common set of data elements (a prolog).",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_144": {
+        "requirement_text": "Implementations MUST support (be capable of generating and using) algorithm \"EdDSA\" and MUST NOT use other algorithms except that implementations of the Logging Service and clients of the Logging Service MUST support (be capable of generating and using) unsigned (algorithm \"none\")",
+        "document_section": "2.8.2",
+        "description": "Implementations must support the **'EdDSA'** algorithm and no others, except for the Logging Service and its clients, which must also support the unsigned **'none'** algorithm.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_145": {
+        "requirement_text": "If a Web Service request receives an \"Unacceptable Algorithm\" error, the client MUST make a new request on the Versions entry point and retry the request with a JWS that uses a signing algorithm acceptable to the Web Service.",
+        "document_section": "2.8.3",
+        "description": "If a Web Service client receives an 'Unacceptable Algorithm' error, it must query the Versions entry point and retry the request using a JWS with an acceptable signing algorithm.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_146": {
+        "requirement_text": "When this document indicates that a set of Web Service interface parameters is a JWS (e.g., for LogEvents), the set of parameters is conveyed in the web service request as a string consisting of a JWS. The JWS is formed by applying the JWS algorithm to the set of parameters per the JWS standard [171]. The JWS Protected Header MUST contain exactly one \"alg\" field. The \"alg\" field MUST have a value acceptable to the Web Service. An unsigned (unprotected) JWS is indicated by an \"alg\" field set to the value \"none\". For signed LogEvents, and all other uses of JWS requiring signatures (e.g., policy documents), the JWS Protected Header MUST have its \"alg\" field set to a value acceptable to the Web Service that MUST NOT be \"none\" and MUST specify the signing entity's X.509 certificate and all intermediate certificates up to one signed by the trusted root58. The certificate is provided either by reference or by value. A certificate provided by value is contained in an \"x5c\" field. A certificate is provided by reference using the \"x5u\" and \"x5t#256\" fields. When the \"x5u\" field is present, it MUST contain a URL that is stable (resolvable) for a minimum of 10 years. The JWS Protected Header MAY contain other fields. Including a certificate (with chain) in each LogEvent increases the size of the event (in some cases by a multiple of the event size) but avoids the additional network requests necessary to retrieve the certificate chain using the \"x5u\" field. When the \"x5u\" field is used, the\"x5t#256\" field MUST also be used, to allow an entity to more easily detect when a certificate chain needs to be retrieved.",
+        "document_section": "2.9",
+        "description": "Web Service parameters, such as for LogEvents, are conveyed as a JWS string with an acceptable 'alg' field in the Protected Header. Signed LogEvents must use a non-'none' algorithm and include the signing entity's X.509 certificate, either by value ('x5c') or by reference ('x5u' and 'x5t#256').",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_147": {
+        "requirement_text": "All endpoints in an ESInet/NGCS MUST use ACK.",
+        "document_section": "2.9",
+        "description": "All endpoints within an ESInet/NGCS are required to use the SIP ACK method.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_148": {
+        "requirement_text": "The PRACK method MUST be used within systems that need reliable provisional responses (non 100)",
+        "document_section": "2.9",
+        "description": "The PRACK method is mandatory in systems that require reliable provisional SIP responses (any response other than 100).",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_149": {
+        "requirement_text": "ESInet elements MUST allow MESSAGE requests in the context of a dialog initiated by some other SIP request.",
+        "document_section": "2.9",
+        "description": "ESInet elements must permit SIP MESSAGE requests to occur within the context of a dialog that was started by a different SIP request.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_150": {
+        "requirement_text": "The functional elements described in this document MUST support the discrepancy report (DR) function.",
+        "document_section": "3.1.12",
+        "description": "All functional elements described in this document must be capable of supporting the discrepancy report (DR) function.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_151": {
+        "requirement_text": "Clients MUST appropriately handle all status codes listed for each supported entry point, and MUST react appropriately to other status codes received, based on the first digit as per RFC 7231 [223] Section 6.",
+        "document_section": "3.1.12",
+        "description": "Clients must appropriately handle all listed status codes for supported entry points and react to all other status codes based on the first digit, as per RFC 7231, Section 6.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_152": {
+        "requirement_text": "Implementations MUST ignore elements of data structures they do not understand",
+        "document_section": "3.1.13",
+        "description": "Implementations are required to ignore any elements within data structures that they do not understand.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_153": {
+        "requirement_text": "Clients MUST retry transactions on redundant elements that that could not be completed on the initial element.",
+        "document_section": "3.1.14",
+        "description": "Clients must retry failed transactions on redundant elements if the initial element could not complete them.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_154": {
+        "requirement_text": "Every implementation MUST be capable of using a DNS based implementation of redundant elements where more than one address may be returned for the URI provided.",
+        "document_section": "3.1.14",
+        "description": "All implementations must be capable of using a DNS-based approach for redundant elements where multiple addresses are returned for a single URI.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_155": {
+        "requirement_text": "Implementations MUST be capable of preferring the first returned address, and using the second, third and optionally additional addresses returned as representing redundant elements for the service.",
+        "document_section": "3.1.17",
+        "description": "Implementations must prefer the first address returned but be capable of using subsequent addresses as redundant elements for the service.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_156": {
+        "requirement_text": "Other mechanisms to achieve redundancy MAY be provided, but the DNS based mechanism MUST be supported by all services and clients of those services.",
+        "document_section": "3.1.18",
+        "description": "While other redundancy mechanisms are optional, all services and clients must support the DNS-based mechanism for redundancy.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_157": {
+        "requirement_text": "a JWS MUST use the Flat JSON serialization format (not JWS Compact Serialization and not General JWS JSON Serialization Syntax), and only the Edwards-curve Digital Signature Algorithm (ECDSA) with Curve448 (algorithm\"EdDSA\") [227] [228] signature method is used.",
+        "document_section": "3.1.18",
+        "description": "A JWS must use the Flat JSON serialization format. The only permitted signature method is the Edwards-curve Digital Signature Algorithm (ECDSA) with Curve448, identified by the 'EdDSA' algorithm.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_158": {
+        "requirement_text": "All SIP elements in an ESInet/NGCS MUST support multipart MIME as defined in RFC 2046 [90]",
+        "document_section": "3.1.2.4",
+        "description": "All SIP elements in an ESInet/NGCS must support multipart MIME format, as specified in RFC 2046.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_159": {
+        "requirement_text": "All SIP elements in the NGCS MUST allow all mime types/body parts to pass to the PSAP",
+        "document_section": "3.1.2.5",
+        "description": "All SIP elements within the NGCS must allow every mime type and body part to pass through to the PSAP.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_160": {
+        "requirement_text": "When location is passed by value, processing elements along the path MUST NOT change the location record.",
+        "document_section": "3.1.2.6",
+        "description": "When location information is passed directly by value, no processing element along the call path is permitted to alter the location record.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_161": {
+        "requirement_text": "NGCS that receive a location reference and forward location in SIP signaling to another element MUST pass the reference, and not any value that they determine by de- referencing (although the value should be logged).",
+        "document_section": "3.1.3.2",
+        "description": "NGCS elements receiving a location reference and forwarding it in SIP signaling must pass the reference itself, not a dereferenced value (though the dereferenced value should be logged).",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_162": {
+        "requirement_text": "All SIP user agents that place calls within the ESInet/NGCS MUST be able to set Resource-Priority.",
+        "document_section": "3.1.7",
+        "description": "All SIP user agents originating calls within the ESInet/NGCS must have the capability to set the Resource-Priority header.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_163": {
+        "requirement_text": "all SIP elements within the NGCS MUST support connection reuse, RFC 5923 [217].",
+        "document_section": "3.2",
+        "description": "All SIP elements within the NGCS must support the connection reuse mechanism defined in RFC 5923.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_164": {
+        "requirement_text": "all SIP elements MUST implement the overload control mechanisms described in RFC 7339 [56].",
+        "document_section": "3.2",
+        "description": "All SIP elements must implement the overload control mechanisms detailed in RFC 7339.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_165": {
+        "requirement_text": "All elements in an ESInet that implement SIP interfaces MUST comply with RFC 5626 [42] (Outbound) to maintain connections from User Agents.",
+        "document_section": "3.7",
+        "description": "All ESInet elements with SIP interfaces must comply with RFC 5626 (Outbound) to maintain connections from User Agents.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_166": {
+        "requirement_text": "All SIP elements MUST support routing of SIP messages per RFC 3261 [10] and RFC 3263 [13].",
+        "document_section": "5.10",
+        "description": "All SIP elements are required to support routing of SIP messages according to RFC 3261 and RFC 3263.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_167": {
+        "requirement_text": "DNS SRV records (RFC 2782) [75] MUST be consulted to determine the hostname of the SIP server for that domain.",
+        "document_section": "5.10",
+        "description": "The DNS SRV records (RFC 2782) must be queried to determine the correct hostname of the SIP server for a given domain.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_168": {
+        "requirement_text": "Entities implementing a notifier MUST implement RFC 3857 [26].",
+        "document_section": "5.10",
+        "description": "Any entity that implements a notifier function is required to implement RFC 3857.",
+        "test_id": "",
+        "subtests": []
+    },
+    "RQ_BRG_169": {
+        "requirement_text": "PSAPs, IMRs, bridges and other elements that terminate calls from entities outside an ESInet that may be behind NATs MUST implement\"Interactive Connectivity Establishment (ICE)\", RFC 8445 [44] which includes support for\"Session Traversal Utilities for NAT (STUN), RFC 5389 [83].",
+        "document_section": "5.10",
+        "description": "Elements terminating external calls behind NATs (PSAPs, IMRs, bridges) must implement Interactive Connectivity Establishment (ICE), which includes support for STUN.",
+        "test_id": "",
+        "subtests": []
+    }
+}

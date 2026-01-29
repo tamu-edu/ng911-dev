@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.3.0.3
+  Date:      20250731
+
+-->
+<scenario name="SIP_INVITE_RECEIVE">
+	<recv request="OPTIONS" optional="true"> </recv>
+	<recv request="OPTIONS" optional="true"> </recv>
+	<recv request="OPTIONS" optional="true"> </recv>
+	<recv request="OPTIONS" optional="true"> </recv>
+	<recv request="OPTIONS" optional="true"> </recv>
+	<recv request="INVITE"> </recv>
+</scenario>

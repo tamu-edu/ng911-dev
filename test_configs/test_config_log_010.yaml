@@ -1,0 +1,891 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LOG_010"
+        "preamble_list": [
+          {
+            "method_name": "prepare_jws_procedures",
+            "required_for": [ "RQ_LOG_047", ],
+            "kwargs": {
+              "list_of_procedures": [
+                "CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                "CallSignalingMessageLogEvent_example_v010.3f.3.0.1.json",
+                "CallEndLogEvent_object_example_v010.3f.3.0.1.json"
+              ],
+              "config_vars": {
+                "callId": "urn:emergency:uid:callid:0123456789qwerty:bcf.ng911.test",
+                "incidentId": "urn:emergency:uid:incidentid:0123456789qwertyuiop:bcf.ng911.test"
+              },
+              "url": "/LogEvents",
+              "expected_response_code": "201"
+            }
+          }
+        ]
+        variations:
+          - name: "Correct_IncidentIds_request"
+            description: "Validate 200 OK + JSON response for any correct request. \
+                          Send request without optional parameters"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: [ ]
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/IncidentIds"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_limit_send_string"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter (send string)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?limit=test"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_limit_send_empty"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter (send empty)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?limit="  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_limit_send_space"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter (send space)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?limit=%20"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_limit_exceed_64bit_uint"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter \
+                          (send value exceeding 64bit unsigned int)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?limit=18446744073709551616"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_limit_negative_exceed_64bit"
+            description: "Validate 4xx error response for request with incorrect 'limit' parameter \
+                          (send negative value exceeding 64bit int)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?limit=-9223372036854775809"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_start_send_string"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter (send string)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?start=test"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_start_send_empty"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter (send empty)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?start="  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_start_send_space"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter (send space)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?start=%20"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_start_exceed_64bit_uint"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter \
+                          (send value exceeding 64bit unsigned int)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?start=18446744073709551616"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_start_less_than_one"
+            description: "Validate 4xx error response for request with incorrect 'start' parameter \
+                          (send value less than 1)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?start=0"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_startTime_send_space"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter (send space)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?startTime=%20"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_startTime_bad_year"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect year '20155-08-21T12:58:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?startTime=20155-08-21T12%3A58%3A03.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_startTime_bad_month"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect month '2015-13-21T12:58:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?startTime=2015-13-21T12%3A58%3A03.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_startTime_bad_day"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect day '2015-12-32T12:58:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?startTime=2015-12-32T12%3A58%3A03.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_startTime_bad_hour"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect hour '2015-12-21T24:58:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?startTime=2015-12-21T24%3A58%3A03.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_startTime_bad_minutes"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect minutes '2015-12-21T12:60:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?startTime=2015-12-21T12%3A60%3A03.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_startTime_bad_seconds"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with incorrect seconds '2015-12-21T12:58:61.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?startTime=2015-12-21T12%3A58%3A61.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_startTime_offset_exceeded"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send with exceeded time offset '2015-12-21T12:58:03.01-13:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?startTime=2015-12-21T12%3A58%3A61.01-13%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_startTime_february_day"
+            description: "Validate 4xx error response for request with incorrect 'startTime' parameter \
+                          (send incorrect day in February '2015-02-30T12:58:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?startTime=2015-02-30T12%3A58%3A61.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_endTime_send_space"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter (send space)"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?endTime=%20"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_endTime_bad_year"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect year '20155-08-21T12:58:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?endTime=20155-08-21T12%3A58%3A03.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_endTime_bad_month"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect month '2015-13-21T12:58:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?endTime=2015-13-21T12%3A58%3A03.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_endTime_bad_day"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect day '2015-12-32T12:58:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?endTime=2015-12-32T12%3A58%3A03.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_endTime_bad_hour"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect hour '2015-12-21T24:58:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?endTime=2015-12-21T24%3A58%3A03.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_endTime_bad_minutes"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect minutes '2015-12-21T12:60:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?endTime=2015-12-21T12%3A60%3A03.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_endTime_bad_seconds"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with incorrect seconds '2015-12-21T12:58:61.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?endTime=2015-12-21T12%3A58%3A61.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_endTime_offset_exceeded"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send with exceeded time offset '2015-12-21T12:58:03.01-13:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?endTime=2015-12-21T12%3A58%3A61.01-13%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_endTime_february_day"
+            description: "Validate 4xx error response for request with incorrect 'endTime' parameter \
+                          (send incorrect day in February '2015-02-30T12:58:03.01-05:00')"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?endTime=2015-02-30T12%3A58%3A61.01-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Request_with_incorrect_area"
+            description: "Validate 4xx error response for request with incorrect 'area' parameter. \
+                          Send request with 'area' which is a string without PIDF-LO object"
+            interfaces:
+              - name: "IF_ESRP_LOG"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/IncidentIds?area=test"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+        requirements:
+          - name: "RQ_LOG_047"
+            variations: [ "Correct_IncidentIds_request" ]
+          - name: "RQ_LOG_045"
+            variations: [
+              "Request_with_incorrect_limit_send_string",
+              "Request_with_incorrect_limit_send_empty",
+              "Request_with_incorrect_limit_send_space",
+              "Request_with_incorrect_limit_exceed_64bit_uint",
+              "Request_with_incorrect_limit_negative_exceed_64bit",
+              "Request_with_incorrect_start_send_string",
+              "Request_with_incorrect_start_send_empty",
+              "Request_with_incorrect_start_send_space",
+              "Request_with_incorrect_start_exceed_64bit_uint",
+              "Request_with_incorrect_start_less_than_one",
+              "Request_with_incorrect_startTime_send_space",
+              "Request_with_incorrect_startTime_bad_year",
+              "Request_with_incorrect_startTime_bad_month",
+              "Request_with_incorrect_startTime_bad_day",
+              "Request_with_incorrect_startTime_bad_hour",
+              "Request_with_incorrect_startTime_bad_minutes",
+              "Request_with_incorrect_startTime_bad_seconds",
+              "Request_with_incorrect_startTime_offset_exceeded",
+              "Request_with_incorrect_startTime_february_day",
+              "Request_with_incorrect_endTime_send_space",
+              "Request_with_incorrect_endTime_bad_year",
+              "Request_with_incorrect_endTime_bad_month",
+              "Request_with_incorrect_endTime_bad_day",
+              "Request_with_incorrect_endTime_bad_hour",
+              "Request_with_incorrect_endTime_bad_minutes",
+              "Request_with_incorrect_endTime_bad_seconds",
+              "Request_with_incorrect_endTime_offset_exceeded",
+              "Request_with_incorrect_endTime_february_day",
+              "Request_with_incorrect_area"
+            ]

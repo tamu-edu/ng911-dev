@@ -1,0 +1,72 @@
+REQUIREMENTS_SCHEMA = {
+    "RQ_LIS_001": {
+        "requirement_text": "If the LIS supplies location by reference, it MUST also provide dereferencing service for that location URI.",
+        "document_section": "4.10",
+        "description": "If the LIS supplies location by reference, it MUST also provide the dereferencing service for that location URI.",
+        "test_id": "LIS_001",
+        "subtests": []
+    },
+    "RQ_LIS_002": {
+        "requirement_text": "If the LIS supplies location by reference, it MUST support HELD (RFC 5985) [7], HELD Dereferencing (RFC 6753) [55], and/or",
+        "document_section": "4.10",
+        "description": "If the LIS supplies location by reference, it MUST support HELD (RFC 5985), HELD Dereferencing (RFC 6753), or both.",
+        "test_id": "LIS_001",
+        "subtests": []
+    },
+    "RQ_LIS_003": {
+        "requirement_text": "LISs supporting SIP MUST support location filters (RFC 6447) [72]",
+        "document_section": "4.10",
+        "description": "LISs supporting SIP MUST support location filters (RFC 6447).",
+        "test_id": "LIS_003",
+        "subtests": []
+    },
+    "RQ_LIS_005": {
+        "requirement_text": "A LIS MUST accept credentials traceable to the PCA for authenticating queries for a location dereference. Since calls may be diverted to any available PSAP, the LIS cannot rely on any other credential source to authorize location dereferencing.",
+        "document_section": "4.10",
+        "description": "A LIS MUST accept credentials traceable to the PCA (PSAP Credentialing Agency) for authenticating queries for a location dereference.",
+        "test_id": "LIS_005",
+        "subtests": []
+    },
+    "RQ_LIS_006": {
+        "requirement_text": "..any LIS that provides a dereferencing service for a location URI MUST provide an expiration time associated with that URI set at a minimum of 30 minutes, with a maximum of 24 hours.",
+        "document_section": "4.1",
+        "description": "Any LIS providing location dereferencing must provide an expiration time for the location URI, at least 30 minutes and no more than 24 hours.",
+        "test_id": "LIS_002",
+        "subtests": []
+    },
+    "RQ_LIS_007": {
+        "requirement_text": "The NG9-1-1 system supports location included by value in the body of a SIP message, with a pointer to it (i.e., a cid URL) in the Geolocation header field (RFC 6442) [8] of the SIP message. It also supports location by reference, when a location URI is populated in the Geolocation header field. All NGCS that receive location as a PIDF-LO must be prepared to receive location by reference and to use location by reference the NGCS MUST implement SIP and HTTP Enabled Location Delivery (HELD) (RFC 5985) [7] de-referencing protocols. A Location Information Server (LIS)14 MUST implement one or both of these protocols.",
+        "document_section": "3.2",
+        "description": "The NG9-1-1 system supports location by value (PIDF-LO in body) or by reference (URI in Geolocation header). The LIS MUST implement one or both of the SIP and HELD dereferencing protocols.",
+        "test_id": "LIS_001",
+        "subtests": []
+    },
+    "RQ_LIS_008": {
+        "requirement_text": "In order for a LIS to be NG9-1-1 compliant, it MUST accept credentials traceable to the PSAP Credentialing Agency (PCA) when establishing the TLS connection as sufficient to deliver \"dispatch\" quality location.",
+        "document_section": "3.2",
+        "description": "To be NG9-1-1 compliant, a LIS MUST accept PCA-traceable credentials during the TLS connection as sufficient to deliver 'dispatch' quality location.",
+        "test_id": "LIS_005",
+        "subtests": []
+    },
+    "RQ_LIS_009": {
+        "requirement_text": "LISs supporting SIP MUST support event rate control (RFC 6446) [80].",
+        "document_section": "4.10",
+        "description": "LISs supporting SIP MUST support event rate control (RFC 6446).",
+        "test_id": "LIS_004",
+        "subtests": []
+    },
+    "RQ_LIS_010": {
+        "requirement_text": "If the LIS supplies location by reference, it MUST support [...], and/or SIP Presence Event Package (RFC 3856) [25].",
+        "document_section": "4.10",
+        "description": "If the LIS supplies location by reference, it MUST support the SIP Presence Event Package (RFC 3856).",
+        "test_id": "LIS_001",
+        "subtests": []
+    },
+    "RQ_LIS_012": {
+        "requirement_text": "The services, unless specified otherwise, MUST support HTTP/1.1 (RFC 7230) [162] and SHOULD support HTTP/2.0 (RFC 7540) [197].",
+        "document_section": "2.8.1",
+        "description": "The services, unless specified otherwise, MUST support HTTP/1.1 and SHOULD support HTTP/2.0.",
+        "test_id": "",
+        "subtests": []
+    }
+}

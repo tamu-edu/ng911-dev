@@ -1,0 +1,50 @@
+launch_config:
+  output_folder: "/results/1/"        # Base folder where run artifacts will be saved
+  global_config:
+    lab_info: "templates/lab_configs/lab__info.yaml"   # Path to lab_info YAML
+    type: "conformance"         # conformance | interoperability
+    report_files:
+      prefix: "TAMU"            # Report filename prefix
+      suffix: "test"            # Optional suffix appended to report name
+      output_folder_path: ""    # empty if you want to have reports in TS root dir or absolute path to the FOLDER
+      detailed_view: true       # true | false for detailed report content
+      types:                    # Report output formats
+        - "docx"
+        - "pdf"
+    id_summary:
+      eng_name: "Arty"          # Engineer name
+      supplier:
+        name: "Arty"
+        addr_line_1: "1"
+        addr_line_2: "2"
+        city: "Web"
+        state: "Internet"
+        country: "Earth"
+        zip: "001001"
+        url: "www"
+      test_env:
+        ts_version: "1111"         # Test suite version
+        ixit_id: "11111"           # IXIT identifier
+        test_period_start: "15.06.2025"  # Start date (dd.mm.yyyy)
+        test_period_end: "15.06.2025"    # End date (dd.mm.yyyy)
+        log_ref: "123412"          # Log reference/id
+        log_ret_date: "1234124"    # Log retention date/id
+    log:
+      level: "DEBUG"             # Logging level: DEBUG, WARNING, ERROR, CRITICAL, FATAL, INFO, NOTSET
+      output_file: "BCF_001_logger.log"  # Relative or absolute path for log file
+    comments:                    # Free-form comments
+      - author: "Lab"
+        comment: "this is test env"
+      - author: "Arty"
+        comment: "This is my own test env"
+  tests:
+    - iut:
+        type: "BCF"              # IUT type
+        name: "IUT_BCF"          # IUT name
+        version: "0.0.0.1"       # IUT version
+        test_period: "Sun 15 Jun" # Human-friendly test period
+        date_of_receipt: "15.06.2025"
+        location: "Web"
+        cs_id: "11111"           # Component/system identifier
+      lab_config: "templates/lab_configs/lab_config_bcf.yaml"  # Path to lab_config for this test
+      requirements: ["RQ_BCF_001","RQ_BCF_002","RQ_BCF_003","RQ_BCF_005","RQ_BCF_007","RQ_BCF_009","RQ_BCF_010",]
