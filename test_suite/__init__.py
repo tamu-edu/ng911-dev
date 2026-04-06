@@ -1,1 +1,1 @@
-_TS_VERSION = "1.0.1"
+_TS_VERSION = "5.0"
