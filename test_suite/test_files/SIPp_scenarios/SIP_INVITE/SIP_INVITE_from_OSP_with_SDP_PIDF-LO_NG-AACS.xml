@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+
+  Version:   010.3f.5.1.2
+  Date:      20260316
+
+-->
+<scenario name="SIP_INVITE_from_OSP_with_SDP_PIDF-LO_NG-AACS">
+  <send>
+    <![CDATA[
+      INVITE urn:service:sos SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: "NG911 Test" <sip:+12025551212@[local_ip]:[local_port]>;tag=[call_number]
+      To: urn:service:sos
+      Call-ID: [call_id]
+      Cseq: 1 INVITE
+      Contact: sip:+12025551212@[local_ip]:[local_port]
+      Max-Forwards: 70
+      Geolocation-Routing: yes
+      Geolocation: <cid:2222@ng911.example.com>
+      Call-Info: <cid:3333@ng911.example.com>;purpose=EmergencyCallData.DeviceInfo
+      Call-Info: <cid:4444@ng911.example.com>;purpose=EmergencyCallData.ProviderInfo
+      Call-Info: <cid:5555@ng911.example.com>;purpose=EmergencyCallData.ServiceInfo
+      Call-Info: <cid:6666@ng911.example.com>;purpose=EmergencyCallData.Control
+      Call-Info: <cid:7777@ng911.example.com>;purpose=EmergencyCallData.VEDS
+      Accept: application/sdp, application/pidf+xml, application/EmergencyCallData.DeviceInfo+xml, application/EmergencyCallData.ProviderInfo+xml, application/EmergencyCallData.ServiceInfo+xml, application/EmergencyCallData.Control+xml, application/EmergencyCallData.VEDS+xml
+      Content-Type: multipart/mixed; boundary=ng911-test
+      Content-Length: [len]
+
+      --ng911-test
+      Content-Type: application/sdp
+
+      v=0
+      o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+      s=-
+      t=0 0
+      c=IN IP[media_ip_type] [media_ip]
+      m=audio [media_port] RTP/AVP 0
+      a=rtpmap:0 PCMU/8000
+      a=sendrecv
+
+      --ng911-test
+      Content-Type: application/pidf+xml
+      Content-ID: <2222@ng911.example.com>
+
+      <?xml version="1.0" encoding="UTF-8"?>
+          <presence xmlns="urn:ietf:params:xml:ns:pidf"
+                    xmlns:dm="urn:ietf:params:xml:ns:pidf:data-model"
+                    xmlns:gp="urn:ietf:params:xml:ns:pidf:geopriv10"
+                    xmlns:gml="http://www.opengis.net/gml"
+                    xmlns:cl="urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr"
+                    entity="pres:SENDER@[local_ip]">
+            <dm:device id="SENDER">
+              <gp:geopriv>
+                <gp:location-info>
+                  <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
+                    <gml:pos>40.71668300756087 -73.99069756654683</gml:pos>
+                  </gml:Point>
+                </gp:location-info>
+              </gp:geopriv>
+              <dm:timestamp>2050-05-15T12:30:00Z</dm:timestamp>
+            </dm:device>
+          </presence>
+
+      --ng911-test
+      Content-Type: application/EmergencyCallData.DeviceInfo+xml
+      Content-ID: <3333@ng911.example.com>
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <dev:EmergencyCallData.DeviceInfo
+          xmlns:dev="urn:ietf:params:xml:ns:EmergencyCallData:DeviceInfo">
+          <dev:DataProviderReference>ng911test@10.140.140.201</dev:DataProviderReference>
+          <dev:DeviceClassification>fixed</dev:DeviceClassification>
+          <dev:DeviceMfgr>ng911-device</dev:DeviceMfgr>
+          <dev:DeviceModelNr>ng911-device-model</dev:DeviceModelNr>
+          <dev:UniqueDeviceID TypeOfDeviceID="IMEI">11122123
+      </dev:UniqueDeviceID>
+      </dev:EmergencyCallData.DeviceInfo>
+
+      --ng911-test
+      Content-Type: application/EmergencyCallData.ProviderInfo+xml
+      Content-ID: <4444@ng911.example.com>
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <ad:EmergencyCallData.ProviderInfo
+          xmlns:ad="urn:ietf:params:xml:ns:EmergencyCallData:ProviderInfo">
+          <ad:DataProviderReference>string0987654321@example.org
+      </ad:DataProviderReference>
+          <ad:DataProviderString>Example VoIP Provider
+      </ad:DataProviderString>
+          <ad:ProviderID>urn:nena:companyid:ID123</ad:ProviderID>
+          <ad:ProviderIDSeries>NENA</ad:ProviderIDSeries>
+          <ad:TypeOfProvider>Telecom Provider</ad:TypeOfProvider>
+          <ad:ContactURI>tel:+1-201-555-0123</ad:ContactURI>
+          <ad:Language>en</ad:Language>
+          <ad:DataProviderContact
+              xmlns="urn:ietf:params:xml:ns:vcard-4.0">
+              <vcard>
+                  <fn>
+                      <text>Hannes Tschofenig</text>
+                  </fn>
+                  <n>
+                      <surname>Hannes</surname>
+                      <given>Tschofenig</given>
+                      <additional/>
+                      <prefix/>
+                      <suffix>Dipl. Ing.</suffix>
+                  </n>
+                  <bday>
+                      <date>--0203</date>
+                  </bday>
+                  <anniversary>
+                      <date-time>20090808T1430-0500</date-time>
+                  </anniversary>
+                  <gender>
+                      <sex>M</sex>
+                  </gender>
+                  <lang>
+                      <parameters>
+                          <pref>
+                              <integer>1</integer>
+                          </pref>
+                      </parameters>
+                      <language-tag>de</language-tag>
+                  </lang>
+                  <lang>
+                      <parameters>
+                          <pref>
+                              <integer>2</integer>
+                          </pref>
+                      </parameters>
+                      <language-tag>en</language-tag>
+                  </lang>
+                  <org>
+                      <parameters>
+                          <type>
+                              <text>work</text>
+                          </type>
+                      </parameters>
+                      <text>Example VoIP Provider</text>
+                  </org>
+                  <adr>
+                      <parameters>
+                          <type>
+                              <text>work</text>
+                          </type>
+                          <label>
+                              <text>Hannes Tschofenig
+      Linnoitustie 6
+      Espoo , Finland
+      02600</text>
+                          </label>
+                      </parameters>
+                      <pobox/>
+                      <ext/>
+                      <street>Linnoitustie 6</street>
+                      <locality>Espoo</locality>
+                      <region>Uusimaa</region>
+                      <code>02600</code>
+                      <country>Finland</country>
+                  </adr>
+                  <tel>
+                      <parameters>
+                          <type>
+                              <text>work</text>
+                              <text>voice</text>
+                          </type>
+                      </parameters>
+                      <uri>tel:+358 50 4871445</uri>
+                  </tel>
+                  <tel>
+                      <parameters>
+                          <type>
+                              <text>work</text>
+                              <text>main-number</text>
+                              <text>voice</text>
+                          </type>
+                      </parameters>
+                      <uri>tel:+358 50 5050505</uri>
+                  </tel>
+                  <email>
+                      <parameters>
+                          <type>
+                              <text>work</text>
+                          </type>
+                      </parameters>
+                      <text>hannes.tschofenig@nsn.com</text>
+                  </email>
+                  <geo>
+                      <parameters>
+                          <type>
+                              <text>work</text>
+                          </type>
+                      </parameters>
+                      <uri>geo:60.210796,24.812924</uri>
+                  </geo>
+                  <key>
+                      <parameters>
+                          <type>
+                              <text>home</text>
+                          </type>
+                      </parameters>
+                      <uri>
+      http://www.example.com/key.asc
+      </uri>
+                  </key>
+                  <tz>
+                      <text>Finland/Helsinki</text>
+                  </tz>
+                  <url>
+                      <parameters>
+                          <type>
+                              <text>home</text>
+                          </type>
+                      </parameters>
+                      <uri>http://www.tschofenig.priv.at</uri>
+                  </url>
+              </vcard>
+          </ad:DataProviderContact>
+      </ad:EmergencyCallData.ProviderInfo>
+
+      --ng911-test
+      Content-Type: application/EmergencyCallData.ServiceInfo+xml
+      Content-ID: <5555@ng911.example.com>
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <svc:EmergencyCallData.ServiceInfo
+          xmlns:svc="urn:ietf:params:xml:ns:EmergencyCallData:ServiceInfo">
+          <svc:DataProviderReference>2468.IBOC.MLTS.1359@example.org
+      </svc:DataProviderReference>
+          <svc:ServiceEnvironment>Business</svc:ServiceEnvironment>
+          <svc:ServiceType>MLTS-hosted</svc:ServiceType>
+          <svc:ServiceMobility>Fixed</svc:ServiceMobility>
+      </svc:EmergencyCallData.ServiceInfo>
+
+      --ng911-test
+      Content-Type: application/EmergencyCallData.Control+xml
+      Content-ID: <6666@ng911.example.com>
+      Content-Disposition: by-reference
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <EmergencyCallData.Control
+          xmlns="urn:ietf:params:xml:ns:EmergencyCallData:control">
+          <capabilities>
+              <request action="send-data" supported-values="eCall.MSD"/>
+          </capabilities>
+      </EmergencyCallData.Control>
+
+      --ng911-test
+      Content-Type: application/EmergencyCallData.VEDS+xml
+      Content-ID: <7777@ng911.example.com>
+      Content-Disposition: by-reference
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <AutomatedCrashNotification
+          xmlns="http://www.veds.org/acn/1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <Crash>
+              <CrashVehicle>
+                  <ItemMakeName
+                      xmlns="http://niem.gov/niem/niem-core/2.0">
+      Saab
+
+                  </ItemMakeName>
+                  <ItemModelName
+                      xmlns="http://niem.gov/niem/niem-core/2.0">
+      9-5
+
+                  </ItemModelName>
+                  <ItemModelYearDate
+                      xmlns="http://niem.gov/niem/niem-core/2.0">
+      2015
+
+                  </ItemModelYearDate>
+                  <Airbag>
+                      <AirbagCategoryCode>FRONT</AirbagCategoryCode>
+                      <AirbagDeployedIndicator>true
+      </AirbagDeployedIndicator>
+                  </Airbag>
+                  <ConvertibleIndicator>false</ConvertibleIndicator>
+                  <PowerSourceCategoryCode>MAIN</PowerSourceCategoryCode>
+                  <VehicleBodyCategoryCode
+                      xmlns="http://niem.gov/niem/domains/jxdm/4.1">
+      101
+
+                  </VehicleBodyCategoryCode>
+                  <VehicleCrashPulse>
+                      <CrashPulseChangeInVelocityMeasure>
+                          <MeasurePointValue
+                              xmlns="http://niem.gov/niem/niem-core/2.0">
+      100
+
+                          </MeasurePointValue>
+                          <MeasureUnitText
+                              xmlns="http://niem.gov/niem/niem-core/2.0">
+      MPH
+                          </MeasureUnitText>
+                      </CrashPulseChangeInVelocityMeasure>
+                      <CrashPulsePrincipalDirectionOfForceValue>12
+      </CrashPulsePrincipalDirectionOfForceValue>
+                      <CrashPulseRolloverQuarterTurnsValue>1
+      </CrashPulseRolloverQuarterTurnsValue>
+                  </VehicleCrashPulse>
+                  <VehicleRollbarDeployedIndicator>false
+      </VehicleRollbarDeployedIndicator>
+                  <VehicleSeat>
+                      <VehicleSeatLocationCategoryCode>1
+      </VehicleSeatLocationCategoryCode>
+                      <VehicleSeatOccupiedIndicator>true
+      </VehicleSeatOccupiedIndicator>
+                      <VehicleSeatbeltFastenedIndicator>true
+      </VehicleSeatbeltFastenedIndicator>
+                      <VehicleSeatbeltMonitoredIndicator>true
+      </VehicleSeatbeltMonitoredIndicator>
+                  </VehicleSeat>
+                  <VehicleUnladenWeightMeasure
+                      xmlns="http://niem.gov/niem/niem-core/2.0">
+                      <MeasurePointValue
+                          xmlns="http://niem.gov/niem/niem-core/2.0">
+      600
+
+                      </MeasurePointValue>
+                      <MeasureUnitText
+                          xmlns="http://niem.gov/niem/niem-core/2.0">
+      kilogram
+
+                      </MeasureUnitText>
+                  </VehicleUnladenWeightMeasure>
+              </CrashVehicle>
+              <FuelLeakingIndicator>true</FuelLeakingIndicator>
+              <MultipleImpactsIndicator>false</MultipleImpactsIndicator>
+              <SevereInjuryIndicator>true</SevereInjuryIndicator>
+              <VehicleFinalRestOrientationCategoryCode>Driver
+      </VehicleFinalRestOrientationCategoryCode>
+              <VehicleFireIndicator>false</VehicleFireIndicator>
+          </Crash>
+      </AutomatedCrashNotification>
+
+      --ng911-test--
+
+    ]]>
+  </send>
+
+  <recv response="100" optional="true"></recv>
+  <recv response="180" optional="true"></recv>
+  <recv response="183" optional="true"></recv>
+  <recv response="200"></recv>
+
+  <send>
+    <![CDATA[
+      ACK urn:service:sos SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: "NG911 Test" <sip:+12025551212@[local_ip]:[local_port]>;tag=[call_number]
+      To: urn:service:sos[peer_tag_param]
+      Call-ID: [call_id]
+      Cseq: 1 ACK
+      Contact: sip:+12025551212@[local_ip]:[local_port]
+      Content-Length: 0
+    ]]>
+  </send>
+
+  <pause milliseconds="2000"/>
+
+  <send>
+    <![CDATA[
+      BYE urn:service:sos SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: "NG911 Test" <sip:+12025551212@[local_ip]:[local_port]>;tag=[call_number]
+      To: urn:service:sos[peer_tag_param]
+      Call-ID: [call_id]
+      Cseq: 2 BYE
+      Content-Length: 0
+    ]]>
+  </send>
+  <recv response="100" optional="true"></recv>
+  <recv response="180" optional="true"></recv>
+  <recv response="183" optional="true"></recv>
+  <recv response="200" optional="true"></recv>
+  <recv response="487" optional="true"></recv>
+  <recv response="999" timeout="30000"></recv>
+</scenario>

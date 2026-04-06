@@ -1,0 +1,327 @@
+test_config:
+  conformance:
+    tests:
+      - name: "PS_001"
+        variations:
+          - name: "Policy_PCA_signed_by_the_owner"
+            description: "Validate 201 Policy Successfully Created response for HTTP POST with PCA-signed JWS JSON 
+                          containing policy"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        extract_field: "pca_certificate_file"
+                      save_result_as: "var.pca_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        extract_field: "pca_certificate_key"
+                      save_result_as: "var.pca_certificate_key"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_file"
+                      save_result_as: "var.esrp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_key"
+                      save_result_as: "var.esrp_certificate_key"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "interfaces"
+                      save_result_as: "var.esrp_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.esrp_interfaces"
+                        where_field: "name"
+                        where_value: "IF_ESRP_PS"
+                        extract_field: "fqdn"
+                      save_result_as: "var.esrp_fqdn"
+                    - method_name: "generate_pca_signed_certificate"
+                      kwargs:
+                        pca_cert_file: "var.pca_certificate_file"
+                        pca_cert_key: "var.pca_certificate_key"
+                        output_cert_cn: "var.esrp_fqdn"
+                        output_cert_file: "file./tmp/PS_001/esrp_pca_signed.crt"
+                        output_key_file: "file./tmp/PS_001/esrp_pca_signed.key"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/policy_object/Policy_object_example_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "var.esrp_fqdn"
+                        output_file: "file./tmp/PS_001/policy_object.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "/tmp/PS_001/policy_object.json"
+                        cert_path: "/tmp/PS_001/esrp_pca_signed.crt"
+                        key_path: "/tmp/PS_001/esrp_pca_signed.key"
+                        output_file: "file./tmp/jws_body_http_post"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body_http_post"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_PS"
+                  dst_interface: "IF_PS_ESRP"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "POST" #  leave empty if not needed
+                  response_status_code: "201" #  leave empty if not needed
+                  header_contains: "/Policies"
+                  body_contains: ""
+          - name: "Policy_signed_by_the_owner"
+            description: "Validate 4xx error response for HTTP POST with JWS JSON containing policy which is not 
+                          PCA-signed"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_file"
+                      save_result_as: "var.esrp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_key"
+                      save_result_as: "var.esrp_certificate_key"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "interfaces"
+                      save_result_as: "var.esrp_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.esrp_interfaces"
+                        where_field: "name"
+                        where_value: "IF_ESRP_PS"
+                        extract_field: "fqdn"
+                      save_result_as: "var.esrp_fqdn"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/policy_object/Policy_object_example_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "var.esrp_fqdn"
+                        output_file: "file./tmp/PS_001/policy_object.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "/tmp/PS_001/policy_object.json"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        output_file: "file./tmp/jws_body_http_post"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body_http_post"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_PS"
+                  dst_interface: "IF_PS_ESRP"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "POST" #  leave empty if not needed
+                  response_status_code: "4xx" #  leave empty if not needed
+                  header_contains: "/Policies"
+                  body_contains: ""
+          - name: "Policy_not_signed"
+            description: "Validate 4xx error response for HTTP POST with JWS JSON containing policy which is not signed"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "interfaces"
+                      save_result_as: "var.esrp_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.esrp_interfaces"
+                        where_field: "name"
+                        where_value: "IF_ESRP_PS"
+                        extract_field: "fqdn"
+                      save_result_as: "var.esrp_fqdn"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/policy_object/Policy_object_example_v010.3f.3.0.1.json"
+                        param_name: "policyOwner"
+                        value: "var.esrp_fqdn"
+                        output_file: "file./tmp/PS_001/policy_object.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "/tmp/PS_001/policy_object.json"
+                        output_file: "file./tmp/jws_body_http_post"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body_http_post"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_PS"
+                  dst_interface: "IF_PS_ESRP"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "POST" #  leave empty if not needed
+                  response_status_code: "4xx" #  leave empty if not needed
+                  header_contains: "/Policies"
+                  body_contains: ""
+          - name: "Policy_PCA_signed_different_owner"
+            description: "Validate 4xx error response for HTTP POST with JWS JSON containing policy which is not signed 
+                          by the policy owner"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        extract_field: "pca_certificate_file"
+                      save_result_as: "var.pca_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        extract_field: "pca_certificate_key"
+                      save_result_as: "var.pca_certificate_key"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_file"
+                      save_result_as: "var.esrp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_key"
+                      save_result_as: "var.esrp_certificate_key"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "interfaces"
+                      save_result_as: "var.esrp_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.esrp_interfaces"
+                        where_field: "name"
+                        where_value: "IF_ESRP_PS"
+                        extract_field: "fqdn"
+                      save_result_as: "var.esrp_fqdn"
+                    - method_name: "generate_pca_signed_certificate"
+                      kwargs:
+                        pca_cert_file: "var.pca_certificate_file"
+                        pca_cert_key: "var.pca_certificate_key"
+                        output_cert_cn: "var.esrp_fqdn"
+                        output_cert_file: "file./tmp/PS_001/esrp_pca_signed.crt"
+                        output_key_file: "file./tmp/PS_001/esrp_pca_signed.key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file.test_suite/test_files/JSON/policy_object/Policy_object_example_v010.3f.3.0.1.json"
+                        cert_path: "/tmp/PS_001/esrp_pca_signed.crt"
+                        key_path: "/tmp/PS_001/esrp_pca_signed.key"
+                        output_file: "file./tmp/jws_body_http_post"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body_http_post"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_PS"
+                  dst_interface: "IF_PS_ESRP"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "POST" #  leave empty if not needed
+                  response_status_code: "4xx" #  leave empty if not needed
+                  header_contains: "/Policies"
+                  body_contains: ""
+          - name: "Incorrect_JWS"
+            description: "Validate 4xx error response for HTTP POST with incorrect JWS JSON"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file.test_suite/test_files/JSON/policy_object/Incorrect_JWS_Policy_object_example_v010.3f.5.0.0.json"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_PS"
+                  dst_interface: "IF_PS_ESRP"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "POST" #  leave empty if not needed
+                  response_status_code: "4xx" #  leave empty if not needed
+                  header_contains: "/Policies"
+                  body_contains: ""
+        requirements:
+          - name: "RQ_PS_004"
+            variations: [
+              "Policy_not_signed",
+              "Policy_PCA_signed_different_owner"
+            ]
+          - name: "RQ_PS_006"
+            variations: ["Incorrect_JWS"]
+          - name: "RQ_PS_028"
+            variations: ["all"]
+          - name: "RQ_PS_008"
+            variations: ["Policy_signed_by_the_owner"]

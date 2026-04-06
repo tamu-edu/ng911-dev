@@ -1,0 +1,216 @@
+test_config:
+  conformance:
+    tests:
+      - name: "BRIDGE_004"
+        variations:
+          - name: "Logging_the_call_status"
+            description: "Test BRIDGE logging of CallStartLogEvent, CallEndLogEvent and CallSignallingMessageLogEvent"
+            interfaces:
+              - name: "IF_ESRP_CHFE"
+                port_names: []
+              - name: "IF_CHFE_ESRP"
+                port_names: []
+              - name: "IF_CHFE_TS-CA"
+                port_names: []
+              - name: "IF_TS-CA_CHFE"
+                port_names: []
+              - name: "IF_BRIDGE_CHFE"
+                port_names: []
+              - name: "IF_CHFE_BRIDGE"
+                port_names: []
+              - name: "IF_BRIDGE_LOG"
+                port_names: []
+              - name: "IF_LOG_BRIDGE"
+                port_names: []
+
+            params:
+              messages:
+                # Test System Logging Service
+                - action: "receive"
+                  if_name: "IF_LOG_BRIDGE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "lab_config['lab_config']['entities']",
+                             where_field: "name",
+                             where_value: "LOG",
+                             extract_field: 'interfaces'
+                      }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "var.log_interfaces",
+                             where_field: "name",
+                             where_value: "IF_LOG_BRIDGE",
+                             extract_field: 'fqdn'
+                      }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                             identifier_type: "logid",
+                             fqdn: "var.log_fqdn"
+                      }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/bridge_004/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/bridge_004/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/bridge_004/logeventid.json"
+                  type: "HTTP"
+                  method: ["POST", "GET"]
+                  response_code: ["201", "200"]
+                  http_url: ["/LogEvents", "/Versions"] # part after f.e. http://IP:PORT
+                  body: ["file./tmp/bridge_004/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json"]
+                  sipp_scenario: {}
+                  run_in_background: "True"
+
+                # Test System CHFE
+                - action: "receive"
+                  if_name: "IF_CHFE_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_TS-CA_CHFE"
+                      "save_result_as": "var.IF_TS-CA_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_BRIDGE"
+                      "save_result_as": "var.IF_CHFE_BRIDGE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BRIDGE_CHFE"
+                      "save_result_as": "var.IF_BRIDGE_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_CHFE"
+                      "save_result_as": "var.IF_ESRP_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_ESRP"
+                      "save_result_as": "var.IF_CHFE_ESRP"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHFE"
+                        extract_field: "api"
+                      "save_result_as": "var.api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.api"
+                        extract_field: "tel_number"
+                      "save_result_as": "var.CHFE_tel"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/BRIDGE_004/CHFE_BRIDGE_004.xml",
+                    kwargs: {
+                      set: {
+                             CHFE_tel: "var.CHFE_tel",
+                             IF_TS-CA_CHFE: "var.IF_TS-CA_CHFE",
+                             IF_BRIDGE_CHFE: "var.IF_BRIDGE_CHFE",
+                             IF_CHFE_BRIDGE: "var.IF_CHFE_BRIDGE",
+                             IF_ESRP_CHFE: "var.IF_ESRP_CHFE",
+                             IF_CHFE_ESRP: "var.IF_CHFE_ESRP"
+                      }
+                    },
+                    save_response_as: "CHFE_BRIDGE_004_response.log",
+                    save_log_as: "CHFE_BRIDGE_004.log"
+                  }
+                  run_in_background: "True"
+
+                  # Test System ESRP
+                - action: "send"
+                  if_name: "IF_ESRP_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_CHFE"
+                      "save_result_as": "var.IF_ESRP_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_ESRP"
+                      "save_result_as": "var.IF_CHFE_ESRP"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHFE"
+                        extract_field: "api"
+                      "save_result_as": "var.api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.api"
+                        extract_field: "tel_number"
+                      "save_result_as": "var.CHFE_tel"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/BRIDGE_004/ESRP_BRIDGE_004.xml",
+                    kwargs: {
+                      set: {
+                             CHFE_tel: "var.CHFE_tel",
+                             IF_ESRP_CHFE: "var.IF_ESRP_CHFE",
+                             IF_CHFE_ESRP: "var.IF_CHFE_ESRP"
+                      }
+                    },
+                    save_response_as: "ESRP_BRIDGE_004_response.log",
+                    save_log_as: "ESRP_BRIDGE_004.log"
+                  }
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_CHFE"
+                  dst_interface: "IF_CHFE_ESRP"
+                  sip_method: "INVITE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_CHFE_TS-CA"
+                  dst_interface: "IF_TS-CA_CHFE"
+                  sip_method: "INVITE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "302" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_CHFE_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE"
+                  sip_method: "INVITE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_BRIDGE_LOG"
+                  dst_interface: "IF_LOG_BRIDGE"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "POST" #  leave empty if not needed
+                  response_status_code: "201" #  leave empty if not needed
+                  header_contains: "/LogEvents"
+                  body_contains: ""
+        requirements:
+          - name: "RQ_BRG_092"
+            variations: ["all"]
+          - name: "RQ_BRG_100"
+            variations: ["all"]
+          - name: "RQ_BRG_101"
+            variations: ["all"]
+          - name: "RQ_BRG_102"
+            variations: ["all"]

@@ -1,0 +1,4 @@
+#50 users with default Resource-Priority which SIPp will read sequentially
+#CSV file need to be passed with parameter '-inf filename'
+SEQUENTIAL,PRINTF=50
+sender%02d;esnet.1

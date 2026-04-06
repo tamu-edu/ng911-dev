@@ -1,0 +1,41 @@
+test_config:
+  test_case_name: "TC_PS_009"
+  global:
+    response_timeout: 30
+  report_files:
+    - type: "xml"
+      path: "TC_PS_009_CTR.xml"
+  log:
+    level: "DEBUG"
+    output_file: "test_files/logs/logger.log"
+  scenarios:
+    - name: "TC_PS_009_pass"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/PS_009/TC_PS_009_pass.pcap"
+      tests:
+        - name: "PS_009 variation 1"
+          test_id: "PS_009"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_FE_TS"
+            dst_interface: "IF_TS_FE"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+            header_contains: "/Versions"
+            body_contains: ""
+    - name: "TC_PS_009_fail"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/PS_009/TC_PS_009_fail.pcap"
+      tests:
+        - name: "PS_009 variation 1"
+          test_id: "PS_009"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_FE_TS"
+            dst_interface: "IF_TS_FE"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            response_status_code: "" #  leave empty if not needed
+            header_contains: "/Versions"
+            body_contains: ""

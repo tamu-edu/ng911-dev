@@ -1,0 +1,14 @@
+POST LOCATION_URI HTTP/1.1
+Host: LIS_FQDN:PORT
+Content-Type: application/held+xml
+Content-Length: 87
+Test-File-Version: 010.3d.2.0.2
+Test-File-Date: 20241009
+
+<?xml version="1.0" ?>
+<held:locationRequest xmlns:held="urn:ietf:params:xml:ns:geopriv:held">  
+  <held:locationType exact="false">locationURI</held:locationType>  
+    <device xmlns="urn:ietf:params:xml:ns:geopriv:held:id">  
+      <uri>tel:DEVICE_URI</uri>  
+    </device>  
+</held:locationRequest>

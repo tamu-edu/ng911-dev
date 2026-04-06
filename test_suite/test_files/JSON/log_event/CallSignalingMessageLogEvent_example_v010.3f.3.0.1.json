@@ -1,0 +1,13 @@
+{
+  "logEventType": "CallSignalingMessageLogEvent",
+  "timestamp": "2025-03-10T10:00:00Z",
+  "elementId": "bcf.ng911.test",
+  "agencyId": "ng911.test",
+  "direction": "incoming",
+  "protocol": "SIP",
+  "callId": "urn:emergency:uid:callid:123456789qwerty:bcf.ng911.test",
+  "incidentId": "urn:emergency:uid:incidentid:123456789qwerty:bcf.ng911.test",
+  "callIdSIP": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6@osp.test",
+  "ipAddressPort": "192.168.64.15:5061",
+  "text": "INVITE sip:esrp@127.0.0.1 SIP/2.0\r\nVia: SIP/2.0/TLS 192.168.64.10:5060;branch=z9hG4bK74bf9\r\nMax-Forwards: 70\r\nFrom: <sip:+15551234567@osp.test>;tag=1928301774\r\nTo: <urn:service:sos>\r\nCall-ID: f81d4fae-7dec-11d0-a765-00a0c91e6bf6@osp.test\r\nCSeq: 314159 INVITE\r\nContact: <sip:+15551234567@192.168.64.10:5060;transport=tls>\r\nContent-Type: application/sdp\r\nContent-Length: 147\r\n\r\nv=0\r\no=- 20518 0 IN IP4 192.168.64.10\r\ns=Emergency Call\r\nc=IN IP4 192.168.64.10\r\nt=0 0\r\nm=audio 49170 RTP/AVP 0\r\na=rtpmap:0 PCMU/8000\r\n"
+}

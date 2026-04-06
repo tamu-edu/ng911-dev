@@ -1,0 +1,922 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LOG_008"
+        variations:
+          - name: "Correct_certificate_chain_provided_by_value"
+            description: "Validate 201 Created response for CallStartLogEvent request with correct certificate chain
+                          provided by value"
+            interfaces:
+              - name: "IF_ESRP_LOG-read"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']",
+                        extract_field: "pca_certificate_file",
+                      },
+                      "save_result_as": "var.pca_certificate_file"
+                    },
+                    {
+                      method_name: "build_certificate_chain",
+                        kwargs: {
+                                  cert_filenames: "list.[var.esrp_certificate_file, var.pca_certificate_file]",
+                                  output_filename: "/tmp/log_008/cert_chain.pem"
+                        },
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        cert_path: "/tmp/log_008/cert_chain.pem",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "/tmp/log_008/var1_jws.json"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/log_008/var1_jws.json"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "201" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Correct_certificate_chain_provided_by_reference"
+            description: "Validate 201 Created response for CallStartLogEvent request with correct certificate chain
+                          provided by reference"
+            interfaces:
+              - name: "IF_ESRP_LOG-read"
+                port_names: []
+              - name: "IF_LIS_LOG"
+                port_names: ["IF_LIS_LOG_HTTP_8443_TLSv1.3"]
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_LIS_LOG"
+                  if_port_name: "IF_LIS_LOG_HTTP_8443_TLSv1.3"  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']",
+                        extract_field: "pca_certificate_file",
+                      },
+                      "save_result_as": "var.pca_certificate_file"
+                    },
+                    {
+                      method_name: "build_certificate_chain",
+                        kwargs: {
+                                  cert_filenames: "list.[var.esrp_certificate_file, var.pca_certificate_file]",
+                                  output_filename: "/tmp/log_008/cert_chain.pem"
+                        },
+                    },
+                  ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: "file./tmp/log_008/cert_chain.pem"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']",
+                        extract_field: "pca_certificate_file",
+                      },
+                      "save_result_as": "var.pca_certificate_file"
+                    },
+                    {
+                      method_name: "build_certificate_chain",
+                        kwargs: {
+                                  cert_filenames: "list.[var.esrp_certificate_file, var.pca_certificate_file]",
+                                  output_filename: "/tmp/log_008/cert_chain.pem"
+                        },
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "LIS",
+                            extract_field: "interfaces"
+                        },
+                        "save_result_as": "var.lis_interfaces"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_interfaces",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG",
+                            extract_field: "fqdn"
+                        },
+                        "save_result_as": "var.lis_fqdn"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_interfaces",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG",
+                            extract_field: "ip"
+                        },
+                        "save_result_as": "var.lis_ip"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_interfaces",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG",
+                            extract_field: "port_mapping"
+                        },
+                        "save_result_as": "var.lis_port_mapping"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_port_mapping",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG_HTTP_8443_TLSv1.3",
+                            extract_field: "port"
+                        },
+                        "save_result_as": "var.lis_port"
+                    },
+                    {
+                      method_name: "generate_url",
+                        kwargs: {
+                          protocol: "https",
+                            address: "list.[var.lis_fqdn, var.lis_ip]",
+                            port: "var.lis_port",
+                            url_prefix: "var.lis_url",
+                            path: "/cert_chain.pem"
+                        },
+                      save_result_as: "var.lis_url"
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        cert_path: "/tmp/log_008/cert_chain.pem",
+                        key_path: "var.esrp_certificate_key",
+                        cert_url: "var.lis_url",
+                        output_file: "/tmp/log_008/var2_jws.json",
+                        disable_cert_url_checks: True
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/log_008/var2_jws.json"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "201" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_LOG_LIS"
+                dst_interface: "IF_LIS_LOG"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+          - name: "Incorrect_certificate_provided_by_value"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect certificate 
+                          provided by value"
+            interfaces:
+              - name: "IF_ESRP_LOG-read"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']",
+                        extract_field: "pca_certificate_file",
+                      },
+                      "save_result_as": "var.pca_certificate_file"
+                    },
+                    {
+                      method_name: "build_certificate_chain",
+                        kwargs: {
+                                  cert_filenames: "list.[var.esrp_certificate_file, var.pca_certificate_file]",
+                                  output_filename: "/tmp/log_008/cert_chain.pem"
+                        },
+                    },
+                    {
+                      method_name: "get_file_string_content",
+                        kwargs: {
+                                  path: "var.esrp_certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate"
+                    },
+                    {
+                      method_name: "get_first_certificate_body",
+                      kwargs: {
+                        cert: "var.esrp_certificate"
+                      },
+                      save_result_as: "var.esrp_certificate"
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        cert_path: "/tmp/log_008/cert_chain.pem",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "/tmp/log_008/var3_jws.json"
+                      }
+                    },
+                    {
+                      method_name: "replace_string_in_jws_json",
+                      kwargs: {
+                          json_input_file: "file./tmp/log_008/var3_jws.json",
+                          param_name: "protected",
+                          replace_from: "var.esrp_certificate",
+                          replace_to: "test_cert_fail",
+                          output_file: "file./tmp/log_008/var3_jws.json"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/log_008/var3_jws.json"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Incorrect_certificate_chain_provided_by_value"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect certificate 
+                          chain provided by value"
+            interfaces:
+              - name: "IF_ESRP_LOG-read"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']",
+                        extract_field: "pca_certificate_file",
+                      },
+                      "save_result_as": "var.pca_certificate_file"
+                    },
+                    {
+                      method_name: "build_certificate_chain",
+                        kwargs: {
+                                  cert_filenames: "list.[var.esrp_certificate_file, var.pca_certificate_file]",
+                                  output_filename: "/tmp/log_008/cert_chain.pem"
+                        },
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        cert_path: "/tmp/log_008/cert_chain.pem",
+                        key_path: "var.esrp_certificate_key",
+                        output_file: "/tmp/log_008/var4_jws.json"
+                      }
+                    },
+                    {
+                      method_name: "get_file_string_content",
+                        kwargs: {
+                                  path: "var.pca_certificate_file"
+                        },
+                        "save_result_as": "var.pca_certificate"
+                    },
+                    {
+                      method_name: "get_first_certificate_body",
+                      kwargs: {
+                        cert: "var.pca_certificate"
+                      },
+                      save_result_as: "var.pca_certificate"
+                    },
+                    {
+                      method_name: "replace_string_in_jws_json",
+                      kwargs: {
+                          json_input_file: "file./tmp/log_008/var4_jws.json",
+                          param_name: "protected",
+                          replace_from: "var.pca_certificate",
+                          replace_to: "test_cert_chain_fail",
+                          output_file: "file./tmp/log_008/var4_jws.json"
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/log_008/var4_jws.json"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+          - name: "Incorrect_certificate_reference"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect certificate 
+                          reference"
+            interfaces:
+              - name: "IF_ESRP_LOG-read"
+                port_names: []
+              - name: "IF_LIS_LOG"
+                port_names: ["IF_LIS_LOG_HTTP_8443_TLSv1.3"]
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_LIS_LOG"
+                  if_port_name: "IF_LIS_LOG_HTTP_8443_TLSv1.3"  # Optional
+                  prep_steps: [
+                    {
+                      "method_name": "generate_random_certificate",
+                      "kwargs": {
+                        output_certificate_file: "file./tmp/temp.crt",
+                        output_key_file: "file./tmp/temp.key"
+                      }
+                    },
+                  ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: "file./tmp/temp.crt"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']",
+                        extract_field: "pca_certificate_file",
+                      },
+                      "save_result_as": "var.pca_certificate_file"
+                    },
+                    {
+                      method_name: "build_certificate_chain",
+                        kwargs: {
+                                  cert_filenames: "list.[var.esrp_certificate_file, var.pca_certificate_file]",
+                                  output_filename: "/tmp/log_008/cert_chain.pem"
+                        },
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        cert_path: "/tmp/log_008/cert_chain.pem",
+                        key_path: "var.esrp_certificate_key",
+                        cert_url: "https://test.incorrect.example.123.com",
+                        output_file: "/tmp/log_008/var5_jws.json",
+                        disable_cert_url_checks: True
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/log_008/var5_jws.json"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_LOG_LIS"
+                dst_interface: "IF_LIS_LOG"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+          - name: "Incorrect_certificate_provided_by_reference"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect certificate 
+                          provided by reference"
+            interfaces:
+              - name: "IF_ESRP_LOG-read"
+                port_names: []
+              - name: "IF_LIS_LOG"
+                port_names: ["IF_LIS_LOG_HTTP_8443_TLSv1.3"]
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_LIS_LOG"
+                  if_port_name: "IF_LIS_LOG_HTTP_8443_TLSv1.3"  # Optional
+                  prep_steps: [
+                    {
+                      "method_name": "generate_random_certificate",
+                      "kwargs": {
+                        output_certificate_file: "file./tmp/temp.crt",
+                        output_key_file: "file./tmp/temp.key"
+                      }
+                    },
+                  ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: "file./tmp/temp.crt"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']",
+                        extract_field: "pca_certificate_file",
+                      },
+                      "save_result_as": "var.pca_certificate_file"
+                    },
+                    {
+                      method_name: "build_certificate_chain",
+                        kwargs: {
+                                  cert_filenames: "list.[var.esrp_certificate_file, var.pca_certificate_file]",
+                                  output_filename: "/tmp/log_008/cert_chain.pem"
+                        },
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "LIS",
+                            extract_field: "interfaces"
+                        },
+                        "save_result_as": "var.lis_interfaces"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_interfaces",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG",
+                            extract_field: "fqdn"
+                        },
+                        "save_result_as": "var.lis_fqdn"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_interfaces",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG",
+                            extract_field: "ip"
+                        },
+                        "save_result_as": "var.lis_ip"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_interfaces",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG",
+                            extract_field: "port_mapping"
+                        },
+                        "save_result_as": "var.lis_port_mapping"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_port_mapping",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG_HTTP_8443_TLSv1.3",
+                            extract_field: "port"
+                        },
+                        "save_result_as": "var.lis_port"
+                    },
+                    {
+                      method_name: "generate_url",
+                        kwargs: {
+                          protocol: "https",
+                            address: "list.[var.lis_fqdn, var.lis_ip]",
+                            port: "var.lis_port",
+                            url_prefix: "var.lis_url",
+                            path: "/temp.crt"
+                        },
+                      save_result_as: "var.lis_url"
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        cert_path: "/tmp/log_008/cert_chain.pem",
+                        key_path: "var.esrp_certificate_key",
+                        cert_url: "var.lis_url",
+                        output_file: "/tmp/log_008/var6_jws.json",
+                        disable_cert_url_checks: True
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/log_008/var6_jws.json"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_LOG_LIS"
+                dst_interface: "IF_LIS_LOG"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+          - name: "Incorrect_certificate_chain_provided_by_reference"
+            description: "Validate 4xx error response for CallStartLogEvent request with incorrect certificate chain 
+                          provided by reference"
+            interfaces:
+              - name: "IF_ESRP_LOG-read"
+                port_names: []
+              - name: "IF_LIS_LOG"
+                port_names: ["IF_LIS_LOG_HTTP_8443_TLSv1.3"]
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_LIS_LOG"
+                  if_port_name: "IF_LIS_LOG_HTTP_8443_TLSv1.3"  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "build_certificate_chain",
+                        kwargs: {
+                                  cert_filenames: "list.[var.esrp_certificate_file, var.pca_certificate_file]",
+                                  output_filename: "/tmp/log_008/cert_chain.pem"
+                        },
+                    },
+                  ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: "file./tmp/log_008/cert_chain.pem"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps: [
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "ESRP",
+                            extract_field: "certificate_file"
+                        },
+                        "save_result_as": "var.esrp_certificate_file"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "ESRP",
+                        extract_field: "certificate_key",
+                      },
+                      "save_result_as": "var.esrp_certificate_key"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                      kwargs: {
+                        config_part: "lab_config['lab_config']",
+                        extract_field: "pca_certificate_file",
+                      },
+                      "save_result_as": "var.pca_certificate_file"
+                    },
+                    {
+                      method_name: "build_certificate_chain",
+                        kwargs: {
+                                  cert_filenames: "list.[var.esrp_certificate_file, var.pca_certificate_file]",
+                                  output_filename: "/tmp/log_008/cert_chain.pem"
+                        },
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "lab_config['lab_config']['entities']",
+                            where_field: "name",
+                            where_value: "LIS",
+                            extract_field: "interfaces"
+                        },
+                        "save_result_as": "var.lis_interfaces"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_interfaces",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG",
+                            extract_field: "fqdn"
+                        },
+                        "save_result_as": "var.lis_fqdn"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_interfaces",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG",
+                            extract_field: "ip"
+                        },
+                        "save_result_as": "var.lis_ip"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_interfaces",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG",
+                            extract_field: "port_mapping"
+                        },
+                        "save_result_as": "var.lis_port_mapping"
+                    },
+                    {
+                      method_name: "extract_from_config",
+                        kwargs: {
+                          config_part: "var.lis_port_mapping",
+                            where_field: "name",
+                            where_value: "IF_LIS_LOG_HTTP_8443_TLSv1.3",
+                            extract_field: "port"
+                        },
+                        "save_result_as": "var.lis_port"
+                    },
+                    {
+                      method_name: "generate_url",
+                        kwargs: {
+                          protocol: "https",
+                            address: "list.[var.lis_fqdn, var.lis_ip]",
+                            port: "var.lis_port",
+                            url_prefix: "var.lis_url",
+                            path: "/cert_chain.pem"
+                        },
+                      save_result_as: "var.lis_url"
+                    },
+                    {
+                      method_name: "generate_jws",
+                      kwargs: {
+                        json_source: "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json",
+                        cert_path: "/tmp/log_008/cert_chain.pem",
+                        key_path: "var.esrp_certificate_key",
+                        cert_url: "var.lis_url",
+                        output_file: "/tmp/log_008/var7_jws.json",
+                        disable_cert_url_checks: True
+                      }
+                    }
+                  ]
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/log_008/var7_jws.json"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_LOG_LIS"
+                dst_interface: "IF_LIS_LOG"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+        requirements:
+          - name: "RQ_LOG_218"
+            variations: ["all"]
