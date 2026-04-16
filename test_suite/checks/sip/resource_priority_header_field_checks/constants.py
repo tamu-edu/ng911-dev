@@ -1,1 +1,0 @@
-RESOURCE_PRIORITY_PATTERN = r"esnet.1"
