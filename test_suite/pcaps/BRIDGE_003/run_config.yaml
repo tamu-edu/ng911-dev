@@ -1,0 +1,377 @@
+"run_config":
+  "output_folder": "/tmp/pcap_tests"
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": ""
+      "prefix": "BRIDGE"
+      "suffix": "BRIDGE_ALL_TESTS"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "ENTER NAME"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "ENTER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": "ENTER ADDRESS"
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+        "eng_name": "ENTER NAME"
+      "supplier":
+        "name": "ENTER SUPPLIER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": ""
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+      "iut":
+        "type": "BRIDGE"
+        "name": "IF_BRIDGE_CHFE"
+        "version": "0.0.0.1"
+        "date_of_receipt": "ENTER CURRENT DATE"
+        "location": "ENTER LOCATION"
+        "cs_id": "CS00001"
+        "cs_static_conform": false
+      "test_env":
+        "ixit_id": "11111"
+        "test_method": "test_method"
+        "spec_name": "STA-010"
+        "spec_version": "3.0"
+        "test_period_start": "ENTER CURRENT DATE"
+        "test_period_end": "ENTER CURRENT DATE"
+        "log_ref": "00001"
+        "log_ret_date": "ENTER CURRENT DATE"
+    "log":
+      "level": "DEBUG"
+      "output_file": "/tmp/pcap_tests/LOG_DEBUG.log"
+    "comments":
+    - "author": "ENTER AUTHOR NAME"
+      "comment": "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  "tests":
+  - "name": "BRIDGE_CS00001"
+    "requirements":
+    - "name": "RQ_BRG_042"
+      "variations":
+      - "Handling_multi-party_aware_and_unaware_endpoints_in_the_same_session"
+    "variations":
+    - "name": "Handling_multi-party_aware_and_unaware_endpoints_in_the_same_session"
+      "description": "Validate if Bridge is capable of handling multi-party aware\
+        \ and multi-party unaware endpoints in the same session"
+      "interfaces":
+      - "name": "IF_OSP_BCF"
+        "port_names": []
+      - "name": "IF_OSP_CHFE"
+        "port_names": []
+      - "name": "IF_OSP_BRIDGE"
+        "port_names": []
+      - "name": "IF_BCF_OSP"
+        "port_names": []
+      - "name": "IF_BCF_ESRP"
+        "port_names": []
+      - "name": "IF_ESRP_BCF"
+        "port_names": []
+      - "name": "IF_ESRP_CHFE"
+        "port_names": []
+      - "name": "IF_BRIDGE_CHFE"
+        "port_names": []
+      - "name": "IF_BRIDGE_OSP"
+        "port_names": []
+      - "name": "IF_CHFE_OSP"
+        "port_names": []
+      - "name": "IF_CHFE_ESRP"
+        "port_names": []
+      - "name": "IF_CHFE_BRIDGE"
+        "port_names": []
+      - "name": "IF_CHFE_TS-CA"
+        "port_names": []
+      - "name": "IF_TS-CA_CHFE"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/BRIDGE_003/BRIDGE_003_pass.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "receive"
+          "if_name": "IF_BCF_OSP"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_OSP_BCF"
+            "save_result_as": "var.IF_OSP_BCF"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_BCF_OSP"
+            "save_result_as": "var.IF_BCF_OSP"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_BCF_ESRP"
+            "save_result_as": "var.IF_BCF_ESRP"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_BCF"
+            "save_result_as": "var.IF_ESRP_BCF"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/sip_service/FEs/BCF_simple_call.xml"
+            "kwargs":
+              "set":
+                "IF_OSP_BCF": "var.IF_OSP_BCF"
+                "IF_BCF_OSP": "var.IF_BCF_OSP"
+                "IF_BCF_ESRP": "var.IF_BCF_ESRP"
+                "IF_ESRP_BCF": "var.IF_ESRP_BCF"
+            "save_response_as": "BCF_BRIDGE_003_response.log"
+            "save_log_as": "BCF_BRIDGE_003.log"
+          "run_in_background": "True"
+        - "action": "receive"
+          "if_name": "IF_ESRP_BCF"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_OSP_BCF"
+            "save_result_as": "var.IF_OSP_BCF"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_BCF_ESRP"
+            "save_result_as": "var.IF_BCF_ESRP"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_CHFE_ESRP"
+            "save_result_as": "var.IF_CHFE_ESRP"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_CHFE"
+            "save_result_as": "var.IF_ESRP_CHFE"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "api"
+            "save_result_as": "var.api"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.api"
+              "extract_field": "conference_id"
+            "save_result_as": "var.conference_id"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "CHFE"
+              "extract_field": "api"
+            "save_result_as": "var.api"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.api"
+              "extract_field": "tel_number"
+            "save_result_as": "var.CHFE_tel"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "api"
+            "save_result_as": "var.api"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.api"
+              "extract_field": "tel_number"
+            "save_result_as": "var.OSP_tel"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/sip_service/FEs/ESRP_simple_call.xml"
+            "kwargs":
+              "set":
+                "IF_OSP_BCF": "var.IF_OSP_BCF"
+                "IF_BCF_ESRP": "var.IF_BCF_ESRP"
+                "IF_CHFE_ESRP": "var.IF_CHFE_ESRP"
+                "IF_ESRP_CHFE": "var.IF_ESRP_CHFE"
+                "conference_id": "var.conference_id"
+                "CHFE_tel": "var.CHFE_tel"
+                "OSP_tel": "var.OSP_tel"
+            "save_response_as": "ESRP_BRIDGE_003_response.log"
+            "save_log_as": "ESRP_BRIDGE_003.log"
+          "run_in_background": "True"
+        - "action": "receive"
+          "if_name": "IF_CHFE_ESRP"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_OSP_BCF"
+            "save_result_as": "var.IF_OSP_BCF"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_BRIDGE_CHFE"
+            "save_result_as": "var.IF_BRIDGE_CHFE"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_CHFE_BRIDGE"
+            "save_result_as": "var.IF_CHFE_BRIDGE"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_BCF_CHFE"
+            "save_result_as": "var.IF_BCF_CHFE"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_CHFE_BCF"
+            "save_result_as": "var.IF_CHFE_BCF"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "TS-CA"
+              "extract_field": "api"
+            "save_result_as": "var.api"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.api"
+              "extract_field": "conference_id"
+            "save_result_as": "var.conference_id"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "CHFE"
+              "extract_field": "api"
+            "save_result_as": "var.api"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.api"
+              "extract_field": "tel_number"
+            "save_result_as": "var.CHFE_tel"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/sip_service/BRIDGE_003/CHFE_BRIDGE_003.xml"
+            "kwargs":
+              "set":
+                "conference_id": "var.conference_id"
+                "IF_OSP_BCF": "var.IF_OSP_BCF"
+                "IF_BRIDGE_CHFE": "var.IF_BRIDGE_CHFE"
+                "IF_CHFE_BRIDGE": "var.IF_CHFE_BRIDGE"
+                "TS-CHFE_tel": "var.CHFE_tel"
+                "IF_BCF_CHFE": "var.IF_BCF_CHFE"
+                "IF_CHFE_BCF": "var.IF_CHFE_BCF"
+            "save_response_as": "CHFE_BRIDGE_003_response.log"
+            "save_log_as": "CHFE_BRIDGE_003.log"
+          "run_in_background": "True"
+        - "action": "send"
+          "if_name": "IF_OSP_BCF"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_OSP_CHFE"
+            "save_result_as": "var.IF_OSP_CHFE"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_CHFE_OSP"
+            "save_result_as": "var.IF_CHFE_OSP"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_OSP_BRIDGE"
+            "save_result_as": "var.IF_OSP_BRIDGE"
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_BRIDGE_OSP"
+            "save_result_as": "var.IF_BRIDGE_OSP"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "api"
+            "save_result_as": "var.api"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.api"
+              "extract_field": "tel_number"
+            "save_result_as": "var.OSP_tel"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "CHFE"
+              "extract_field": "api"
+            "save_result_as": "var.api"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.api"
+              "extract_field": "tel_number"
+            "save_result_as": "var.CHFE_tel"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": "200"
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/sip_service/BRIDGE_003/OSP_BRIDGE_003.xml"
+            "kwargs":
+              "set":
+                "OSP_tel": "var.OSP_tel"
+                "CHFE_tel": "var.CHFE_tel"
+                "IF_OSP_CHFE": "var.IF_OSP_CHFE"
+                "IF_CHFE_OSP": "var.IF_CHFE_OSP"
+                "IF_OSP_BRIDGE": "var.IF_OSP_BRIDGE"
+                "IF_BRIDGE_OSP": "var.IF_BRIDGE_OSP"
+            "save_response_as": "OSP_BRIDGE_003_response.log"
+            "save_log_as": "OSP_BRIDGE_003.log"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_CHFE_BRIDGE"
+        "dst_interface": "IF_BRIDGE_CHFE"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": "200"
+        "body_contains": ""
+        "header_contains": ""
+      - "message_type": "other"
+        "src_interface": "IF_BRIDGE_OSP"
+        "dst_interface": "IF_OSP_BRIDGE"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": "200"
+        "body_contains": ""
+        "header_contains": ""
+      - "message_type": "other"
+        "src_interface": "IF_OSP_BCF"
+        "dst_interface": "IF_BCF_OSP"
+        "sip_method": ""
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": "CHFE test"
+        "header_contains": ""
+      - "message_type": "other"
+        "src_interface": "IF_CHFE_BRIDGE"
+        "dst_interface": "IF_BRIDGE_CHFE"
+        "sip_method": ""
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": "OSP test"
+        "header_contains": ""
+    "preamble_list": []
+    "postamble_list": []

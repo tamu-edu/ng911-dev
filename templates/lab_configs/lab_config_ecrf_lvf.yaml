@@ -1,0 +1,315 @@
+# This configuration file defines the physical and network layout of the test environment.
+# It tells the test suite which network entities are involved in the test (e.g. OSP, BCF, ESRP),
+# how they are connected to each other, and what network settings and protocols each connection uses.
+# The test suite loads this file at startup, validates it, and uses it to automatically launch and
+# configure stub server entities before each test run. This file is specific to the functional element
+# being tested (e.g. BCF, ESRP) and will need to be filled out to match your actual lab network setup.
+lab_config:
+
+  # Path to the Certificate Authority certificate used to validate TLS/mTLS connections between lab entities.
+  # Only required if one or more interfaces are configured with mTLSv1.2 or mTLSv1.3 transport. e.g. /path/to/ca.crt
+  pca_certificate_file: ""
+
+  # Path to the private key corresponding to the CA certificate above.
+  # Only required if one or more interfaces are configured with mTLSv1.2 or mTLSv1.3 transport. e.g. /path/to/ca.key
+  pca_certificate_key: ""
+
+  # IP address of the machine running the test suite; must match one of its local network interface IPs. e.g. 192.168.1.10
+  test_suite_host_ip: ""
+
+  # Entities represent each network element involved in the test scenario.
+  # Each entity is either a real device on the network (REAL_DEVICE) or simulated by the test suite (STUB_SERVER).
+  # The test suite launches and manages stub server entities automatically during test execution,
+  # while real device entities are expected to already be running on the network.
+  entities:
+
+      # ESRP (Emergency Services Routing Proxy) is simulated as a STUB_SERVER that acts as the stimulus
+      # sender in ECRF-LVF tests. It sends HTTP LoST findService requests to the ECRF-LVF IUT, simulating
+      # the routing queries an ESRP would make in a real ESInet deployment to resolve a location to a
+      # PSAP service URI.
+    - name: "ESRP"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "ESRP"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      role: ["SENDER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_ESRP_ECRF-LVF = ESRP connecting to ECRF-LVF)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_ESRP_ECRF-LVF -> IF_ECRF-LVF_ESRP).
+      interfaces:
+
+          # Network interface connecting ESRP to ECRF-LVF
+        - name: "IF_ESRP_ECRF-LVF"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the ESRP side of the ESRP-ECRF-LVF connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the ESRP-ECRF-LVF interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the ESRP-ECRF-LVF Docker network; used when creating the Docker network that connects the ESRP and ECRF-LVF containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the ESRP-ECRF-LVF connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test.
+            - name: "IF_ESRP_ECRF-LVF_HTTP_4443_TLSv1.2"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 4443
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TLSv1.2"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test.
+              # Enable this entry when TLS is not available — used as a fallback for lab testing purposes only
+            - name: "IF_ESRP_ECRF-LVF_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # ECRF-LVF (Emergency Call Routing Function / Location Validation Function) is the device under test
+      # in this lab configuration. It receives HTTP LoST findService requests from the ESRP, resolves
+      # the provided location to a PSAP service URI, and returns the result. As the IUT, its behaviour
+      # is what the test suite is validating.
+    - name: "ECRF-LVF"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "REAL_DEVICE"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "ECRF-LVF"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      role: ["IUT"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Optional path prefix appended to the base URL when the stub server sends HTTP requests to this entity.
+      # Used when the IUT hosts its HTTP API under a non-root path (e.g. '/api/v1'). The stub server reads
+      # this value via _get_target_api_prefix (stub_server_service.py) and prepends it to the request path.
+      # Leave empty if the IUT serves requests at the root path.
+      api_http_url_prefix: ""
+
+      # Free-form dictionary of entity-specific values that the test suite extracts at runtime
+      # and injects into SIP message bodies and scenario files during test execution.
+      # The values here are referenced by name in the test config prep_steps via extract_field.
+      api:
+        
+        # The URL path suffix for the ECRF-LVF's LoST endpoint; extracted by test configs and used
+        # directly as the http_url in HTTP POST requests. e.g. for http://IP:PORT/lost provide '/lost'
+        http_url_suffix_lost: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_ECRF-LVF_ESRP = ECRF-LVF connecting to ESRP)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_ECRF-LVF_ESRP -> IF_ESRP_ECRF-LVF).
+      interfaces:
+
+          # Network interface connecting ECRF-LVF to ESRP
+        - name: "IF_ECRF-LVF_ESRP"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the ECRF-LVF side of the ECRF-LVF-ESRP connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the ECRF-LVF-ESRP interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the ECRF-LVF-ESRP Docker network; used when creating the Docker network that connects the ECRF-LVF and ESRP containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the ECRF-LVF-ESRP connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+#            - name: "IF_ECRF-LVF_ESRP_HTTP_4443_TLSv1.2"
+#              protocol: "HTTP"
+#              port: 4443
+#              transport_protocol: "TLSv1.2"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_ECRF-LVF_ESRP_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting ECRF-LVF to TS-ECRF-LVF (the secondary ECRF-LVF stub used in recursive/iterative mode tests)
+        - name: "IF_ECRF-LVF_TS-ECRF-LVF"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the ECRF-LVF side of the ECRF-LVF-TS-ECRF-LVF connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the ECRF-LVF-TS-ECRF-LVF interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the ECRF-LVF-TS-ECRF-LVF Docker network; used when creating the Docker network that connects the ECRF-LVF and TS-ECRF-LVF containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the ECRF-LVF-TS-ECRF-LVF connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_ECRF-LVF_TS-ECRF-LVF_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # TS-ECRF-LVF (Test System ECRF-LVF) simulates a second ECRF-LVF that the IUT forwards requests to
+      # during recursive and iterative LoST mode tests. In recursive mode the IUT queries this entity on
+      # behalf of the ESRP and returns the aggregated result; in iterative mode the IUT returns a redirect
+      # pointing to this entity for the ESRP to query directly.
+    - name: "TS-ECRF-LVF"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "ECRF-LVF"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      role: ["RECEIVER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_TS-ECRF-LVF_ECRF-LVF = TS-ECRF-LVF connecting to ECRF-LVF)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_TS-ECRF-LVF_ECRF-LVF -> IF_ECRF-LVF_TS-ECRF-LVF).
+      interfaces:
+
+          # Network interface connecting TS-ECRF-LVF to ECRF-LVF
+        - name: "IF_TS-ECRF-LVF_ECRF-LVF"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the TS-ECRF-LVF side of the TS-ECRF-LVF-ECRF-LVF connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the TS-ECRF-LVF-ECRF-LVF interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the TS-ECRF-LVF-ECRF-LVF Docker network; used when creating the Docker network that connects the TS-ECRF-LVF and ECRF-LVF containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the TS-ECRF-LVF-ECRF-LVF connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_TS-ECRF-LVF_ECRF-LVF_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"

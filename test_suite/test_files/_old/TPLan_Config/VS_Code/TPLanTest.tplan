@@ -1,0 +1,133 @@
+TSS : COR
+Title : 'RFC2460 IPv6 Core Specification' 
+Version  : 1.0.1 
+Date     : 05.10.2006  
+Author   : 'Steve Randall (ETSI TC-MTS)' 
+
+-- Cross references 
+xref RQ_001 {RFC2460, RFC2461} 
+xref CF_COR_11 {ETSI_TS_102_517_Annex_B} 
+xref CF_COR_21 {ETSI_TS_102_517_Annex_B} 
+xref CF_COR_23 {ETSI_TS_102_517_Annex_B} 
+
+-- Definitions 
+-- Entities 
+def entity EUT 
+def entity QE1 
+def entity QE2 
+
+-- Messages 
+def event data{packet_length} 
+def event ICMP_error_message {parameter_problem} 
+def event packet           
+	{ source_address,
+	  destination_address, 
+	  routing_header, 
+	  hop_by_hop_options, 
+	  Hop_Limit, 
+	  flow_label, 
+	  Type_0_routing_header,             
+	  EUT_address, 
+	  request_for_response}
+	
+-- Values
+def value Path_MTU 
+def value Type_0_routing_header 
+	{ Next_Header,             
+	  Header_Extension_Length,             
+	  Routing_Type_0,             
+	  Segments_Left,             
+	  Addresses } 
+
+-- Units 
+def unit octets
+
+-- Keywords - Pre-conditions 
+def word configured 
+
+-- Keywords - Stimuli 
+def word indicates
+def word requested
+def word requiring
+def word send
+def context {is ~requested to} 
+
+-- Keywords - Responses
+def word decrements
+def word discards
+def word receipt
+def word response
+def word unchanged
+def context {sends no ~response} 
+def context {sends a valid ~response} 
+
+-- Keywords - Glue
+def word between
+def word exactly
+def word greater
+def word less
+def word same
+def word than
+def word valid
+
+--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx--
+
+Group 1 'RFC2460' 
+Group 1.1 'Process IPv6 Packet' 
+Group 1.1.1 'Process IPv6 Header' 
+TP id : TP_COR_1097_01 
+Summary : 'EUT processes a packet with its size equals to its link MTU' 
+RQ ref : RQ_001_1097 
+Config : CF_COR_11 
+TD ref : TD_COR_1097_01 
+with { QE1 configured 'with a unique global unicast address' 
+ and EUT configured 'with a unique global unicast address' 
+ and EUT 'having a link MTU smaller than the link MTU of QE1' 
+ } 
+ensure that { 
+ when { EUT receives a packet 'with its size equal to link MTU of EUT' 
+ 		containing QE1 as the source_address
+ 	and containing EUT as the destination_address
+ 	and containing a request_for_response } 
+ then { EUT sends a valid response to QE1 } 
+ } 
+ 
+--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx--
+
+TP id : TP_COR_1097_02 
+Summary : 'EUT processes a traversed packet with its size equals to its incoming link MTU' 
+RQ ref : RQ_001_1097 
+Config : CF_COR_21 
+TD ref : TD_COR_1097_02 
+with { QE1 configured 'with a unique global unicast address ' 
+ and QE2 configured 'with a unique global unicast address' 
+ and EUT configured 'with two unique global unicast addresses on the link connecting QE1 and EUT, and, the link connecting QE2 and EUT, respectively' 
+ and QE1 'having larger link MTU than EUT' 
+ and EUT 'having larger or equivalent link MTU than QE2' 
+ } 
+ensure that { 
+ when { EUT receives a packet 'with its size equal to its incoming link MTU' 
+ 		containing QE1 as the source_address
+ 	and containing QE2 as the destination_address } 
+ then { EUT sends the packet to QE2 } 
+ } 
+
+Group 1.1.1.1 'Process Hop Limit' 
+
+TP id : TP_COR_1002_01 
+Summary : 'EUT decreases the Hop Limit field of a traversed IPv6 packet and forwards it' 
+RQ ref : RQ_001_1002 
+Config : CF_COR_21 
+TD ref : TD_COR_1002_01 
+with { QE1 configured 'with a unique global unicast address ' 
+ and QE2 configured 'with a unique global unicast address' 
+ and EUT configured 'with two unique global unicast addresses on the link connecting QE1 and EUT, and the link connecting QE2 and EUT, respectively' 
+ } 
+ensure that { 
+ when { EUT receives a packet 
+ 		containing QE1 as the source_address
+ 	and containing QE2 as the destination_address
+ 	and containing a Hop_Limit greater than 1 } 
+ then { EUT decrements the Hop_Limit
+ and EUT sends the packet to QE2 } 
+ }

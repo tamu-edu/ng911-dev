@@ -1,0 +1,241 @@
+lab_config:
+  pca_certificate_file: ""       # PCA-issued certificate for TLS authentication
+  pca_certificate_key: ""        # Private key matching PCA certificate
+  test_suite_host_ip: "192.168.0.4"         # IP address of the test suite controller
+  entities:
+    # Test System ESRP (Stimulus sender)
+    - name: "ESRP"
+      mode: "STUB_SERVER"        # Acts as a stub server to send test HTTP requests
+      function: "ESRP"           # Emergency Services Routing Proxy
+      role: ["SENDER"]             # Initiates HTTP requests for logging
+      fqdn: ""                   # Fully Qualified Domain Name
+      certificate_file: ""       # TLS certificate
+      certificate_key: ""        # TLS key
+      interfaces:
+        - name: "IF_ESRP_LOG-read"    # Interface between ESRP and LOG service
+          fqdn: ""
+          ip: "192.168.0.105"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_ESRP_LOG-read_HTTP_8080_TCP"
+              protocol: "HTTP"   # HTTP traffic for log submission
+              port: 8080
+              transport_protocol: "TCP"
+            - name: "IF_ESRP_LOG-read_SIP_5060_TCP"
+              protocol: "SIP"   # HTTP traffic for log submission
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_ESRP_LOG-write"    # Interface between ESRP and LOG service
+          fqdn: ""
+          ip: "192.168.0.105"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_ESRP_LOG-write_HTTP_8080_TCP"
+              protocol: "HTTP"   # HTTP traffic for log submission
+              port: 8080
+              transport_protocol: "TCP"
+            - name: "IF_ESRP_LOG-write_SIP_5060_TCP"
+              protocol: "SIP"   # HTTP traffic for log submission
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_ESRP_LOG-rec"    # Interface between ESRP and LOG service
+          fqdn: ""
+          ip: "192.168.0.105"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_ESRP_LOG-rec_SIP_5060_TCP"
+              protocol: "SIP"   # HTTP traffic for log submission
+              port: 5060
+              transport_protocol: "TCP"
+    # Test System BCF (Stimulus sender)
+    - name: "BCF"
+      mode: "STUB_SERVER"        # Acts as a stub server to send test HTTP requests
+      function: "BCF"           # Emergency Services Routing Proxy
+      role: [ "SENDER" ]             # Initiates HTTP requests for logging
+      fqdn: ""                   # Fully Qualified Domain Name
+      certificate_file: ""       # TLS certificate
+      certificate_key: ""        # TLS key
+      interfaces:
+        - name: "IF_BCF_LOG-read"    # Interface between BCF and LOG service
+          fqdn: ""
+          ip: "192.168.0.10"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_BCF_LOG-read_HTTP_8080_TCP"
+              protocol: "HTTP"   # HTTP traffic for log submission
+              port: 8080
+              transport_protocol: "TCP"
+            - name: "IF_BCF_LOG-read_SIP_5060_TCP"
+              protocol: "SIP"   # HTTP traffic for log submission
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_BCF_LOG-write"    # Interface between BCF and LOG service
+          fqdn: ""
+          ip: "192.168.0.10"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_BCF_LOG-write_HTTP_8080_TCP"
+              protocol: "HTTP"   # HTTP traffic for log submission
+              port: 8080
+              transport_protocol: "TCP"
+            - name: "IF_BCF_LOG-write_SIP_5060_TCP"
+              protocol: "SIP"   # HTTP traffic for log submission
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_BCF_LOG-rec"    # Interface between BCF and LOG service
+          fqdn: ""
+          ip: "192.168.0.10"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_BCF_LOG-rec_SIP_5060_TCP"
+              protocol: "SIP"   # HTTP traffic for log submission
+              port: 5060
+              transport_protocol: "TCP"
+    # Logging Service (Implementation Under Test)
+    - name: "LOG-read"
+      mode: "REAL_DEVICE"        # Physical logging service under test
+      function: "LOG"            # Service receiving and storing logs
+      role: ["IUT"]                # Implementation Under Test
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      api_http_url_prefix: ""  # Optional
+      interfaces:
+        - name: "IF_LOG-read_ESRP"
+          fqdn: ""
+          ip: "192.168.0.102"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG-read_ESRP_HTTP_8080_TCP"
+              protocol: "HTTP"   # Receives HTTP requests from ESRP
+              port: 8080
+              transport_protocol: "TCP"
+            - name: "IF_LOG-read_ESRP_SIP_5060_TCP"
+              protocol: "SIP"   # Receives HTTP requests from ESRP
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_LOG-read_BCF"
+          fqdn: ""
+          ip: "192.168.0.102"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG-read_BCF_HTTP_8080_TCP"
+              protocol: "HTTP"   # Receives HTTP requests from BCF
+              port: 8080
+              transport_protocol: "TCP"
+        - name: "IF_LOG-read_LIS"
+          fqdn: ""
+          ip: "192.168.0.102"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG-read_LIS_HTTP_8443_TLSv1.3"
+              protocol: "HTTP"
+              port: 8443
+              transport_protocol: "TLSv1.3"
+    # Logging Service WRITE (Implementation Under Test) - entrypoint for writing data
+    - name: "LOG-write"
+      mode: "REAL_DEVICE"        # Physical logging service under test
+      function: "LOG"            # Service receiving and storing logs
+      role: ["IUT"]                # Implementation Under Test
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      api_http_url_prefix: ""  # Optional
+      interfaces:
+        - name: "IF_LOG-write_ESRP"
+          fqdn: ""
+          ip: "192.168.0.102"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG-write_ESRP_HTTP_8080_TCP"
+              protocol: "HTTP"   # Receives HTTP requests from ESRP
+              port: 8080
+              transport_protocol: "TCP"
+            - name: "IF_LOG-write_ESRP_SIP_5060_TCP"
+              protocol: "SIP"   # Receives HTTP requests from ESRP
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_LOG-write_LIS"
+          fqdn: ""
+          ip: "192.168.0.102"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG-write_LIS_HTTP_8443_TLSv1.3"
+              protocol: "HTTP"
+              port: 8443
+              transport_protocol: "TLSv1.3"
+    # Logging Service REC (Implementation Under Test) - entrypoint for recording SIP calls
+    - name: "LOG-rec"
+      mode: "REAL_DEVICE"        # Physical logging service under test
+      function: "LOG"            # Service receiving and storing logs
+      role: ["IUT"]                # Implementation Under Test
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      api_http_url_prefix: ""  # Optional
+      interfaces:
+        - name: "IF_LOG-rec_ESRP"
+          fqdn: ""
+          ip: "192.168.0.102"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG-rec_ESRP_SIP_5060_TCP"
+              protocol: "SIP"   # Receives HTTP requests from ESRP
+              port: 5060
+              transport_protocol: "TCP"
+    # Test System LIS
+    - name: "LIS"
+      mode: "STUB_SERVER"
+      function: "LIS"
+      role: ["OTHER"]
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      api_http_url_prefix: ""  # Optional
+      interfaces:
+        - name: "IF_LIS_LOG-read"
+          fqdn: ""
+          ip: "192.168.0.106"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_LIS_LOG-read_HTTP_8443_TLSv1.3"
+              protocol: "HTTP"
+              port: 8443
+              transport_protocol: "TLSv1.3"
+        - name: "IF_LIS_LOG-write"
+          fqdn: ""
+          ip: "192.168.0.106"
+          mask: "255.255.255.0"
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_LIS_LOG-write_HTTP_8443_TLSv1.3"
+              protocol: "HTTP"
+              port: 8443
+              transport_protocol: "TLSv1.3"

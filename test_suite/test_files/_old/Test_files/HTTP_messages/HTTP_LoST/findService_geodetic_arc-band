@@ -1,0 +1,32 @@
+GET /LoST HTTP/1.1
+Host: IF_ECRF_TS_IP_ADDRESS
+Content-Type: application/xml
+Content-Length: 808
+Test-File-Version: 010.3d.2.0.1
+Test-File-Date: 20241014
+
+<?xml version="1.0" encoding="UTF-8"?>
+<findService
+ xmlns="urn:ietf:params:xml:ns:lost1"
+ xmlns:p2="http://www.opengis.net/gml"
+ serviceBoundary="value"
+ recursive="true">
+ <location id="123456789" profile="geodetic-2d">
+   <p2:ArcBand id="arcband1" srsName="urn:ogc:def:crs:EPSG::4326">
+      <p2:pos>39.09659644585462, -76.85609359348999</p2:pos>
+      <p2:innerRadius uom="urn:ogc:def:uom:EPSG::9001">
+        123.12
+      </p2:innerRadius>
+      <p2:outerRadius uom="urn:ogc:def:uom:EPSG::9001">
+        900
+      </p2:outerRadius>
+      <p2:startAngle uom="urn:ogc:def:uom:EPSG::9002">
+        20
+      </p2:startAngle>
+      <p2:openingAngle uom="urn:ogc:def:uom:EPSG::9002">
+        20
+      </p2:openingAngle>
+   </p2:ArcBand>
+ </location>
+ <service>urn:service:sos.police</service>
+</findService>

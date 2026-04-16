@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.3.0.2
+  Date:      20250731
+
+-->
+<scenario name="SIP_MESSAGE_from_OSP">
+  <send>
+    <![CDATA[
+
+      MESSAGE urn:service:sos SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      To: urn:service:sos
+      From: "NG911 Test" <sip:+12025551212@[local_ip]:[local_port]>;tag=[call_number]
+      Call-ID: [call_id]
+      CSeq: 1 MESSAGE
+      Max-Forwards: 70
+      Content-Type: text/plain
+      Content-Length: [len]
+
+      SIP MESSAGE from OSP
+
+    ]]>
+  </send>
+  <recv response="100" optional="true"></recv>
+  <recv response="180" optional="true"></recv>
+  <recv response="183" optional="true"></recv>
+  <recv response="200" optional="true"></recv>
+  <recv response="487" optional="true"></recv>
+  <recv response="999" timeout="30000"></recv>
+</scenario>

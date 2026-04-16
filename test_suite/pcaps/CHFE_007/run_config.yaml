@@ -1,0 +1,187 @@
+"run_config":
+  "output_folder": "/tmp/sw_tests/"
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": ""
+      "prefix": "CHFE"
+      "suffix": "CHFE_ALL_TESTS"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "ENTER NAME"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "ENTER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": "ENTER ADDRESS"
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+        "eng_name": "ENTER NAME"
+      "supplier":
+        "name": "ENTER SUPPLIER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": ""
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+      "iut":
+        "type": "CHFE"
+        "name": "IF_CHFE_OSP"
+        "version": "0.0.0.1"
+        "date_of_receipt": "ENTER CURRENT DATE"
+        "location": "ENTER LOCATION"
+        "cs_id": "CS00001"
+        "cs_static_conform": false
+      "test_env":
+        "ixit_id": "11111"
+        "test_method": "test_method"
+        "spec_name": "STA-010"
+        "spec_version": "3.0"
+        "test_period_start": "ENTER CURRENT DATE"
+        "test_period_end": "ENTER CURRENT DATE"
+        "log_ref": "00001"
+        "log_ret_date": "ENTER CURRENT DATE"
+    "log":
+      "level": "DEBUG"
+      "output_file": "results/CHFE_2026-03-23T100552_CHFE_ALL_TESTS/CHFE_DEBUG.log"
+    "comments":
+    - "author": "ENTER AUTHOR NAME"
+      "comment": "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  "tests":
+  - "name": "CHFE_CS00001"
+    "requirements":
+    - "name": "RQ_CHFE_312"
+      "variations":
+      - "Logging_the_call_status"
+    - "name": "RQ_CHFE_318"
+      "variations":
+      - "Logging_the_call_status"
+    - "name": "RQ_CHFE_319"
+      "variations":
+      - "Logging_the_call_status"
+    - "name": "RQ_CHFE_320"
+      "variations":
+      - "Logging_the_call_status"
+    "variations":
+    - "name": "Logging_the_call_status"
+      "description": "Test CHFE logging of CallStartLogEvent, CallEndLogEvent and\
+        \ CallSignallingMessageLogEvent"
+      "interfaces":
+      - "name": "IF_ESRP_CHFE"
+        "port_names": []
+      - "name": "IF_LOG_CHFE"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/CHFE_007/TC_CHFE_007_fail_no_incidentid_in_CallStartLogEvent_no_callid_in_CallEndLogEvent_no_text_in_INVITE_CallSignallingMessageLogEvent.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "receive"
+          "if_name": "IF_LOG_CHFE"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "LOG"
+              "extract_field": "interfaces"
+            "save_result_as": "var.log_interfaces"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.log_interfaces"
+              "where_field": "name"
+              "where_value": "IF_LOG_CHFE"
+              "extract_field": "fqdn"
+            "save_result_as": "var.log_fqdn"
+          - "method_name": "generate_identifier"
+            "kwargs":
+              "identifier_type": "logid"
+              "fqdn": "var.log_fqdn"
+            "save_result_as": "var.logid"
+          - "method_name": "save_to_file"
+            "kwargs":
+              "input_str": "{\"logEventId\": \"test\"}"
+              "filename": "/tmp/chfe_007/logeventid.json"
+          - "method_name": "modify_json_file"
+            "kwargs":
+              "json_input_file": "file./tmp/chfe_007/logeventid.json"
+              "param_name": "logEventId"
+              "value": "var.logid"
+              "output_file": "file./tmp/chfe_007/logeventid.json"
+          "type": "HTTP"
+          "method":
+          - "POST"
+          - "GET"
+          "response_code":
+          - "201"
+          - "200"
+          "http_url":
+          - "/LogEvents"
+          - "/Versions"
+          "body":
+          - "file./tmp/chfe_007/logeventid.json"
+          - "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json"
+          "sipp_scenario": {}
+          "run_in_background": "True"
+        - "action": "send"
+          "prep_steps": []
+          "if_name": "IF_ESRP_CHFE"
+          "if_port_name": ""
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call.xml"
+            "dependencies":
+            - "file.test_suite/test_files/SIPp_scenarios/CALLS/g711ulaw_rtp_stream.pcap"
+            "kwargs": {}
+            "save_response_as": "CHFE_007_ESRP_response.log"
+            "save_log_as": "CHFE_007_ESRP.log"
+          "run_in_background": "False"
+        - "action": "manual"
+          "if_name": ""
+          "type": "SIP"
+          "method": ""
+          "instead": ""
+          "prompt": "MANUAL ACTION REQUIRED - please answer incoming call on CHFE\
+            \ (if auto answering is not configured). Press any key to continue when\
+            \ ready..."
+          "next_action": ""
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_CHFE"
+        "dst_interface": "IF_CHFE_ESRP"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": "200"
+        "body_contains": ""
+        "header_contains": ""
+      - "message_type": "output"
+        "src_interface": "IF_CHFE_LOG"
+        "dst_interface": "IF_LOG_CHFE"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "body_contains": ""
+        "header_contains": "/LogEvents"
+      - "message_type": "other"
+        "src_interface": "IF_ESRP_CHFE"
+        "dst_interface": "IF_CHFE_ESRP"
+        "sip_method": "BYE"
+        "http_request_method": ""
+        "response_status_code": "200"
+        "body_contains": ""
+        "header_contains": ""
+    "preamble_list": []
+    "postamble_list": []

@@ -1,0 +1,435 @@
+# This configuration file defines the physical and network layout of the test environment.
+# It tells the test suite which network entities are involved in the test (e.g. OSP, BCF, ESRP),
+# how they are connected to each other, and what network settings and protocols each connection uses.
+# The test suite loads this file at startup, validates it, and uses it to automatically launch and
+# configure stub server entities before each test run. This file is specific to the functional element
+# being tested (e.g. BCF, ESRP) and will need to be filled out to match your actual lab network setup.
+lab_config:
+
+  # Path to the Certificate Authority certificate used to validate TLS/mTLS connections between lab entities.
+  # Only required if one or more interfaces are configured with mTLSv1.2 or mTLSv1.3 transport. e.g. /path/to/ca.crt
+  pca_certificate_file: ""
+
+  # Path to the private key corresponding to the CA certificate above.
+  # Only required if one or more interfaces are configured with mTLSv1.2 or mTLSv1.3 transport. e.g. /path/to/ca.key
+  pca_certificate_key: ""
+
+  # IP address of the machine running the test suite; must match one of its local network interface IPs. e.g. 192.168.1.10
+  test_suite_host_ip: ""
+
+  # Entities represent each network element involved in the test scenario.
+  # Each entity is either a real device on the network (REAL_DEVICE) or simulated by the test suite (STUB_SERVER).
+  # The test suite launches and manages stub server entities automatically during test execution,
+  # while real device entities are expected to already be running on the network.
+  entities:
+
+      # ESRP (Emergency Services Routing Proxy) is simulated as a STUB_SERVER that acts as the stimulus
+      # sender in LOG tests. It sends HTTP POST requests to the LOG IUT's /LogEvents entrypoint to submit
+      # log event objects (e.g. CallStartLogEvent, CallEndLogEvent), and HTTP GET requests to query stored
+      # log events and identifiers.
+    - name: "ESRP"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "ESRP"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      role: ["SENDER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections.
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_ESRP_LOG = ESRP connecting to LOG)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_ESRP_LOG -> IF_LOG_ESRP).
+      interfaces:
+
+          # Network interface connecting ESRP to LOG for read purposes
+
+        - name: "IF_ESRP_LOG-read"    # Interface between ESRP and LOG service
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the ESRP side of the ESRP-LOG connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the ESRP-LOG interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the ESRP-LOG Docker network; used when creating the Docker network that connects the ESRP and LOG containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the ESRP-LOG connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_ESRP_LOG-read_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+            - name: "IF_ESRP_LOG-read_SIP_5060_TCP"
+              protocol: "SIP"   # HTTP traffic for log submission
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_ESRP_LOG-write"    # Interface between ESRP and LOG service
+          fqdn: ""
+          ip: ""
+          mask: ""
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_ESRP_LOG-write_HTTP_8080_TCP"
+              protocol: "HTTP"   # HTTP traffic for log submission
+              port: 8080
+              transport_protocol: "TCP"
+            - name: "IF_ESRP_LOG-write_SIP_5060_TCP"
+              protocol: "SIP"   # HTTP traffic for log submission
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_ESRP_LOG-rec"    # Interface between ESRP and LOG service
+          fqdn: ""
+          ip: ""
+          mask: ""
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_ESRP_LOG-rec_SIP_5060_TCP"
+              protocol: "SIP"   # HTTP traffic for log submission
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # LOG (Logging Service) is the device under test in this lab configuration. It receives HTTP POST
+      # requests containing log event objects from the ESRP, stores them, and responds to HTTP GET queries
+      # on entrypoints such as /LogEvents, /LogEventIds, /CallIds, /IncidentIds, and /Conversations.
+      # It also validates JWS signatures on incoming log events.
+    - name: "LOG-read"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "REAL_DEVICE"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "LOG"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      role: ["IUT"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Optional path prefix appended to the base URL when the stub server sends HTTP requests to this entity.
+      # Used when the IUT hosts its HTTP API under a non-root path (e.g. '/api/v1'). The stub server reads
+      # this value via _get_target_api_prefix (stub_server_service.py) and prepends it to the request path.
+      # Leave empty if the IUT serves requests at the root path.
+      api_http_url_prefix: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_LOG_ESRP = LOG connecting to ESRP)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_LOG_ESRP -> IF_ESRP_LOG).
+      interfaces:
+
+          # Network interface connecting LOG to ESRP (receives HTTP POST log events and HTTP GET queries from ESRP)
+        - name: "IF_LOG-read_ESRP"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the LOG side of the LOG-ESRP connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the LOG-ESRP interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the LOG-ESRP Docker network; used when creating the Docker network that connects the LOG and ESRP containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the LOG-ESRP connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_LOG-read_ESRP_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_LOG-read_ESRP_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface used by the LOG IUT to fetch JWS signing certificates by reference.
+          # In TD_LOG_008.md (Var2), the ESRP includes a cert_url (x5u) in the JWS header pointing to
+          # a certificate file hosted on the LIS stub at port 8443 over TLSv1.3. The LOG fetches this
+          # certificate via HTTP GET on this interface to validate the JWS signature on the log event.
+        - name: "IF_LOG-read_LIS"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the LOG side of the LOG-LIS connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the LOG-LIS interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the LOG-LIS Docker network; used when creating the Docker network that connects the LOG and LIS containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the LOG-LIS connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_LOG-read_LIS_HTTP_8443_TLSv1.3"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8443
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TLSv1.3"
+    # Logging Service WRITE (Implementation Under Test) - entrypoint for writing data
+    - name: "LOG-write"
+      mode: "REAL_DEVICE"        # Physical logging service under test
+      function: "LOG"            # Service receiving and storing logs
+      role: ["IUT"]                # Implementation Under Test
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      api_http_url_prefix: ""  # Optional
+      interfaces:
+        - name: "IF_LOG-write_ESRP"
+          fqdn: ""
+          ip: ""
+          mask: ""
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG-write_ESRP_HTTP_8080_TCP"
+              protocol: "HTTP"   # Receives HTTP requests from ESRP
+              port: 8080
+              transport_protocol: "TCP"
+            - name: "IF_LOG-write_ESRP_SIP_5060_TCP"
+              protocol: "SIP"   # Receives HTTP requests from ESRP
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_LOG-write_LIS"
+          fqdn: ""
+          ip: ""
+          mask: ""
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG-write_LIS_HTTP_8443_TLSv1.3"
+              protocol: "HTTP"
+              port: 8443
+              transport_protocol: "TLSv1.3"
+              
+    # LIS (Location Information Server) is simulated as a STUB_SERVER that acts as a certificate file
+    # host in TD_LOG_008.md (JWS certificates by reference). The ESRP generates a JWS object with a
+    # cert_url (x5u header) pointing to this stub, which serves the PCA-signed certificate chain over
+    # HTTPS at port 8443. The LOG IUT fetches this certificate to validate the JWS signature.
+    # Role OTHER: LIS does not send requests or act as IUT; it only serves files on request from LOG.
+    # Logging Service REC (Implementation Under Test) - entrypoint for recording SIP calls
+    - name: "LOG-rec"
+      mode: "REAL_DEVICE"        # Physical logging service under test
+      function: "LOG"            # Service receiving and storing logs
+      role: ["IUT"]                # Implementation Under Test
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      api_http_url_prefix: ""  # Optional
+      interfaces:
+        - name: "IF_LOG-rec_ESRP"
+          fqdn: ""
+          ip: ""
+          mask: ""
+          gateway: ""            # Leave empty if not required
+          dns: [ ]               # Leave empty if not required
+          port_mapping:
+            - name: "IF_LOG-rec_ESRP_SIP_5060_TCP"
+              protocol: "SIP"   # Receives HTTP requests from ESRP
+              port: 5060
+              transport_protocol: "TCP"
+    # Test System LIS
+    - name: "LIS"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "LIS"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # OTHER = participates in the test flow but does not initiate requests or act as IUT
+      role: ["OTHER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      api_http_url_prefix: ""  # Optional
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_LIS_LOG = LIS connecting to LOG)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_LIS_LOG -> IF_LOG_LIS).
+      interfaces:
+
+          # Network interface connecting LIS to LOG (serves certificate files to LOG on HTTP GET requests)
+        - name: "IF_LIS_LOG-read"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the LIS side of the LIS-LOG connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the LIS-LOG interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the LIS-LOG Docker network; used when creating the Docker network that connects the LIS and LOG containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the LIS-LOG connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_LIS_LOG-read_HTTP_8443_TLSv1.3"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+              
+              # Port number (0-65535)
+              port: 8443
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TLSv1.3"
+              
+          # Network interface connecting LIS to LOG (serves certificate files to LOG on HTTP GET requests)
+        - name: "IF_LIS_LOG-write"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the LIS side of the LIS-LOG connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the LIS-LOG interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the LIS-LOG Docker network; used when creating the Docker network that connects the LIS and LOG containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the LIS-LOG connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_LIS_LOG-write_HTTP_8443_TLSv1.3"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+              
+              # Port number (0-65535)
+              port: 8443
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TLSv1.3"

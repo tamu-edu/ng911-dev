@@ -1,0 +1,620 @@
+# This configuration file defines the physical and network layout of the test environment.
+# It tells the test suite which network entities are involved in the test (e.g. OSP, BCF, ESRP),
+# how they are connected to each other, and what network settings and protocols each connection uses.
+# The test suite loads this file at startup, validates it, and uses it to automatically launch and
+# configure stub server entities before each test run. This file is specific to the functional element
+# being tested (e.g. BCF, ESRP) and will need to be filled out to match your actual lab network setup.
+lab_config:
+
+  # Path to the Certificate Authority certificate used to validate TLS/mTLS connections between lab entities.
+  # Only required if one or more interfaces are configured with mTLSv1.2 or mTLSv1.3 transport. e.g. /path/to/ca.crt
+  pca_certificate_file: ""
+
+  # Path to the private key corresponding to the CA certificate above.
+  # Only required if one or more interfaces are configured with mTLSv1.2 or mTLSv1.3 transport. e.g. /path/to/ca.key
+  pca_certificate_key: ""
+
+  # IP address of the machine running the test suite; must match one of its local network interface IPs. e.g. 192.168.1.10
+  test_suite_host_ip: ""
+
+  # Entities represent each network element involved in the test scenario.
+  # Each entity is either a real device on the network (REAL_DEVICE) or simulated by the test suite (STUB_SERVER).
+  # The test suite launches and manages stub server entities automatically during test execution,
+  # while real device entities are expected to already be running on the network.
+  entities:
+
+      # OSP (Originating Service Provider) represents the network or carrier from which an emergency call originates
+      # before it enters the ESInet. In a real deployment this would be a third-party provider, but in the test
+      # environment it is simulated as a STUB_SERVER that sends SIP INVITE and SIP MESSAGE requests to the BCF,
+      # acting as the stimulus that triggers the BCF behaviour being tested.
+    - name: "OSP"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "OSP"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      # Multiple roles can be assigned e.g. role: ["SENDER", "RECEIVER"] if the entity does both in a given test
+      role: ["SENDER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_OSP_BCF = OSP connecting to BCF)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_OSP_BCF -> IF_BCF_OSP).
+      interfaces:
+
+          # Network interface connecting OSP to BCF
+        - name: "IF_OSP_BCF"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the OSP side of the OSP-BCF connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the OSP-BCF interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the OSP-BCF Docker network; used when creating the Docker network that connects the OSP and BCF containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the OSP-BCF connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+#            - name: "IF_OSP_BCF_SIP_5061_TLSv1.2"
+#              protocol: "SIP"
+#              port: 5061
+#              transport_protocol: "TLSv1.2"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_OSP_BCF_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_OSP_BCF_SIP_5060_UDP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "UDP"
+
+#            - name: "IF_OSP_BCF_SIP_5060_SCTP"
+#              protocol: "SIP"
+#              port: 5060
+#              transport_protocol: "SCTP"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_OSP_BCF_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # SAL (Service/Agency Locator) is a stub server that simulates a service/agency locator in the test environment.
+      # It responds to location queries from other entities such as the ESRP, returning agency routing information.
+    - name: "SAL"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "OSP"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      # Multiple roles can be assigned e.g. role: ["SENDER", "RECEIVER"] if the entity does both in a given test
+      role: ["SENDER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_SAL_BCF = SAL connecting to BCF)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_SAL_BCF -> IF_BCF_SAL).
+      interfaces:
+
+          # Network interface connecting SAL to BCF
+        - name: "IF_SAL_BCF"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the SAL side of the SAL-BCF connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the SAL-BCF interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the SAL-BCF Docker network; used when creating the Docker network that connects the SAL and BCF containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the SAL-BCF connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_SAL_BCF_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # BCF (Border Control Function) is the device under test in this lab configuration. It sits at the border
+      # between the OSP network and the ESInet, receiving incoming SIP calls from the OSP and routing them
+      # to the ESRP inside the ESInet. As the IUT, its behaviour is what the test suite is validating.
+    - name: "BCF"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "REAL_DEVICE"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "BCF"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      # Multiple roles can be assigned e.g. role: ["SENDER", "RECEIVER"] if the entity does both in a given test
+      role: [ "IUT" ]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_BCF_OSP = BCF connecting to OSP)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_BCF_OSP -> IF_OSP_BCF).
+      interfaces:
+
+          # Network interface connecting BCF to OSP
+        - name: "IF_BCF_OSP"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the BCF side of the BCF-OSP connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the BCF-OSP interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the BCF-OSP Docker network; used when creating the Docker network that connects the BCF and OSP containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the BCF-OSP connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+#            - name: "IF_BCF_OSP_SIP_5061_TLSv1.2"
+#              protocol: "SIP"
+#              port: 5061
+#              transport_protocol: "TLSv1.2"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BCF_OSP_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BCF_OSP_SIP_5060_UDP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "UDP"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BCF_OSP_SIP_5060_SCTP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "SCTP"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BCF_OSP_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting BCF to SAL
+        - name: "IF_BCF_SAL"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the BCF side of the BCF-SAL connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the BCF-SAL interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the BCF-SAL Docker network; used when creating the Docker network that connects the BCF and SAL containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the BCF-SAL connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BCF_SAL_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting BCF to ESRP
+        - name: "IF_BCF_ESRP"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the BCF side of the BCF-ESRP connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the BCF-ESRP interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the BCF-ESRP Docker network; used when creating the Docker network that connects the BCF and ESRP containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the BCF-ESRP connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+#            - name: "IF_BCF_ESRP_SIP_5061_TLSv1.2"
+#              protocol: "SIP"
+#              port: 5061
+#              transport_protocol: "TLSv1.2"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BCF_ESRP_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BCF_ESRP_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting BCF to LOG
+        - name: "IF_BCF_LOG"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the BCF side of the BCF-LOG connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the BCF-LOG interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the BCF-LOG Docker network; used when creating the Docker network that connects the BCF and LOG containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the BCF-LOG connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BCF_LOG_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # ESRP (Emergency Services Routing Proxy) is simulated as a STUB_SERVER that acts as the receiving end
+      # of the SIP session inside the ESInet. In these tests it listens for SIP messages forwarded by the BCF,
+      # allowing the test suite to verify that the BCF correctly routes calls toward the ESRP.
+    - name: "ESRP"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "ESRP"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      # Multiple roles can be assigned e.g. role: ["SENDER", "RECEIVER"] if the entity does both in a given test
+      role: [ "RECEIVER" ]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_ESRP_BCF = ESRP connecting to BCF)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_ESRP_BCF -> IF_BCF_ESRP).
+      interfaces:
+
+          # Network interface connecting ESRP to BCF
+        - name: "IF_ESRP_BCF"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the ESRP side of the ESRP-BCF connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the ESRP-BCF interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the ESRP-BCF Docker network; used when creating the Docker network that connects the ESRP and BCF containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the ESRP-BCF connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+#            - name: "IF_ESRP_BCF_SIP_5061_TLSv1.2"
+#              protocol: "SIP"
+#              port: 5061
+#              transport_protocol: "TLSv1.2"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_ESRP_BCF_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_ESRP_BCF_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # LOG (Logging Service) is simulated as a STUB_SERVER that acts as the receiving end for HTTP log events
+      # sent by the BCF. The BCF is expected to send log events such as CallStartLogEvent, CallEndLogEvent,
+      # MessageLogEvent and CallSignalingMessageLogEvent to this service, and these tests validate that behaviour.
+    - name: "LOG"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "LOG"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      # Multiple roles can be assigned e.g. role: ["SENDER", "RECEIVER"] if the entity does both in a given test
+      role: [ "RECEIVER" ]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_LOG_BCF = LOG connecting to BCF)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_LOG_BCF -> IF_BCF_LOG).
+      interfaces:
+
+          # Network interface connecting LOG to BCF
+        - name: "IF_LOG_BCF"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the LOG side of the LOG-BCF connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the LOG-BCF interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the LOG-BCF Docker network; used when creating the Docker network that connects the LOG and BCF containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the LOG-BCF connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_LOG_BCF_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"

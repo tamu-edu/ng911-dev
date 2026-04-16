@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.5.0.4
+  Date:      20260408
+
+-->
+<scenario name="SIP_SUBSCRIBE_LIS">
+  <recv request="SUBSCRIBE"> </recv>
+    <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:];tag=[call_number]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: sip:SENDER@[local_ip]:[local_port]
+        Content-Length:0 
+    
+      ]]>
+    </send>
+    <send>
+      <![CDATA[
+  
+          NOTIFY LOCATION_SIP_URI SIP/2.0
+          Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+          From: LOCATION_SIP_URI
+          To: IUT <sip:user@[remote_ip]:[remote_port]>
+          Call-ID: [call_id]
+          Event: presence
+          Subscription-State: active;expires=599
+          Max-Forwards: 70
+          CSeq: 1 NOTIFY
+          Contact: LOCATION_SIP_URI
+          Content-Type: application/pidf+xml
+          Content-Length: [len]
+  
+          <?xml version="1.0"?>
+          <locationResponse xmlns="urn:ietf:params:xml:ns:geopriv:held">
+              <presence xmlns="urn:ietf:params:xml:ns:pidf"
+              xmlns:gp="urn:ietf:params:xml:ns:pidf:geopriv10"
+              xmlns:bp="urn:ietf:params:xml:ns:pidf:geopriv10:basicPolicy"
+              xmlns:ca="urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr"
+              xmlns:gs="http://www.opengis.net/pidflo/1.0"
+              xmlns:gml="http://www.opengis.net/gml"
+              entity="sip:SENDER@LIS_IP">
+              <tuple id="0">
+                <status>
+                  <gp:geopriv>
+                    <gp:location-info>
+                      <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
+                        <gml:pos>40.71668300756087 -73.99069756654683</gml:pos>
+                      </gml:Point>
+                    </gp:location-info>
+                  </gp:geopriv>
+                </status>
+                <timestamp>2050-05-15T12:30:00Z</timestamp>
+              </tuple>
+              </presence>
+          </locationResponse>
+      
+      ]]>
+    </send>
+    <recv response="200"> </recv>
+</scenario>
