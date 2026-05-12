@@ -1,1 +1,1 @@
-_TS_VERSION = "5.x-BETA"
+_TS_VERSION = "5.2"
