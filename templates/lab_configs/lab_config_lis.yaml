@@ -1,0 +1,232 @@
+# This configuration file defines the physical and network layout of the test environment.
+# It tells the test suite which network entities are involved in the test (e.g. OSP, BCF, ESRP),
+# how they are connected to each other, and what network settings and protocols each connection uses.
+# The test suite loads this file at startup, validates it, and uses it to automatically launch and
+# configure stub server entities before each test run. This file is specific to the functional element
+# being tested (e.g. BCF, ESRP) and will need to be filled out to match your actual lab network setup.
+lab_config:
+
+  # Path to the Certificate Authority certificate used to validate TLS/mTLS connections between lab entities.
+  # Only required if one or more interfaces are configured with mTLSv1.2 or mTLSv1.3 transport. e.g. /path/to/ca.crt
+  pca_certificate_file: ""
+
+  # Path to the private key corresponding to the CA certificate above.
+  # Only required if one or more interfaces are configured with mTLSv1.2 or mTLSv1.3 transport. e.g. /path/to/ca.key
+  pca_certificate_key: ""
+
+  # IP address of the machine running the test suite; must match one of its local network interface IPs. e.g. 192.168.1.10
+  test_suite_host_ip: ""
+
+  # Entities represent each network element involved in the test scenario.
+  # Each entity is either a real device on the network (REAL_DEVICE) or simulated by the test suite (STUB_SERVER).
+  # The test suite launches and manages stub server entities automatically during test execution,
+  # while real device entities are expected to already be running on the network.
+  entities:
+
+      # ESRP (Emergency Services Routing Proxy) is simulated as a STUB_SERVER acting as the stimulus sender.
+      # It sends SIP SUBSCRIBE requests (Presence Event Package location dereference) and HTTP HELD POST
+      # requests (location dereference and locationURI retrieval) to the LIS IUT.
+
+    - name: "ESRP"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "ESRP"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      role: ["SENDER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_ESRP_LIS = ESRP connecting to LIS)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_ESRP_LIS -> IF_LIS_ESRP).
+      interfaces:
+
+          # Network interface connecting ESRP to LIS
+        - name: "IF_ESRP_LIS"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the ESRP side of the ESRP-LIS connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the ESRP-LIS interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the ESRP-LIS Docker network; used when creating the Docker network that connects the ESRP and LIS containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the ESRP-LIS connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+#            - name: "IF_ESRP_LIS_SIP_5061_TLSv1.2"
+#              protocol: "SIP"
+#              port: 5061
+#              transport_protocol: "TLSv1.2"
+
+              # SIP port used by ESRP to send SIP SUBSCRIBE requests to the LIS, subscribing to the Presence
+              # Event Package to dereference SIP locationURIs and receive NOTIFY responses containing PIDF-LO.
+            - name: "IF_ESRP_LIS_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+              # HTTP port used by ESRP to send HELD POST requests to the LIS to dereference location reference
+              # URIs into PIDF-LO objects and to request locationURIs for known devices.
+            - name: "IF_ESRP_LIS_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # LIS (Location Information Server) is the device under test in this lab configuration.
+      # It receives HTTP HELD POST requests from the ESRP to dereference location reference URIs into
+      # PIDF-LO objects, and SIP SUBSCRIBE requests to provide location by reference via the Presence
+      # Event Package.
+    - name: "LIS"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "REAL_DEVICE"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "LIS"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      role: ["IUT"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Optional path prefix appended to the base URL when the stub server sends HTTP requests to this entity.
+      # Used when the IUT hosts its HTTP API under a non-root path (e.g. '/api/v1'). The stub server reads
+      # this value via _get_target_api_prefix (stub_server_service.py) and prepends it to the request path.
+      # Leave empty if the IUT serves requests at the root path.
+      api_http_url_prefix: ""
+
+      # Free-form dictionary of entity-specific values that the test suite extracts at runtime
+      # and injects into HTTP request bodies and SIPp scenario files during test execution.
+      # The values here are referenced by name in the test config prep_steps via extract_field.
+      api:
+
+        # The URL path suffix for the LIS HELD endpoint; extracted by test configs that send HTTP HELD POST
+        # requests and used directly as the http_url value in the HTTP POST message.
+        http_url_suffix_held: ""
+
+        # The user part of the SIP locationURI issued by the LIS for the subscribed resource (e.g.
+        # '9769+357yc6s64ceyoiuy5ax3o' from 'sip:9769+357yc6s64ceyoiuy5ax3o@ls.example.com'); extracted
+        # and passed as the SIPp '-s' argument to set the SUBSCRIBE Request-URI on the IUT.
+        sip_uri_user: ""
+
+        # SIP URI or tel URI of a target device that the LIS already has a location record for; extracted
+        # and substituted into the <uri>DEVICE_URI</uri> element of the HELD locationRequest XML body
+        # (Location_request_for_locationURI template) before the HTTP POST is sent. The LIS uses this to
+        # look up the device and return its locationURI in the HELD response.
+        device_uri: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_LIS_ESRP = LIS connecting to ESRP)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_LIS_ESRP -> IF_ESRP_LIS).
+      interfaces:
+
+          # Network interface connecting LIS to ESRP
+        - name: "IF_LIS_ESRP"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the LIS side of the LIS-ESRP connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the LIS-ESRP interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the LIS-ESRP Docker network; used when creating the Docker network that connects the LIS and ESRP containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the LIS-ESRP connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+#            - name: "IF_LIS_ESRP_SIP_5061_TLSv1.2"
+#              protocol: "SIP"
+#              port: 5061
+#              transport_protocol: "TLSv1.2"
+
+              # SIP port on which the LIS IUT listens for incoming SIP SUBSCRIBE requests from the ESRP stub
+              # and from which it sends SIP NOTIFY responses containing PIDF-LO location data.
+            - name: "IF_LIS_ESRP_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+              # HTTP port on which the LIS IUT listens for incoming HELD POST requests from the ESRP stub;
+              # used for location dereference (returning PIDF-LO for a locationURI) and locationURI provisioning
+            - name: "IF_LIS_ESRP_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"

@@ -1,0 +1,11 @@
+forward_conduits:
+
+  - name: "OSP_to_BCF"
+    from_if: "IF_OSP_BCF"
+    to_if:   "IF_BCF_OSP"
+    proxy_if: "IF_BCF_OSP_PRS"
+
+  - name: "BCF_to_ESRP"
+    from_if: "IF_BCF_ESRP"
+    to_if:   "IF_ESRP_BCF"
+    proxy_if: "IF_ESRP_BCF_PRS"

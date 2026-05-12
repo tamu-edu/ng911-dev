@@ -1,0 +1,959 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.5.0.4
+  Date:      20251205
+
+-->
+<scenario name="BRIDGE_CHFE_006_var2">
+    <Global variables="conference_id, CHFE_tel, IF_CHFE_BRIDGE, IF_BRIDGE_CHFE, IF_OSP_BRIDGE, IF_BRIDGE_OSP, IF_OSP_BCF,
+                    IF_TS-CHFE_BRIDGE, IF_BRIDGE_TS-CHFE, TS-CHFE_tel, SUBSCRIBE_CHFE_conference_Call_ID,
+                    REFER_CHFE_replaces_OSP_CHFE_Call_ID, REFER_CHFE_refer_to_TS-CHFE_Call_ID,
+                    SUBSCRIBE_TS-CHFE_conference_Call_ID"/>
+    <recv request="INVITE">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+          SIP/2.0 180 Ringing
+          [$last_Via]
+          [$last_From]
+          [$last_To]
+          [$last_Call-ID]
+          [$last_CSeq]
+          Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+          Content-Length:0
+
+    ]]>
+    </send>
+    <pause milliseconds="1000"/>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+          SIP/2.0 200 OK
+          [$last_Via]
+          [$last_From]
+          [$last_To]
+          [$last_Call-ID]
+          [$last_CSeq]
+          Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+          Content-Type: application/sdp
+          Content-Length: [len]
+
+          v=0
+          o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+          s=-
+          t=0 0
+          c=IN IP[media_ip_type] [media_ip]
+          m=audio 5046 RTP/AVP 0
+          a=rtpmap:0 PCMU/8000
+
+    ]]>
+    </send>
+    <recv request="ACK"> </recv>
+    <media
+            type="rtp"
+            src_ip="[local_ip]"
+            dst_ip="[$IF_CHFE_BRIDGE]"
+            dst_port="5046"
+    />
+    <recv request="SUBSCRIBE">
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="Call-ID:"
+            ctx_key="SUBSCRIBE_CHFE_conference_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+          SIP/2.0 200 OK
+          [$last_Via]
+          [$last_From]
+          [$last_To]
+          [$last_Call-ID]
+          [$last_CSeq]
+          Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+          Content-Length: 0
+
+    ]]>
+    </send>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+       NOTIFY sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [local_ip]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+       From: <sip:[$conference_id]@[local_ip]:[local_port]>
+       Call-ID: [$SUBSCRIBE_CHFE_conference_Call_ID]
+       CSeq: 1 NOTIFY
+       Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: conference
+       Accept: application/sdp, message/sipfrag
+       Subscription-State: active;expires=3600
+       Supported: replaces, join, gruu
+       Content-Type: application/conference-info+xml
+       Content-Length: [len]
+
+       <conference-info version="0" state="full"
+        entity="sip:[$conference_id]@[local_ip]:[local_port]">
+        <conference-description>
+         <conf-uris>
+          <entry>
+           <uri>sip:[$conference_id]@[local_ip]:[local_port]</uri>
+          </entry>
+         </conf-uris>
+        </conference-description>
+        <users>
+         <user entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]" state="full">
+          <display-text>CHFE</display-text>
+          <endpoint entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]">
+           <status>connected</status>
+           <joining-method>dialed-in</joining-method>
+           <media id="1">
+            <display-text>Main Audio</display-text>
+            <type>audio</type>
+            <src-id>583398</src-id>
+            <status>sendrecv</status>
+           </media>
+          </endpoint>
+         </user>
+        </users>
+       </conference-info>
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <recv request="REFER">
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="Call-ID:"
+            ctx_key="REFER_CHFE_replaces_OSP_CHFE_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+      SIP/2.0 200 OK
+      [$last_Via]
+      [$last_From]
+      [$last_To]
+      [$last_Call-ID]
+      [$last_CSeq]
+      Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+      Content-Length: [len]
+
+    ]]>
+    </send>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+       NOTIFY sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [local_ip]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+       From: <sip:[$conference_id]@[local_ip]:[local_port]>
+       Call-ID: [$REFER_CHFE_replaces_OSP_CHFE_Call_ID]
+       CSeq: 2 NOTIFY
+       Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: refer
+       Subscription-State: active;expires=3600
+       Supported: replaces, join, gruu
+       Content-Type: message/sipfrag;version=2.0
+       Content-Length: [len]
+
+       SIP/2.0 100 Trying
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <send to="[$IF_OSP_BRIDGE]:[local_port]">
+        <![CDATA[
+
+      INVITE sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port] SIP/2.0
+      Via: SIP/2.0/[transport] [$IF_BRIDGE_OSP]:[local_port]
+      From: <sip:[$conference_id]@[$IF_BRIDGE_OSP]:[local_port]>
+      To: sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port]
+      Call-ID: bridge_to_osp@[$IF_BRIDGE_OSP]
+      Cseq: 1 INVITE
+      Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+      Max-Forwards: 70
+      Supported: replaces
+      Replaces: osptoCHFEcallid@[$IF_OSP_BCF];to-tag=toCHFE;from-tag=ospcall
+
+    ]]>
+    </send>
+    <recv response="100" optional="true"> </recv>
+    <recv response="180" optional="true"> </recv>
+    <recv response="200"> </recv>
+    <send to="[$IF_OSP_BRIDGE]:[local_port]">
+        <![CDATA[
+
+      ACK sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      From: <sip:[$conference_id]@[$IF_BRIDGE_OSP]:[local_port]>
+      To: sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port]
+      Call-ID: bridge_to_osp@[$IF_BRIDGE_OSP]
+      Cseq: 1 ACK
+      Contact: <sip:[$conference_id]@[$IF_BRIDGE_OSP]:[local_port]>;isfocus
+      Content-Length: 0
+
+    ]]>
+
+    </send>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+        <![CDATA[
+
+       NOTIFY sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [$IF_BRIDGE_CHFE]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[remote_port]>
+       From: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>
+       Call-ID: [$SUBSCRIBE_CHFE_conference_Call_ID]
+       CSeq: 1 NOTIFY
+       Contact: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: conference
+       Accept: application/sdp, message/sipfrag
+       Subscription-State: active;expires=3600
+       Supported: replaces, join, gruu
+       Content-Type: application/conference-info+xml
+       Content-Length: [len]
+
+       <conference-info version="0" state="full"
+        entity="sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]">
+        <conference-description>
+         <conf-uris>
+          <entry>
+           <uri>sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]</uri>
+          </entry>
+         </conf-uris>
+        </conference-description>
+        <users>
+         <user entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]" state="full">
+          <display-text>CHFE</display-text>
+          <endpoint entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]">
+           <status>connected</status>
+           <joining-method>dialed-in</joining-method>
+           <media id="1">
+            <display-text>Main Audio</display-text>
+            <type>audio</type>
+            <src-id>583398</src-id>
+            <status>sendrecv</status>
+           </media>
+          </endpoint>
+         </user>
+         <user entity="sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port]" state="full">
+          <display-text>OSP</display-text>
+          <endpoint entity="sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port]">
+           <status>connected</status>
+           <joining-method>dialed-in</joining-method>
+           <media id="1">
+            <display-text>Main Audio</display-text>
+            <type>audio</type>
+            <src-id>583398</src-id>
+            <status>sendrecv</status>
+           </media>
+          </endpoint>
+         </user>
+        </users>
+       </conference-info>
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+        <![CDATA[
+
+       NOTIFY sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [local_ip]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+       From: <sip:[$conference_id]@[local_ip]:[local_port]>
+       Call-ID: [$REFER_CHFE_replaces_OSP_CHFE_Call_ID]
+       CSeq: 2 NOTIFY
+       Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: refer
+       Subscription-State: terminated
+       Supported: replaces, join, gruu
+       Content-Type: message/sipfrag;version=2.0
+       Content-Length: [len]
+
+       SIP/2.0 200 OK
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <media
+            type="rtp"
+            src_ip="[local_ip]"
+            dst_ip="[$IF_OSP_BRIDGE]"
+            dst_port="5014"
+    />
+    <recv request="REFER">
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="Call-ID:"
+            ctx_key="REFER_CHFE_refer_to_TS-CHFE_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+        <![CDATA[
+
+      SIP/2.0 200 OK
+      [$last_Via]
+      [$last_From]
+      [$last_To]
+      [$last_Call-ID]
+      [$last_CSeq]
+      Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+      Content-Length: [len]
+
+    ]]>
+    </send>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+        <![CDATA[
+
+       NOTIFY sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [$IF_BRIDGE_CHFE]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+       From: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>
+       Call-ID: [$REFER_CHFE_refer_to_TS-CHFE_Call_ID]
+       CSeq: 2 NOTIFY
+       Contact: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: refer
+       Subscription-State: active;expires=3600
+       Supported: replaces, join, gruu
+       Content-Type: message/sipfrag;version=2.0
+       Content-Length: [len]
+
+       SIP/2.0 100 Trying
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <send to="[$IF_TS-CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+      INVITE sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port] SIP/2.0
+      Via: SIP/2.0/[transport] [$IF_BRIDGE_TS-CHFE]:[local_port]
+      From: <sip:[$conference_id]@[$IF_BRIDGE_TS-CHFE]:[local_port]>
+      To: sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port]
+      Call-ID: bridge_to_ts_CHFE@[$IF_BRIDGE_TS-CHFE]
+      Cseq: 1 INVITE
+      Contact: <sip:[$conference_id]@[$IF_BRIDGE_TS-CHFE]:[local_port]>;isfocus
+      Max-Forwards: 70
+      Supported: replaces
+      Content-Type: application/sdp
+      Content-Length: [len]
+
+      v=0
+      o=user1 53655765 2353687637 IN IP[local_ip_type] [$IF_BRIDGE_TS-CHFE]
+      s=-
+      t=0 0
+      c=IN IP[media_ip_type] [media_ip]
+      m=audio 5047 RTP/AVP 0
+      a=rtpmap:0 PCMU/8000
+    ]]>
+    </send>
+    <recv response="100" optional="true"> </recv>
+    <recv response="180"> </recv>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+       NOTIFY sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [$IF_BRIDGE_CHFE]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+       From: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>
+       Call-ID: [$REFER_CHFE_refer_to_TS-CHFE_Call_ID]
+       CSeq: 3 NOTIFY
+       Contact: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: refer
+       Subscription-State: active;expires=3600
+       Supported: replaces, join, gruu
+       Content-Type: message/sipfrag;version=2.0
+       Content-Length: [len]
+
+       SIP/2.0 180 Ringing
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <recv response="200"> </recv>
+    <send to="[$IF_TS-CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+      ACK sip:[$TS-CHFE_tel]@[$TS_CHFE_IP]:[$TS_CHFE_port] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      From: <sip:[$conference_id]@[local_ip]:[local_port]>
+      To: sip:[$TS_CHFE_tel]@[$TS_CHFE_IP]:[$TS_CHFE_port]
+      Call-ID: bridge_to_ts_CHFE@[$IF_BRIDGE_TS-CHFE]
+      Cseq: 1 ACK
+      Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+      Content-Length: 0
+
+    ]]>
+    </send>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+       NOTIFY sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [$IF_BRIDGE_CHFE]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+       From: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>
+       Call-ID: [$REFER_CHFE_refer_to_TS-CHFE_Call_ID]
+       CSeq: 4 NOTIFY
+       Contact: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: refer
+       Subscription-State: terminated
+       Supported: replaces, join, gruu
+       Content-Type: message/sipfrag;version=2.0
+       Content-Length: [len]
+
+       SIP/2.0 200 OK
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+       NOTIFY sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [$IF_BRIDGE_CHFE]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[remote_port]>
+       From: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>
+       Call-ID: [$SUBSCRIBE_CHFE_conference_Call_ID]
+       CSeq: 2 NOTIFY
+       Contact: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: conference
+       Accept: application/sdp, message/sipfrag
+       Subscription-State: active;expires=3600
+       Supported: replaces, join, gruu
+       Content-Type: application/conference-info+xml
+       Content-Length: [len]
+
+       <conference-info version="0" state="full"
+        entity="sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]">
+        <conference-description>
+         <conf-uris>
+          <entry>
+           <uri>sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]</uri>
+          </entry>
+         </conf-uris>
+        </conference-description>
+        <users>
+         <user entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]" state="full">
+          <display-text>CHFE</display-text>
+          <endpoint entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]">
+           <status>connected</status>
+           <joining-method>dialed-in</joining-method>
+           <media id="1">
+            <display-text>Main Audio</display-text>
+            <type>audio</type>
+            <src-id>583398</src-id>
+            <status>sendrecv</status>
+           </media>
+          </endpoint>
+         </user>
+         <user entity="sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port]" state="full">
+          <display-text>OSP</display-text>
+          <endpoint entity="sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port]">
+           <status>connected</status>
+           <joining-method>dialed-in</joining-method>
+           <media id="1">
+            <display-text>Main Audio</display-text>
+            <type>audio</type>
+            <src-id>583398</src-id>
+            <status>sendrecv</status>
+           </media>
+          </endpoint>
+         </user>
+         <user entity="sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port]" state="full">
+          <display-text>OSP</display-text>
+          <endpoint entity="sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port]">
+           <status>connected</status>
+           <joining-method>dialed-in</joining-method>
+           <media id="1">
+            <display-text>Main Audio</display-text>
+            <type>audio</type>
+            <src-id>583398</src-id>
+            <status>sendrecv</status>
+           </media>
+          </endpoint>
+         </user>
+        </users>
+       </conference-info>
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <media
+            type="rtp"
+            src_ip="[local_ip]"
+            dst_ip="[$IF_TS-CHFE_BRIDGE]"
+            dst_port="5047"
+    />
+    <recv request="SUBSCRIBE">
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="Call-ID:"
+            ctx_key="SUBSCRIBE_TS-CHFE_conference_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_TS-CHFE_BRIDGE]:[local_port]">
+        <![CDATA[
+
+      SIP/2.0 200 OK
+      [$last_Via]
+      [$last_From]
+      [$last_To]
+      [$last_Call-ID]
+      [$last_CSeq]
+      Contact: <sip:[$conference_id]@[$IF_BRIDGE_TS-CHFE]:[local_port]>;isfocus
+      Content-Length: 0
+
+    ]]>
+    </send>
+    <send to="[$IF_TS-CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+       NOTIFY sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [$IF_BRIDGE_TS-CHFE]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port]>
+       From: <sip:[$conference_id]@[$IF_BRIDGE_TS-CHFE]:[local_port]>
+       Call-ID: [$SUBSCRIBE_TS-CHFE_conference_Call_ID]
+       CSeq: 1 NOTIFY
+       Contact: <sip:[$conference_id]@[$IF_BRIDGE_TS-CHFE]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: conference
+       Accept: application/sdp, message/sipfrag
+       Subscription-State: active;expires=3600
+       Supported: replaces, join, gruu
+       Content-Type: application/conference-info+xml
+       Content-Length: [len]
+
+
+       <conference-info version="0" state="full"
+        entity="sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]">
+        <conference-description>
+         <conf-uris>
+          <entry>
+           <uri>sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]</uri>
+          </entry>
+         </conf-uris>
+        </conference-description>
+        <users>
+         <user entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]" state="full">
+          <display-text>CHFE</display-text>
+          <endpoint entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]">
+           <status>connected</status>
+           <joining-method>dialed-in</joining-method>
+           <media id="1">
+            <display-text>Main Audio</display-text>
+            <type>audio</type>
+            <src-id>583398</src-id>
+            <status>sendrecv</status>
+           </media>
+          </endpoint>
+         </user>
+         <user entity="sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port]" state="full">
+          <display-text>OSP</display-text>
+          <endpoint entity="sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port]">
+           <status>connected</status>
+           <joining-method>dialed-in</joining-method>
+           <media id="1">
+            <display-text>Main Audio</display-text>
+            <type>audio</type>
+            <src-id>583398</src-id>
+            <status>sendrecv</status>
+           </media>
+          </endpoint>
+         </user>
+         <user entity="sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port]" state="full">
+          <display-text>OSP</display-text>
+          <endpoint entity="sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port]">
+           <status>connected</status>
+           <joining-method>dialed-in</joining-method>
+           <media id="1">
+            <display-text>Main Audio</display-text>
+            <type>audio</type>
+            <src-id>583398</src-id>
+            <status>sendrecv</status>
+           </media>
+          </endpoint>
+         </user>
+        </users>
+       </conference-info>
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <recv request="BYE">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+      SIP/2.0 200 OK
+      [$last_Via]
+      [$last_From]
+      [$last_To]
+      [$last_Call-ID]
+      [$last_CSeq]
+      Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+      Content-Length: 0
+
+    ]]>
+    </send>
+    <send to="[$IF_CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+       NOTIFY sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [$IF_BRIDGE_CHFE]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[remote_port]>
+       From: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>
+       Call-ID: [$SUBSCRIBE_CHFE_conference_Call_ID]
+       CSeq: 2 NOTIFY
+       Contact: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: conference
+       Accept: application/sdp, message/sipfrag
+       Subscription-State: terminated
+       Supported: replaces, join, gruu
+       Content-Type: application/conference-info+xml
+       Content-Length: 0
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <send to="[$IF_TS-CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+       NOTIFY sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [$IF_BRIDGE_TS-CHFE]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port]>
+       From: <sip:[$conference_id]@[$IF_BRIDGE_TS-CHFE]:[local_port]>
+       Call-ID: [$SUBSCRIBE_TS-CHFE_conference_Call_ID]
+       CSeq: 2 NOTIFY
+       Contact: <sip:[$conference_id]@[$IF_BRIDGE_TS-CHFE]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: conference
+       Accept: application/sdp, message/sipfrag
+       Subscription-State: active;expires=3600
+       Supported: replaces, join, gruu
+       Content-Type: application/conference-info+xml
+       Content-Length: [len]
+
+       <conference-info version="0" state="full"
+        entity="sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]">
+        <conference-description>
+         <conf-uris>
+          <entry>
+           <uri>sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]</uri>
+          </entry>
+         </conf-uris>
+        </conference-description>
+        <users>
+         <user entity="sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port]" state="full">
+          <display-text>OSP</display-text>
+          <endpoint entity="sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port]">
+           <status>connected</status>
+           <joining-method>dialed-in</joining-method>
+           <media id="1">
+            <display-text>Main Audio</display-text>
+            <type>audio</type>
+            <src-id>583398</src-id>
+            <status>sendrecv</status>
+           </media>
+          </endpoint>
+         </user>
+         <user entity="sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port]" state="full">
+          <display-text>OSP</display-text>
+          <endpoint entity="sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port]">
+           <status>connected</status>
+           <joining-method>dialed-in</joining-method>
+           <media id="1">
+            <display-text>Main Audio</display-text>
+            <type>audio</type>
+            <src-id>583398</src-id>
+            <status>sendrecv</status>
+           </media>
+          </endpoint>
+         </user>
+        </users>
+       </conference-info>
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <recv request="BYE">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_OSP_BRIDGE]:[local_port]">
+    <![CDATA[
+
+      SIP/2.0 200 OK
+      [$last_Via]
+      [$last_From]
+      [$last_To]
+      [$last_Call-ID]
+      [$last_CSeq]
+      Contact: <sip:[$conference_id]@[$IF_BRIDGE_OSP]:[local_port]>;isfocus
+      Content-Length: 0
+
+    ]]>
+    </send>
+    <recv request="BYE">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_TS-CHFE_BRIDGE]:[local_port]">
+    <![CDATA[
+
+      SIP/2.0 200 OK
+      [$last_Via]
+      [$last_From]
+      [$last_To]
+      [$last_Call-ID]
+      [$last_CSeq]
+      Contact: <sip:[$conference_id]@[$IF_BRIDGE_OSP]:[local_port]>;isfocus
+      Content-Length: 0
+
+    ]]>
+    </send>
+    <send to="[$IF_TS-CHFE_BRIDGE]:[local_port]">
+        <![CDATA[
+
+       NOTIFY sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port] SIP/2.0
+       Via: SIP/2.0/[transport] [$IF_BRIDGE_TS-CHFE]:[local_port]
+       Max-Forwards: 70
+       To: <sip:[$TS-CHFE_tel]@[$IF_TS-CHFE_BRIDGE]:[local_port]>
+       From: <sip:[$conference_id]@[$IF_BRIDGE_TS-CHFE]:[local_port]>
+       Call-ID: [$SUBSCRIBE_TS-CHFE_conference_Call_ID]
+       CSeq: 3 NOTIFY
+       Contact: <sip:[$conference_id]@[$IF_BRIDGE_TS-CHFE]:[local_port]>;isfocus
+       Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+       Event: conference
+       Accept: application/sdp, message/sipfrag
+       Subscription-State: terminated
+       Supported: replaces, join, gruu
+       Content-Type: application/conference-info+xml
+       Content-Length: 0
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+</scenario>

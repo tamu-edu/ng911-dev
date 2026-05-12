@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+
+  Version:   010.3d.5.0.0
+  Date:      20251103
+
+-->
+<scenario name="BCF_simple">
+  <Global variables="BCF_FQDN, ESRP_FQDN, IF_OSP_BCF, IF_ESRP_BCF"/>
+	<recv request="INVITE">
+	  <operate
+		method_name="rewrite_invite_for_bcf"
+		src_ip="[$IF_OSP_BCF]"
+		dst_ip="[$IF_ESRP_BCF]"
+		dst_port="[port]"
+	  />
+	</recv>
+	<recv response="100" optional="true">
+	  <operate
+		method_name="forward_message"
+		src_ip="[$IF_ESRP_BCF]"
+		dst_ip="[$IF_OSP_BCF]"
+		dst_port="[port]"
+	  />
+	</recv>
+	<recv response="180" optional="true">
+	  <operate
+		method_name="forward_message"
+		src_ip="[$IF_ESRP_BCF]"
+		dst_ip="[$IF_OSP_BCF]"
+		dst_port="[port]"
+	  />
+	</recv>
+	<recv response="200" optional="true">
+	  <operate
+		method_name="forward_message"
+		src_ip="[$IF_ESRP_BCF]"
+		dst_ip="[$IF_OSP_BCF]"
+		dst_port="[port]"
+	  />
+	</recv>
+	<recv request="ACK">
+	  <operate
+		method_name="forward_message"
+		src_ip="[$IF_OSP_BCF]"
+		dst_ip="[$IF_ESRP_BCF]"
+		dst_port="[port]"
+	  />
+	</recv>
+	<recv request="BYE">
+	  <operate
+		method_name="forward_message"
+		src_ip="[$IF_ESRP_BCF]"
+		dst_ip="[$IF_OSP_BCF]"
+		dst_port="[port]"
+	  />
+	</recv>
+	<recv response="200">
+	  <operate
+		method_name="forward_message"
+		src_ip="[$IF_OSP_BCF]"
+		dst_ip="[$IF_ESRP_BCF]"
+		dst_port="[port]"
+	  />
+	</recv>
+</scenario>

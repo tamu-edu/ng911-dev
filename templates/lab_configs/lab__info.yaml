@@ -1,0 +1,36 @@
+# This configuration file defines the details of the test laboratory running this test suite.
+# This information is included in the generated NG9-1-1 Conformance Test Report.
+lab_info:
+
+  # Name of the test laboratory
+  name: "Test LAB"
+
+  # Accreditation status of the test laboratory (e.g. "Accredited")
+  accred_status: "Accredited"
+
+  # Accreditation reference number issued to the test laboratory
+  accred_ref: "123412"
+
+  # Name or identifier of the accreditation authority that issued the accreditation
+  accred_auth: "12344"
+
+  # First line of the test laboratory's address (e.g. street number and name)
+  addr_line_1: "1"
+
+  # Second line of the test laboratory's address (e.g. suite, floor, building); leave empty if not required
+  addr_line_2: "2"
+
+  # City where the test laboratory is located
+  city: "Web"
+
+  # State or province where the test laboratory is located
+  state: "Internet"
+
+  # Country where the test laboratory is located
+  country: "Earth"
+
+  # Postal/ZIP code of the test laboratory
+  zip: "001001"
+
+  # Website URL of the test laboratory
+  url: "www"

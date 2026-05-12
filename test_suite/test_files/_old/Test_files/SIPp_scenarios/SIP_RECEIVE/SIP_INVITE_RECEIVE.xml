@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.2.0.1
+  Date:      20241017
+
+-->
+<scenario name="SIP_INVITE_RECEIVE">
+	<recv request="INVITE"></recv>
+</scenario>

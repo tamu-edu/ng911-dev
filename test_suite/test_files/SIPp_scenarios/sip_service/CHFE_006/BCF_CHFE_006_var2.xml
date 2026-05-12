@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+
+  Version:   010.3d.5.0.2
+  Date:      20251205
+
+-->
+<scenario name="BCF_CHFE_006_var2">
+    <Global variables="IF_OSP_BCF, IF_ESRP_BCF"/>
+    <recv request="INVITE">
+        <operate
+                method_name="rewrite_invite_for_bcf"
+                src_ip="[$IF_OSP_BCF]"
+                dst_ip="[$IF_ESRP_BCF]"
+                dst_port="[local_port]"
+        />
+    </recv>
+</scenario>

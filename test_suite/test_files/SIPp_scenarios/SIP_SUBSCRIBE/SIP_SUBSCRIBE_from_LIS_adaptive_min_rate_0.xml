@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.3.0.1
+  Date:      20250714
+
+-->
+<scenario name="SIP_SUBSCRIBE_from_LIS_min_rate">
+  <send>
+    <![CDATA[
+
+      SUBSCRIBE sip:[service]@[remote_ip]:[remote_port] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      To: <sip:[service]@[remote_ip]:[remote_port]>
+      From: SENDER <sip:SENDER@[local_ip]:[local_port]>;tag=[call_number]
+      Call-ID: [call_id]
+      CSeq: 1 SUBSCRIBE
+      Max-Forwards: 70
+      Event: presence; adaptive-min-rate=0
+      Accept: application/pidf+xml
+      Contact: sip:SENDER@[local_ip]:[local_port]
+      Expires: 600
+      Content-Length: 0
+
+    ]]>
+  </send>
+    <recv response="400" optional="true"> </recv>
+    <recv response="401" optional="true"> </recv>
+    <recv response="402" optional="true"> </recv>
+    <recv response="403" optional="true"> </recv>
+    <recv response="404" optional="true"> </recv>
+    <recv response="405" optional="true"> </recv>
+    <recv response="406" optional="true"> </recv>
+    <recv response="407" optional="true"> </recv>
+    <recv response="408" optional="true"> </recv>
+    <recv response="409" optional="true"> </recv>
+    <recv response="410" optional="true"> </recv>
+    <recv response="411" optional="true"> </recv>
+    <recv response="412" optional="true"> </recv>
+    <recv response="413" optional="true"> </recv>
+    <recv response="414" optional="true"> </recv>
+    <recv response="415" optional="true"> </recv>
+    <recv response="416" optional="true"> </recv>
+    <recv response="417" optional="true"> </recv>
+    <recv response="420" optional="true"> </recv>
+    <recv response="421" optional="true"> </recv>
+    <recv response="422" optional="true"> </recv>
+    <recv response="423" optional="true"> </recv>
+    <recv response="424" optional="true"> </recv>
+    <recv response="428" optional="true"> </recv>
+    <recv response="429" optional="true"> </recv>
+    <recv response="430" optional="true"> </recv>
+    <recv response="433" optional="true"> </recv>
+    <recv response="436" optional="true"> </recv>
+    <recv response="437" optional="true"> </recv>
+    <recv response="438" optional="true"> </recv>
+    <recv response="480" optional="true"> </recv>
+    <recv response="481" optional="true"> </recv>
+    <recv response="482" optional="true"> </recv>
+    <recv response="483" optional="true"> </recv>
+    <recv response="484" optional="true"> </recv>
+    <recv response="485" optional="true"> </recv>
+    <recv response="486" optional="true"> </recv>
+    <recv response="487" optional="true"> </recv>
+    <recv response="488" optional="true"> </recv>
+    <recv response="489" optional="true"> </recv>
+    <recv response="491" optional="true"> </recv>
+    <recv response="493" optional="true"> </recv>
+    <recv response="494" optional="true"> </recv>
+    <recv response="200"> </recv>
+</scenario>

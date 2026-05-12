@@ -1,0 +1,229 @@
+test_config:
+  conformance:
+    tests:
+      - name: "CHFE_010"
+        variations:
+          - name: "Logging CallSignallingMessageLogEvent for outgoing messages"
+            description: "Test covers logging of CallSignallingMessageLogEvent originated by CHFE(outgoing)"
+            interfaces:
+              - name: "IF_ESRP_CHFE"
+                port_names: []
+              - name: "IF_CHFE_ESRP"
+                port_names: [ ]
+              - name: "IF_CHFE_LOG"
+                port_names: [ ]
+              - name: "IF_CHFE_TS-CA"
+                port_names: [ ]
+              - name: "IF_LOG_CHFE"
+                port_names: []
+              - name: "IF_TS-CA_CHFE"
+                port_names: [ ]
+            params:
+              messages:
+                # Test System Conference App
+                - action: "receive"
+                  if_name: "IF_TS-CA_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_TS-CA_CHFE"
+                      "save_result_as": "var.IF_TS-CA_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_TS-CA"
+                      "save_result_as": "var.IF_CHFE_TS-CA"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "TS-CA"
+                        extract_field: "api"
+                      "save_result_as": "var.api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.api"
+                        extract_field: "tel_number"
+                      "save_result_as": "var.TS-CA_tel"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml",
+                    kwargs: {
+                      set: {
+                        TS-CA_tel: "var.TS-CA_tel",
+                        IF_TS-CA_CHFE: "var.IF_TS-CA_CHFE",
+                        IF_CHFE_TS-CA: "var.IF_CHFE_TS-CA",
+                      }
+                    },
+                    save_response_as: "CHFE_010_TS-CA_response.log",
+                    save_log_as: "CHFE_010_TS-CA.log"
+                  }
+                  run_in_background: "True"
+
+                # Test System Logging Service
+                - action: "receive"
+                  if_name: "IF_LOG_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "LOG",
+                        extract_field: 'interfaces'
+                      }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "var.log_interfaces",
+                        where_field: "name",
+                        where_value: "IF_LOG_CHFE",
+                        extract_field: 'fqdn'
+                      }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "logid",
+                        fqdn: "var.log_fqdn",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/chfe_010/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/chfe_010/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/chfe_010/logeventid.json"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "201", "200" ]
+                  http_url: [ "/LogEvents", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/chfe_010/logeventid.json", "file
+                  .test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+
+                # Test System ESRP
+                - action: "send"
+                  if_name: "IF_ESRP_CHFE"
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_CHFE"
+                      "save_result_as": "var.IF_ESRP_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_ESRP"
+                      "save_result_as": "var.IF_CHFE_ESRP"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_CHFE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_CHFE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "api"
+                      "save_result_as": "var.api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.api"
+                        extract_field: "conference_id"
+                      "save_result_as": "var.conference_id"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHFE"
+                        extract_field: "api"
+                      "save_result_as": "var.api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.api"
+                        extract_field: "tel_number"
+                      "save_result_as": "var.CHFE_tel"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call_with_RTP.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/CHFE_010/SIP_basic_call_with_RTP.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/CHFE_010/SIP_basic_call_with_RTP.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/CHFE_010/SIP_basic_call_with_RTP.xml"
+                  if_port_name: ""  # Optional
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHFE_010/SIP_basic_call_with_RTP.xml",
+                    dependencies: [ "file.test_suite/test_files/SIPp_scenarios/CALLS/g711ulaw_rtp_stream.pcap" ],
+                    kwargs: { },
+                    save_response_as: "CHFE_010_ESRP_response.log",
+                    save_log_as: "CHFE_010_ESRP.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "manual_chfe"
+
+                - action: "manual"
+                  if_name: ""
+                  id: "manual_chfe"
+                  type: "SIP"
+                  method: ""
+                  instead: ""
+                  prompt: "MANUAL ACTION REQUIRED - please answer incoming call on CHFE (if auto answering is not 
+                  configured). And perform an Ad Hoc attended call transfer to the Test System Conference App"
+                  next_action: ""
+            filtering_options:
+              - message_type: "other"
+                src_interface: "IF_ESRP_CHFE"
+                dst_interface: "IF_CHFE_ESRP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: ""
+              - message_type: "stimulus"
+                src_interface: "IF_CHFE_TS-CA"
+                dst_interface: "IF_TS-CA_CHFE"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output"
+                src_interface: "IF_CHFE_LOG"
+                dst_interface: "IF_LOG_CHFE"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "201"
+                header_contains: "/LogEvents"
+                body_contains: ""
+        requirements:
+          - name: "RQ_CHFE_313"
+            variations: ["all"]
+          - name: "RQ_CHFE_314"
+            variations: ["all"]

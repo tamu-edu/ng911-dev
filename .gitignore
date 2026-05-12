@@ -1,0 +1,6 @@
+*.pyc
+.DS_Store
+test_suite/output_capture.pcap
+test_suite/test.txt
+test_suite/test_files/logs
+templates/artem_env
