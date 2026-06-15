@@ -1,0 +1,378 @@
+name: Dependency Regression Risk Check
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  regression-risk:
+    runs-on: ubuntu-latest
+
+    steps:
+      # --------------------------------------
+      # Checkout full history
+      # --------------------------------------
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch main
+        run: git fetch origin main
+
+      # --------------------------------------
+      # Detect if requirements changed
+      # --------------------------------------
+      - name: Detect requirements change
+        id: reqcheck
+        run: |
+          if git diff --quiet origin/main -- test_suite/requirements.txt; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: No dependency changes
+        if: steps.reqcheck.outputs.changed == 'false'
+        run: echo "No dependency changes detected."
+
+      # --------------------------------------
+      # Setup Python
+      # --------------------------------------
+      - name: Setup Python
+        if: steps.reqcheck.outputs.changed == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install tooling
+        if: steps.reqcheck.outputs.changed == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install packaging pipdeptree
+
+      # --------------------------------------
+      # Snapshot main and PR requirements
+      # --------------------------------------
+      - name: Prepare snapshots
+        if: steps.reqcheck.outputs.changed == 'true'
+        run: |
+          mkdir -p _dep_snapshots
+          git show origin/main:test_suite/requirements.txt > _dep_snapshots/requirements.main.txt
+          cp test_suite/requirements.txt _dep_snapshots/requirements.pr.txt
+
+      - name: Build main venv
+        if: steps.reqcheck.outputs.changed == 'true'
+        run: |
+          python -m venv .venv_main
+          . .venv_main/bin/activate
+          pip install -r _dep_snapshots/requirements.main.txt
+          pip install pipdeptree
+          pipdeptree --json-tree > _dep_snapshots/deps.main.json
+
+      - name: Build PR venv
+        if: steps.reqcheck.outputs.changed == 'true'
+        run: |
+          python -m venv .venv_pr
+          . .venv_pr/bin/activate
+          pip install -r _dep_snapshots/requirements.pr.txt
+          pip install pipdeptree
+          pipdeptree --json-tree > _dep_snapshots/deps.pr.json
+
+      # --------------------------------------
+      # Analyze regression risk (DETAILED)
+      # --------------------------------------
+      - name: Analyze regression risk
+        if: steps.reqcheck.outputs.changed == 'true'
+        run: |
+          python << 'PY'
+          import json
+          import subprocess
+          from packaging.version import Version, InvalidVersion
+          from pathlib import Path
+
+          SMALL_THRESHOLD = 35
+          HIGH_THRESHOLD = 80
+
+          def req_map(path: Path):
+              out = {}
+              for line in path.read_text().splitlines():
+                  line = line.strip()
+                  if not line or line.startswith("#"):
+                      continue
+                  if "==" in line:
+                      pkg, ver = line.split("==", 1)
+                      out[pkg.strip().lower()] = ver.strip()
+              return out
+
+          def flatten(tree_path: Path):
+            data = json.loads(tree_path.read_text())
+            seen = set()
+        
+            def walk(node):
+                # Handle both structures
+                if "package" in node:
+                    pkg = node["package"]
+                    name = (
+                        pkg.get("key")
+                        or pkg.get("package_name")
+                        or pkg.get("project_name")
+                        or ""
+                    )
+                else:
+                    name = (
+                        node.get("key")
+                        or node.get("package_name")
+                        or node.get("project_name")
+                        or ""
+                    )
+        
+                if name:
+                    seen.add(name.lower())
+        
+                for d in node.get("dependencies", []) or []:
+                    walk(d)
+        
+            if isinstance(data, list):
+                for n in data:
+                    walk(n)
+            elif isinstance(data, dict):
+                walk(data)
+        
+            return seen
+
+          req_main = req_map(Path("_dep_snapshots/requirements.main.txt"))
+          req_pr   = req_map(Path("_dep_snapshots/requirements.pr.txt"))
+
+          deps_main = flatten(Path("_dep_snapshots/deps.main.json"))
+          deps_pr   = flatten(Path("_dep_snapshots/deps.pr.json"))
+
+          diff_txt = subprocess.check_output(
+              ["git","diff","origin/main","--","test_suite/requirements.txt"],
+              text=True
+          )
+
+          added, removed = {}, {}
+          for line in diff_txt.splitlines():
+            # Skip diff metadata
+            if line.startswith(("+++", "---")):
+                continue
+        
+            if not line:
+                continue
+        
+            sign = line[0]
+            if sign not in {"+", "-"}:
+                continue
+        
+            content = line[1:].strip()
+        
+            # 🔥 Remove inline comments
+            content = content.split("#", 1)[0].strip()
+        
+            # Skip empty or commented-out lines
+            if not content:
+                continue
+        
+            # Only strict pins supported
+            if "==" not in content:
+                continue
+        
+            pkg, ver = content.split("==", 1)
+            pkg = pkg.strip().lower()
+            ver = ver.strip()
+        
+            if sign == "+":
+                added[pkg] = ver
+            else:
+                removed[pkg] = ver
+
+          risk = 0
+          major_upgrades = []
+          new_pkgs = []
+          removed_pkgs = []
+
+          for pkg, new_ver in added.items():
+              old_ver = removed.get(pkg)
+              if old_ver:
+                  try:
+                      if Version(new_ver).major > Version(old_ver).major:
+                          major_upgrades.append((pkg, old_ver, new_ver))
+                          risk += 50
+                      else:
+                          risk += 10
+                  except InvalidVersion:
+                      risk += 20
+              else:
+                  new_pkgs.append((pkg, new_ver))
+                  risk += 20
+
+          for pkg, old_ver in removed.items():
+              if pkg not in added:
+                  removed_pkgs.append((pkg, old_ver))
+                  risk += 15
+
+          delta = len(deps_pr) - len(deps_main)
+          ratio = (len(deps_pr) / len(deps_main)) if deps_main else 1
+
+          if delta >= 20:
+              risk += 30
+          if ratio >= 1.25:
+              risk += 30
+
+          if risk >= HIGH_THRESHOLD:
+              band = "HIGH"
+          elif risk >= SMALL_THRESHOLD:
+              band = "MODERATE"
+          else:
+              band = "LOW"
+
+          Path("risk_band.txt").write_text(band)
+
+          lines = []
+          lines.append("### 🔍 Dependency Regression Risk Analysis")
+          lines.append(f"- **Risk score:** `{risk}`")
+          lines.append(f"- **Risk level:** `{band}`")
+          lines.append("")
+
+          if major_upgrades:
+              lines.append("#### 🚨 Major Version Upgrades")
+              for pkg, ov, nv in major_upgrades:
+                  lines.append(f"- `{pkg}`: `{ov}` → `{nv}`")
+              lines.append("")
+
+          if new_pkgs:
+              lines.append("#### ➕ New Top-Level Dependencies")
+              for pkg, ver in new_pkgs:
+                  lines.append(f"- `{pkg}` `{ver}`")
+              lines.append("")
+
+          if removed_pkgs:
+              lines.append("#### ➖ Removed Dependencies")
+              for pkg, ver in removed_pkgs:
+                  lines.append(f"- `{pkg}` `{ver}`")
+              lines.append("")
+
+          lines.append("#### 📦 Transitive Dependency Impact")
+          lines.append(f"- Main branch: `{len(deps_main)}` packages")
+          lines.append(f"- PR branch: `{len(deps_pr)}` packages")
+          lines.append(f"- Delta: `{delta}`")
+          lines.append(f"- Growth ratio: `x{ratio:.2f}`")
+          lines.append("")
+          lines.append("<sub>Auto-generated by Dependency Regression Risk Check.</sub>")
+
+          Path("pr_comment.md").write_text("\n".join(lines))
+          PY
+
+      # --------------------------------------
+      # Comment on PR
+      # --------------------------------------
+      - name: Comment on PR (only for MODERATE/HIGH)
+        if: steps.reqcheck.outputs.changed == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            const marker = "<!-- DEP_REGRESSION_COMMENT -->";
+
+            // Read risk band
+            let band = "LOW";
+            try {
+              band = fs.readFileSync('risk_band.txt','utf8').trim();
+            } catch (e) {
+              band = "LOW";
+            }
+
+            // -----------------------------
+            // Delete previous comment
+            // -----------------------------
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number,
+              per_page: 100
+            });
+
+            for (const comment of comments) {
+              if (comment.body && comment.body.includes(marker)) {
+                await github.rest.issues.deleteComment({
+                  owner,
+                  repo,
+                  comment_id: comment.id
+                });
+              }
+            }
+
+            // 👉 Skip if LOW
+            if (band === "LOW") {
+              console.log("Risk LOW — skipping comment");
+              return;
+            }
+
+            // -----------------------------
+            // Build comment body
+            // -----------------------------
+            let body = fs.readFileSync('pr_comment.md','utf8');
+
+            body += "\n\n";
+            body += "⚠️ This PR introduces **dependency regression risk**.\n\n";
+
+            if (band === "HIGH") {
+              body += "🚨 **HIGH risk detected — careful validation required.**\n\n";
+            } else {
+              body += "⚠️ **MODERATE risk detected — review recommended.**\n\n";
+            }
+
+            body += marker;
+
+            // -----------------------------
+            // Create comment
+            // -----------------------------
+            const labels = context.payload.pull_request.labels.map(l => l.name);
+            
+            if (!labels.includes("dependency-risk-approved")) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body
+              });
+            }
+
+      # --------------------------------------
+      # Fail if MODERATE or HIGH
+      # --------------------------------------
+      - name: Enforce risk policy with manual override
+        if: steps.reqcheck.outputs.changed == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const band = fs.readFileSync('risk_band.txt','utf8').trim();
+            
+            if (band === "LOW") {
+              console.log("Risk LOW — merge allowed.");
+              return;
+            }
+            
+            const labels = context.payload.pull_request.labels.map(l => l.name);
+            
+            if (labels.includes("dependency-risk-approved")) {
+              console.log("Manual validation approved — merge allowed.");
+              return;
+            }
+            
+            core.setFailed(
+              `Dependency regression risk is ${band}.
+              Manual validation required.
+              Add label 'dependency-risk-approved' after testing.`
+            );

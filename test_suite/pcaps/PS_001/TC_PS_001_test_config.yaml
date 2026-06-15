@@ -1,0 +1,85 @@
+test_config:
+  test_case_name: "TC_PS_001"
+  global:
+    response_timeout: 30
+  report_files:
+    - type: "xml"
+      path: "TC_PS_001_CTR.xml"
+  log:
+    level: "DEBUG"
+    output_file: "test_files/logs/logger.log"
+  scenarios:
+    - name: "TC_PS_001_pass"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/PS_001/TC_PS_001_pass.pcap"
+      tests:
+        - name: "PS_001 Variation1 pass"
+          test_id: "PS_001"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            body_contains: "../Test_files/HTTP_messages/HTTP_JWS/Policy_not_signed"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "POST" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+#            parallel_execution: []
+        - name: "PS_001 Variation2 pass"
+          test_id: "PS_001"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            body_contains: "pcaps/PS_001/TC_PS_001_variation_2_JWS_payload"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "POST" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+#            parallel_execution: []
+        - name: "PS_001 Variation3 pass"
+          test_id: "PS_001"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            body_contains: "../Test_files/HTTP_messages/HTTP_JWS/Incorrect_JWS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "POST" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+#            parallel_execution: []
+    - name: "TC_PS_001_fail"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/PS_001/TC_PS_001_fail.pcap"
+      tests:
+        - name: "PS_001 Variation1 fail"
+          test_id: "PS_001"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            body_contains: "../Test_files/HTTP_messages/HTTP_JWS/Policy_not_signed"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "POST" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+#            parallel_execution: []
+        - name: "PS_001 Variation2 fail"
+          test_id: "PS_001"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            body_contains: "pcaps/PS_001/TC_PS_001_variation_2_JWS_payload"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "POST" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+#            parallel_execution: []
+        - name: "PS_001 Variation3 fail"
+          test_id: "PS_001"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            body_contains: "../Test_files/HTTP_messages/HTTP_JWS/Incorrect_JWS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "POST" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+#            parallel_execution: []

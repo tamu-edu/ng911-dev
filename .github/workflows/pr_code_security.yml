@@ -1,0 +1,187 @@
+name: PR Code Security Scan
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  bandit:
+    runs-on: ubuntu-latest
+
+    steps:
+      # -----------------------------
+      # Checkout
+      # -----------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # -----------------------------
+      # Setup Python
+      # -----------------------------
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # -----------------------------
+      # Install Bandit
+      # -----------------------------
+      - name: Install Bandit
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit
+
+      # -----------------------------
+      # Run Bandit (always produce JSON report)
+      #   -f json: machine readable
+      #   -o bandit.json: output file
+      #   --exit-zero: do not fail here (we fail later based on counts)
+      # -----------------------------
+      - name: Run Bandit
+        run: |
+          bandit -c bandit.yaml -r test_suite -f json -o bandit.json --exit-zero
+
+      # -----------------------------
+      # Summarize + Decide Pass/Fail
+      # Fail if MEDIUM or HIGH findings exist
+      # Also generate a short text summary file
+      # -----------------------------
+      - name: Summarize and enforce thresholds
+        id: summary
+        run: |
+          python << 'PY'
+          import json
+          from pathlib import Path
+
+          report_path = Path("bandit.json")
+          data = json.loads(report_path.read_text())
+
+          results = data.get("results", []) or []
+
+          sev_counts = {"LOW": 0, "MEDIUM": 0, "HIGH": 0}
+          for r in results:
+              sev = (r.get("issue_severity") or "").upper()
+              if sev in sev_counts:
+                  sev_counts[sev] += 1
+
+          total = sum(sev_counts.values())
+
+          summary_lines = [
+              "Bandit results summary",
+              f"Total findings: {total}",
+              f"HIGH:   {sev_counts['HIGH']}",
+              f"MEDIUM: {sev_counts['MEDIUM']}",
+              f"LOW:    {sev_counts['LOW']}",
+          ]
+          Path("bandit_summary.txt").write_text("\n".join(summary_lines) + "\n")
+
+          # Export to GitHub Actions outputs (for comment step)
+          out = Path(Path.cwd() / Path("GITHUB_OUTPUT"))
+          # In Actions runner, env var exists; fallback to stdout if not.
+          import os
+          go = os.environ.get("GITHUB_OUTPUT")
+          if go:
+              with open(go, "a", encoding="utf-8") as f:
+                  f.write(f"high={sev_counts['HIGH']}\n")
+                  f.write(f"medium={sev_counts['MEDIUM']}\n")
+                  f.write(f"low={sev_counts['LOW']}\n")
+                  f.write(f"total={total}\n")
+
+          # Fail gate: fail if any MEDIUM or HIGH found
+          if sev_counts["HIGH"] > 0 or sev_counts["MEDIUM"] > 0:
+              print("Failing: MEDIUM/HIGH findings present.")
+              raise SystemExit(1)
+
+          print("Pass: No MEDIUM/HIGH findings.")
+          PY
+
+      # -----------------------------
+      # Upload reports (ALWAYS)
+      # -----------------------------
+      - name: Upload Bandit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-security-bandit-report
+          path: |
+            bandit.json
+            bandit_summary.txt
+
+      # -----------------------------
+      # PR comment (ALWAYS) with counts + link to run
+      # Updates existing bot comment if present
+      # -----------------------------
+      - name: Comment PR with summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+          
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const marker = "<!-- BANDIT_SECURITY_COMMENT -->";
+          
+            const high = Number('${{ steps.summary.outputs.high }}' || '0');
+            const medium = Number('${{ steps.summary.outputs.medium }}' || '0');
+            const low = Number('${{ steps.summary.outputs.low }}' || '0');
+            const total = Number('${{ steps.summary.outputs.total }}' || '0');
+          
+            const failed = high > 0 || medium > 0;
+          
+            // -----------------------------
+            // Delete previous comment
+            // -----------------------------
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number,
+              per_page: 100
+            });
+          
+            for (const comment of comments) {
+              if (comment.body && comment.body.includes(marker)) {
+                await github.rest.issues.deleteComment({
+                  owner,
+                  repo,
+                  comment_id: comment.id
+                });
+              }
+            }
+          
+            // 👉 If no issues — do nothing
+            if (!failed) {
+              console.log("No MEDIUM/HIGH issues — skipping comment");
+              return;
+            }
+          
+            // -----------------------------
+            // Build comment
+            // -----------------------------
+            let body = "## ❌ Code Security Scan Failed (Bandit)\n\n";
+            body += `**Total findings:** ${total}\n\n`;
+          
+            body += `- HIGH: ${high}\n`;
+            body += `- MEDIUM: ${medium}\n`;
+            body += `- LOW: ${low}\n\n`;
+          
+            body += "Pipeline failed due to **MEDIUM or HIGH severity issues**.\n\n";
+          
+            body += `📎 Full report available in workflow artifacts:\n${runUrl}\n\n`;
+            body += marker;
+          
+            // -----------------------------
+            // Create new comment
+            // -----------------------------
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body
+            });

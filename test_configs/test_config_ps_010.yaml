@@ -1,0 +1,95 @@
+test_config:
+  conformance:
+    tests:
+      - name: "PS_010"
+        variations:
+          - name: "Policies_expiration"
+            description: "Verify if Policy Store does not provide expired policies"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+              - name: "IF_TMFE_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_TMFE_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_file"
+                      "save_result_as": "var.esrp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_key"
+                      "save_result_as": "var.esrp_certificate_key"
+                    - method_name: "generate_future_timestamp"
+                      kwargs:
+                        seconds_ahead: 30
+                      output_file: "var.future_timestamp"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file.test_suite/test_files/JSON/policy_object/
+                                          Policy_object_example_v010.3f.3.0.1.json"
+                        param_name: "policyExpirationTime"
+                        value: "var.future_timestamp"
+                        output_file: "file./tmp/PS_010/PS_010_policy.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/PS_010/PS_010_policy.json"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        output_file: "file./tmp/PS_010/PS_010_jws.json"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/PS_010/PS_010_jws.json"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                - action: "manual"
+                  if_name: ""
+                  type: "SIP"
+                  method: ""
+                  instead: ""
+                  prompt: "MANUAL ACTION REQUIRED - wait 30 seconds until policy expiration and then press any key to continue..."
+                  next_action: "send_http_get"
+                - action: "send"
+                  id: "send_http_get"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/Policies?policyId=test_example_1"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_TMFE_PS"
+                dst_interface: "IF_PS_TMFE"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "201" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/Policies?policyId=test_example_1"
+                body_contains: ""
+        requirements:
+          - name: "RQ_PS_001"
+            variations: [ "all" ]

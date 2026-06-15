@@ -1,0 +1,87 @@
+test_config:
+  global:
+    response_timeout: 30
+  report_files:
+    conformance: "CTR.pdf"
+    interoperability: "ITR.pdf"
+  log:
+    level: "DEBUG"
+    output_file: "/logs/testsuite.log"
+  scenarios:
+    - name: "Basic tests scenario"
+      mode: "pcap"  # pcap/capture
+      stimulus_body: "test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_EMERGENCY_SINGLE.xml"
+      pcap_file: "test.pcap"  # Leave empty in 'capture' mode
+      tests:
+        - name: "BCF_001"
+          ixit_file_path: ""  # Required for tests using provisioning data
+          src_interface: "IF_O-BCF-1_ESRP-1"
+          dst_interface: "IF_ESRP-1_O-BCF-1"
+          sip_method: "SIP_INVITE"
+          parallel_execution: ["ESRP_001", "ESRP_002_1"]
+        - name: "ESRP_001"
+          ixit_file_path: ""
+          src_interface: "IF_ESRP-1_LS"
+          dst_interface: "IF_LS_ESRP-1"
+          sip_method: "SIP_NOTIFY"
+          parallel_execution: [ "BCF_001", "ESRP_002_1" ]
+        - name: "ESRP_002_1"
+          ixit_file_path: ""
+          src_interface: "IF_ESRP-1_T-BCF"
+          dst_interface: "IF_T-BCF_ESRP-1"
+          sip_method: "SIP_INVITE"
+          parallel_execution: [ "BCF_001", "ESRP_001" ]
+        - name: "ESRP_002_2"
+          ixit_file_path: ""
+          src_interface: "IF_ESRP-1_T-BCF"
+          dst_interface: "IF_T-BCF_ESRP-1"
+          sip_method: "SIP_INVITE"
+          pcap: "garbled_pidf_lo_from_o-bcf.pcap"
+          parallel_execution: []
+        - name: "ESRP_002_3"
+          ixit_file_path: ""
+          src_interface: "IF_ESRP-1_T-BCF"
+          dst_interface: "IF_T-BCF_ESRP-1"
+          sip_method: "SIP_INVITE"
+          pcap: "geolocation_header_unable_to_dereference.pcap"
+          parallel_execution: []
+    - name: "ECRF_001 all checks"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "test.pcap"  # Leave empty in 'capture' mode
+      tests:
+      - name: "ECRF-LVF_001 - listServices urn:service:sos"
+        ixit_file_path: ""
+        subtests: ["Response for listServices urn:service:sos"]  # To be discussed
+        send_stimulus: "test_files/HTTP_messages/HTTP_LoST/listServices_urn-service-sos"
+        src_interface: "IF_ECRF-LVF_ESRP-1"
+        dst_interface: "IF_ESRP-1_ECRF-LVF"
+        http_request_method: "POST"
+        response_status_code: "200"
+        parallel_execution: ["ECRF-LVF_001 - listServices urn:emergency:service:sos"]
+      - name: "ECRF-LVF_001 - listServices urn:emergency:service:sos"
+        ixit_file_path: ""
+        subtests: ["Response for listServices urn:emergency:service:sos"]  # To be discussed
+        send_stimulus: "test_files/HTTP_messages/HTTP_LoST/listServices_urn-emergency-service-sos"
+        src_interface: "IF_ECRF-LVF_ESRP-1"
+        dst_interface: "IF_ESRP-1_ECRF-LVF"
+        http_request_method: "POST"
+        response_status_code: "200"
+        parallel_execution: ["ECRF-LVF_001 - listServices urn:service:sos"]
+      - name: "ECRF-LVF_001"
+        ixit_file_path: ""
+        subtests: ["Response for listServicesByLocation urn:service:sos"]  # To be discussed
+        send_stimulus: "test_files/HTTP_messages/HTTP_LoST/listServicesByLocation_urn-service-sos"
+        src_interface: "IF_ECRF-LVF_ESRP-1"
+        dst_interface: "IF_ESRP-1_ECRF-LVF"
+        http_request_method: "POST"
+        response_status_code: "200"
+        parallel_execution: []
+      - name: "ECRF-LVF_001"
+        ixit_file_path: ""
+        subtests: ["Response for listServicesByLocation urn:emergency:service:sos"]  # To be discussed
+        send_stimulus: "test_files/HTTP_messages/HTTP_LoST/listServicesByLocation_urn-emergency-service-sos"
+        src_interface: "IF_ECRF-LVF_ESRP-1"
+        dst_interface: "IF_ESRP-1_ECRF-LVF"
+        http_request_method: "POST"
+        response_status_code: "200"
+        parallel_execution: []

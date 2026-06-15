@@ -1,0 +1,217 @@
+name: Generate and Validate SBOM
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  #  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+
+    steps:
+      # -----------------------------
+      # Checkout
+      # -----------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -----------------------------
+      # Setup Python 3.12
+      # -----------------------------
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # -----------------------------
+      # Install dependencies (if exist)
+      # -----------------------------
+      - name: Install project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          if [ -f pyproject.toml ]; then
+            pip install .
+          fi
+
+      # -----------------------------
+      # Detect site-packages path dynamically
+      # -----------------------------
+      - name: Detect site-packages path
+        id: sitepkg
+        run: |
+          SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])")
+          echo "path=$SITE_PACKAGES" >> $GITHUB_OUTPUT
+
+      # -----------------------------
+      # Install Syft
+      # -----------------------------
+      - name: Install Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          syft version
+
+      # -----------------------------
+      # Generate SOURCE SBOM
+      # -----------------------------
+      - name: Generate Source CycloneDX SBOM
+        run: |
+          SYFT_FORMAT_JSON_PRETTY=true \
+          syft . -o cyclonedx-json=sbom-source-cyclonedx.json
+
+      - name: Generate Source SPDX SBOM
+        run: |
+          SYFT_FORMAT_JSON_PRETTY=true \
+          syft . -o spdx-json=sbom-source-spdx.json
+
+      # -----------------------------
+      # Generate INSTALLED SBOM
+      # -----------------------------
+      - name: Generate Installed CycloneDX SBOM
+        run: |
+          SYFT_FORMAT_JSON_PRETTY=true \
+          syft dir:${{ steps.sitepkg.outputs.path }} \
+            -o cyclonedx-json=sbom-installed-cyclonedx.json
+
+      - name: Generate Installed SPDX SBOM
+        run: |
+          SYFT_FORMAT_JSON_PRETTY=true \
+          syft dir:${{ steps.sitepkg.outputs.path }} \
+            -o spdx-json=sbom-installed-spdx.json
+
+      # -----------------------------
+      # Install CycloneDX CLI for validation
+      # -----------------------------
+      - name: Install CycloneDX CLI
+        run: |
+          docker pull cyclonedx/cyclonedx-cli
+
+      # -----------------------------
+      # Validate CycloneDX SBOM
+      # -----------------------------
+      - name: Validate Source CycloneDX SBOM
+        run: |
+          docker run --rm -v $(pwd):/workspace cyclonedx/cyclonedx-cli validate \
+            --input-file /workspace/sbom-source-cyclonedx.json
+            
+      - name: Validate Installed CycloneDX SBOM
+        run: |   
+          docker run --rm -v $(pwd):/workspace cyclonedx/cyclonedx-cli validate \
+            --input-file /workspace/sbom-installed-cyclonedx.json
+
+      # -----------------------------
+      # Validate SPDX SBOM syntax and structure
+      # -----------------------------
+      - name: Basic JSON SPDX Source validation
+        run: |
+          jq empty sbom-source-spdx.json
+
+      - name: Basic JSON SPDX INSTALLED validation
+        run: |
+          jq empty sbom-installed-spdx.json
+      
+      # -----------------------------
+      # Install SPDX Tools (Python)
+      # -----------------------------
+      - name: Install SPDX Tools
+        run: |
+          pip install spdx-tools
+      
+      # -----------------------------
+      # Validate SPDX Source SBOM
+      # -----------------------------
+      - name: Validate SPDX Source SBOM
+        run: |
+          python - <<EOF
+          from spdx_tools.spdx.parser.json.json_parser import parse_from_file
+          from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
+          
+          doc = parse_from_file("sbom-source-spdx.json")
+          messages = validate_full_spdx_document(doc)
+          
+          if messages:
+              print("SPDX Source SBOM validation errors:")
+              for msg in messages:
+                  print(f"- {msg.validation_message} @ {msg.context}")
+              raise SystemExit(1)
+          else:
+              print("SPDX Source SBOM is valid.")
+          EOF
+      
+      # -----------------------------
+      # Validate SPDX Installed SBOM
+      # -----------------------------
+      - name: Validate SPDX Installed SBOM
+        run: |
+          python - <<EOF
+          from spdx_tools.spdx.parser.json.json_parser import parse_from_file
+          from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
+          
+          doc = parse_from_file("sbom-installed-spdx.json")
+          messages = validate_full_spdx_document(doc)
+          
+          if messages:
+              print("SPDX Installed SBOM validation errors:")
+              for msg in messages:
+                  print(f"- {msg.validation_message} @ {msg.context}")
+              raise SystemExit(1)
+          else:
+              print("SPDX Installed SBOM is valid.")
+          EOF
+              
+      # -----------------------------
+      # Upload SBOM artifacts
+      # -----------------------------
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-files
+          path: |
+            sbom-source-cyclonedx.json
+            sbom-source-spdx.json
+            sbom-installed-cyclonedx.json
+            sbom-installed-spdx.json
+
+      # -----------------------------
+      # Comment PR with SBOM artifact link
+      # -----------------------------
+      - name: Comment PR with SBOM artifact link
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = "<sub>Auto-generated by SBOM workflow.</sub>";
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+
+            let body = "## 📦 SBOM Generation Completed\n\n";
+            body += "The Software Bill of Materials (SBOM) has been successfully generated and validated.\n\n";
+            body += "Generated artifacts:\n";
+            body += "- CycloneDX (Source)\n";
+            body += "- CycloneDX (Installed)\n";
+            body += "- SPDX (Source)\n";
+            body += "- SPDX (Installed)\n\n";
+            body += `📎 Download SBOM files from workflow artifacts:\n${runUrl}\n\n`;
+            body += marker;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner, repo, issue_number, per_page: 100
+            });
+
+            const existing = comments.find(c =>
+              c.user?.type === "Bot" && c.body?.includes(marker)
+            );
+            
+            await github.rest.issues.createComment({
+              owner, repo, issue_number, body
+            });

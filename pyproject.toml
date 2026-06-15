@@ -1,0 +1,13 @@
+[tool.deptry]
+
+requirements_files = ["test_suite/requirements.txt"]
+
+ignore = [
+    "DEP001",  # missing dependencies (false positives for internal modules)
+    "DEP003",  # transitive dependencies
+    "DEP004",  # imported but declared as transitive
+    "DEP005",  # stdlib modules (e.g. asyncio)
+]
+
+known_first_party = ["test_suite"]
+exclude = ["tests", "unit_tests"]

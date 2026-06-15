@@ -1,0 +1,167 @@
+test_config:
+  test_case_name: "TC_LOG_004"
+  global:
+    response_timeout: 30
+  report_files:
+    - type: "xml"
+      path: "TC_LOG_004_CTR.xml"
+  log:
+    level: "DEBUG"
+    output_file: "test_files/logs/logger.log"
+  scenarios:
+    - name: "TC_LOG_004_pass"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/LOG_004/TC_LOG_004_pass.pcap"
+      certificate_file: "cert_with_subjectAltName/bcf.ng911.test_PCA.crt"
+      certificate_key: "cert_with_subjectAltName/bcf.ng911.test.key"
+      tests:
+        - name: "LOG_004 pass variation 1"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents/test123"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_004 pass variation 2"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents"
+            body_contains: ""
+            response_status_code: "200" #  leave empty if not needed
+        - name: "LOG_004 pass variation 3"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents/test_log_1"
+            body_contains: ""
+            response_status_code: "200" #  leave empty if not needed
+    - name: "TC_LOG_004_fail1"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/LOG_004/TC_LOG_004_fail.pcap"
+      certificate_file: "cert_with_subjectAltName/bcf.ng911.test_PCA.crt"
+      certificate_key: "cert_with_subjectAltName/bcf.ng911.test.key"
+      tests:
+        - name: "LOG_004 fail variation 1"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents/test123"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_004 fail variation 2"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents"
+            body_contains: ""
+            response_status_code: "200" #  leave empty if not needed
+        - name: "LOG_004 fail variation 3"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents/test_log_1"
+            body_contains: ""
+            response_status_code: "200" #  leave empty if not needed
+    - name: "TC_LOG_004_fail2"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/LOG_004/TC_LOG_004_fail2.pcap"
+      certificate_file: "cert_self_signed/bcf.ng911.test_self_signed.crt"
+      certificate_key: "cert_self_signed/bcf.ng911.test.key"
+      tests:
+        - name: "LOG_004 fail variation 1"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents/test123"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_004 fail variation 2"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents"
+            body_contains: ""
+            response_status_code: "200" #  leave empty if not needed
+        - name: "LOG_004 fail variation 3"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents/test_log_1"
+            body_contains: ""
+            response_status_code: "200" #  leave empty if not needed
+    - name: "TC_LOG_004_fail3"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/LOG_004/TC_LOG_004_fail3.pcap"
+      certificate_file: "cert_with_subjectAltName/bcf.ng911.test_PCA.crt"
+      certificate_key: "cert_with_subjectAltName/bcf.ng911.test.key"
+      tests:
+        - name: "LOG_004 fail variation 1"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents/test123"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_004 fail variation 2"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents"
+            body_contains: ""
+            response_status_code: "200" #  leave empty if not needed
+        - name: "LOG_004 fail variation 3"
+          test_id: "LOG_004"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEvents/test_log_1"
+            body_contains: ""
+            response_status_code: "200" #  leave empty if not needed

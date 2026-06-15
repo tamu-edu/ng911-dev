@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<findService xmlns="urn:ietf:params:xml:ns:lost1" xmlns:p2="http://www.opengis.net/gml" serviceBoundary="value" recursive="true">
+ <location id="123456789" profile="geodetic-2d">
+   <p2:Ellipse id="ellipse1" srsName="urn:ogc:def:crs:EPSG::4326">
+      <p2:pos>39.09659644585462, -76.85609359348999</p2:pos>
+      <p2:semiMajorAxis uom="urn:ogc:def:uom:EPSG::9001">
+        123
+      </p2:semiMajorAxis>
+      <p2:semiMinorAxis uom="urn:ogc:def:uom:EPSG::9001">
+        200
+      </p2:semiMinorAxis>
+      <p2:orientation uom="urn:ogc:def:uom:EPSG::9002">
+        40
+      </p2:orientation>
+   </p2:Ellipse>
+ </location>
+ <service>urn:service:sos.police</service>
+</findService>

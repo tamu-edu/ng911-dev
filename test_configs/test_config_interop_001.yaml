@@ -1,0 +1,232 @@
+test_config:
+  conformance:
+    tests:
+      - name: "INTEROP_001"
+        variations:
+          - name: "INTEROP_2.4_VAR_11_The_Request-URI_is_a_SIP_URI_with_a_911_telephone_number."
+            description: "Interoperability test for Cellular emergency call with SIP URI 911 telephone number in the Request-URI"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_BCF_OSP"
+                port_names: []
+              - name: "IF_BCF_ESRP"
+                port_names: []
+              - name: "IF_BCF_CHFE"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+              - name: "IF_ESRP_CHFE"
+                port_names: []
+              - name: "IF_CHFE_ESRP"
+                port_names: []
+              - name: "IF_CHFE_BCF"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_BCF_OSP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_OSP_BCF"
+                      "save_result_as": "var.IF_OSP_BCF"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BCF_OSP"
+                      "save_result_as": "var.IF_BCF_OSP"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BCF_ESRP"
+                      "save_result_as": "var.IF_BCF_ESRP"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_BCF"
+                      "save_result_as": "var.IF_ESRP_BCF"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/INTEROP_001/BCF_INTEROP_001.xml",
+                    kwargs: {
+                      set: {
+                        IF_OSP_BCF: "var.IF_OSP_BCF",
+                        IF_BCF_OSP: "var.IF_BCF_OSP",
+                        IF_BCF_ESRP: "var.IF_BCF_ESRP",
+                        IF_ESRP_BCF: "var.IF_ESRP_BCF",
+                      }
+                    },
+                    save_response_as: "INTEROP_001_var11_BCF_response.log",
+                    save_log_as: "INTEROP_001_var11_BCF.log"
+                  }
+                  run_in_background: "True"
+                - action: "receive"
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BCF_ESRP"
+                      "save_result_as": "var.IF_BCF_ESRP"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_ESRP"
+                      "save_result_as": "var.IF_CHFE_ESRP"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/INTEROP_001/ESRP_INTEROP_001.xml",
+                    kwargs: {
+                      set: {
+                        IF_CHFE_ESRP: "var.IF_CHFE_ESRP",
+                        IF_BCF_ESRP: "var.IF_BCF_ESRP",
+                      }
+                    },
+                    save_response_as: "INTEROP_001_var11_ESRP_response.log",
+                    save_log_as: "INTEROP_001_var11_ESRP.log"
+                  }
+                  run_in_background: "True"
+                - action: "receive"
+                  if_name: "IF_CHFE_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_ESRP"
+                      "save_result_as": "var.IF_CHFE_ESRP"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_BCF"
+                      "save_result_as": "var.IF_CHFE_BCF"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BCF_CHFE"
+                      "save_result_as": "var.IF_BCF_CHFE"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHFE"
+                        extract_field: "api"
+                      "save_result_as": "var.api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.api"
+                        extract_field: "tel_number"
+                      "save_result_as": "var.CHFE_tel"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/INTEROP_001/CHFE_INTEROP_001.xml",
+                    kwargs: {
+                      set: {
+                        CHFE_tel: "var.CHFE_tel",
+                        IF_CHFE_ESRP: "var.IF_CHFE_ESRP",
+                        IF_BCF_CHFE: "var.IF_BCF_CHFE",
+                        IF_CHFE_BCF: "var.IF_CHFE_BCF",
+                      }
+                    },
+                    save_response_as: "INTEROP_001_var11_CHFE_response.log",
+                    save_log_as: "INTEROP_001_var11_CHFE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_911_call_from_OSP_with_RTP.xml",
+                    kwargs: {},
+                    save_response_as: "INTEROP_001_var11_OSP_response.log",
+                    save_log_as: "INTEROP_001_var11_OSP.log"
+                  }
+                  run_in_background: "False"
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: ""
+              - message_type: "other"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output"
+                src_interface: "IF_ESRP_CHFE"
+                dst_interface: "IF_CHFE_ESRP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: ""
+        requirements:
+          - name: "INTEROP_2.4_TMS_2"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_4"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_6"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_7"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_8"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_10"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_12"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_14"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_53"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_69"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_70"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_72"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_74"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_75"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_76"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_77"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_78"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_80"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_81"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_84"
+            variations: ["all"]
+          - name: "INTEROP_2.4_TMS_89"
+            variations: ["all"]
+          - name: "INTEROP_2.4_CTES_1"
+            variations: ["all"]
+          - name: "INTEROP_2.4_IETES_6"
+            variations: ["all"]
+          - name: "INTEROP_2.4_IETES_7"
+            variations: ["all"]
+          - name: "INTEROP_2.4_IETES_8"
+            variations: ["all"]

@@ -1,0 +1,27 @@
+bcp47==0.1.0
+beautifulsoup4==4.12.3
+bs4==0.0.2
+charset-normalizer==3.3.2
+cryptography==46.0.7
+docker==7.1.0
+docxtpl==0.20.0
+flatten-json==0.1.14
+fpdf==1.7.2
+fpdf2==2.8.3
+psutil==6.0.0
+pyfiglet==1.0.3
+PyJWT==2.12.0
+pyshark==0.6
+pytest==8.3.3
+python-dateutil==2.9.0.post0
+PyYAML==6.0.2
+reportlab==4.4.1
+requests==2.33.1
+urllib3==2.7.0
+shapely==2.1.1
+geopy==2.4.1
+
+# proxy_server
+fastapi==0.115.14
+uvicorn==0.30.6
+pydantic==2.7.4

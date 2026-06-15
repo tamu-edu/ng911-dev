@@ -1,0 +1,369 @@
+test_config:
+  conformance:
+    tests:
+      - name: "ESRP_012"
+        variations:
+          - name: "Client_side_of_ElementState_and_ServiceState_for_downstream_ESRP"
+            description: "Validate client-side of ElementState + ServiceState for downstream ESRP"
+            interfaces:
+              - name: "IF_ESRP-2_ESRP"
+                port_names: []
+              - name: "IF_PS_ESRP"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_PS_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP-2_ESRP"
+                      "save_result_as": "var.IF_ESRP-2_ESRP"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "service@{0}"
+                        variables: "list.[var.IF_ESRP-2_ESRP,]"
+                      save_result_as: "var.downstream_esrp_uri"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_ESRP_012_v010.3f.5.0.1.json"
+                        "param_name": "DOWNSTREAM_ESRP_SIP_URI"
+                        "value": "var.downstream_esrp_uri"
+                        "output_file": "file./tmp/ESRP_012/policy.json"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_file"
+                      save_result_as: "var.esrp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_key"
+                      "save_result_as": "var.esrp_certificate_key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/ESRP_012/policy.json"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        output_file: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                  next_action: "receive_subscription"
+                - action: "receive"
+                  id: "receive_subscription"
+                  if_name: "IF_ESRP-2_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path:
+                      "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_SUBSCRIBE_RECEIVE_ElementState_ServiceState.xml",
+                    kwargs: { },
+                    save_response_as: "ESRP_012_var1_RECEIVE_response.log",
+                    save_log_as: "ESRP_012_var1_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                  next_action: "other_restart_esrp"
+                - action: "manual"
+                  id: "other_restart_esrp"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "MANUAL ACTION REQUIRED - please trigger restart of ESRP and press any key to continue..."
+                  next_action: "other_timeout"
+                - action: "manual"
+                  id: "other_timeout"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 10  # timeout in seconds
+                  prompt: "Waiting 10 seconds until all SIP NOTIFY messages will be sent..."
+                  next_action: ""
+            filtering_options: # optional
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_ESRP_ESRP-2"
+                  dst_interface: "IF_ESRP-2_ESRP"
+                  sip_method: "SUBSCRIBE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "emergency-ServiceState"
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_ESRP-2_ESRP"
+                  dst_interface: "IF_ESRP_ESRP-2"
+                  sip_method: "NOTIFY" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "emergency-ServiceState"
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_ESRP_ESRP-2"
+                  dst_interface: "IF_ESRP-2_ESRP"
+                  sip_method: "SUBSCRIBE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "emergency-ElementState"
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_ESRP-2_ESRP"
+                  dst_interface: "IF_ESRP_ESRP-2"
+                  sip_method: "NOTIFY" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "emergency-ElementState"
+                  body_contains: ""
+          - name: "Server_side_of_ElementState_and_updating_status"
+            description: "Validate server-side of ElementState + updating status"
+            interfaces:
+              - name: "IF_BCF_ESRP"
+                port_names: []
+              - name: "IF_PS_ESRP"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_PS_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP-2_ESRP"
+                      "save_result_as": "var.IF_ESRP-2_ESRP"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "service@{0}"
+                        variables: "list.[var.IF_ESRP-2_ESRP,]"
+                      save_result_as: "var.downstream_esrp_uri"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_ESRP_012_v010.3f.5.0.1.json"
+                        "param_name": "DOWNSTREAM_ESRP_SIP_URI"
+                        "value": "var.downstream_esrp_uri"
+                        "output_file": "file./tmp/ESRP_012/policy.json"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_file"
+                      save_result_as: "var.esrp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_key"
+                      "save_result_as": "var.esrp_certificate_key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/ESRP_012/policy.json"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        output_file: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                  next_action: "other_restart_esrp_var2"
+                - action: "manual"
+                  id: "other_restart_esrp_var2"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "MANUAL ACTION REQUIRED - if configuration should be fetched from the Policy Store, please trigger restart of ESRP (otherwise ignore) and press any key to continue..."
+                  next_action: "send_subscription"
+                - action: "send"
+                  id: "send_subscription"
+                  if_name: "IF_BCF_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "NOTIFY"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_ElementState.xml",
+                    kwargs: {},
+                    save_response_as: "ESRP_012_var2_RECEIVE_response.log",
+                    save_log_as: "ESRP_012_var2_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                  next_action: "other_change_state"
+                - action: "manual"
+                  id: "other_change_state"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "MANUAL ACTION REQUIRED - please simulate change of ElementState and press any key to continue..."
+                  next_action: "other_timeout_var2"
+                - action: "manual"
+                  id: "other_timeout_var2"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 5  # timeout in seconds
+                  prompt: "Waiting 5 seconds until all SIP NOTIFY messages will be sent..."
+                  next_action: ""
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_BCF_ESRP"
+                  dst_interface: "IF_ESRP_BCF"
+                  sip_method: "SUBSCRIBE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "emergency-ElementState"
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_ESRP_BCF"
+                  dst_interface: "IF_BCF_ESRP"
+                  sip_method: "NOTIFY" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "emergency-ElementState"
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_ESRP_BCF"
+                  dst_interface: "IF_BCF_ESRP"
+                  sip_method: "NOTIFY" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "emergency-ElementState"
+                  body_contains: ""
+          - name: "Server_side_of_ServiceState"
+            description: "Validate server-side of ServiceState"
+            interfaces:
+              - name: "IF_BCF_ESRP"
+                port_names: []
+              - name: "IF_PS_ESRP"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_PS_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP-2_ESRP"
+                      "save_result_as": "var.IF_ESRP-2_ESRP"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "service@{0}"
+                        variables: "list.[var.IF_ESRP-2_ESRP,]"
+                      save_result_as: "var.downstream_esrp_uri"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_ESRP_012_v010.3f.5.0.1.json"
+                        "param_name": "DOWNSTREAM_ESRP_SIP_URI"
+                        "value": "var.downstream_esrp_uri"
+                        "output_file": "file./tmp/ESRP_012/policy.json"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_file"
+                      save_result_as: "var.esrp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_key"
+                      "save_result_as": "var.esrp_certificate_key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/ESRP_012/policy.json"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        output_file: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/Policies"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                  next_action: "other_restart_esrp_var3"
+                - action: "manual"
+                  id: "other_restart_esrp_var3"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "MANUAL ACTION REQUIRED - if configuration should be fetched from the Policy Store, please trigger restart of ESRP (otherwise ignore) and press any key to continue..."
+                  next_action: "send_subscription"
+                - action: "send"
+                  id: "send_subscription"
+                  if_name: "IF_BCF_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "NOTIFY"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_ServiceState.xml",
+                    kwargs: {},
+                    save_response_as: "ESRP_012_var3_RECEIVE_response.log",
+                    save_log_as: "ESRP_012_var3_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                  next_action: "other_timeout"
+                - action: "manual"
+                  id: "other_timeout"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 5  # timeout in seconds
+                  prompt: "Waiting 5 seconds until all SIP NOTIFY messages will be sent..."
+                  next_action: ""
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_BCF_ESRP"
+                  dst_interface: "IF_ESRP_BCF"
+                  sip_method: "SUBSCRIBE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "emergency-ServiceState"
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_ESRP_BCF"
+                  dst_interface: "IF_BCF_ESRP"
+                  sip_method: "NOTIFY" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "emergency-ServiceState"
+                  body_contains: ""
+        requirements:
+          - name: "RQ_ESRP_058"
+            variations: ["Client_side_of_ElementState_and_ServiceState_for_downstream_ESRP"]
+          - name: "RQ_ESRP_060"
+            variations: ["Server_side_of_ElementState_and_updating_status"]
+          - name: "RQ_ESRP_062"
+            variations: ["Server_side_of_ServiceState"]
