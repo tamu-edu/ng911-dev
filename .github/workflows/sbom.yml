@@ -1,0 +1,177 @@
+name: Generate and Validate SBOM
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12"
+  SYFT_VERSION: "v1.50.0"
+  CYCLONEDX_CLI_VERSION: "0.32.0"
+  SPDX_TOOLS_VERSION: "0.8.5"
+  ARTIFACT_RETENTION_DAYS: "30"
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: test_suite/requirements.txt
+
+      - name: Prepare installed dependency environment
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+
+          if [ ! -f test_suite/requirements.txt ]; then
+            echo "test_suite/requirements.txt not found."
+            exit 1
+          fi
+
+          python -m pip install -r test_suite/requirements.txt
+
+      - name: Detect site-packages path
+        id: sitepkg
+        run: |
+          SITE_PACKAGES="$(python -c 'import site; print(site.getsitepackages()[0])')"
+          test -d "$SITE_PACKAGES"
+          echo "path=$SITE_PACKAGES" >> "$GITHUB_OUTPUT"
+
+      - name: Install Syft
+        run: |
+          set -euo pipefail
+          curl -sSfL "https://raw.githubusercontent.com/anchore/syft/${SYFT_VERSION}/install.sh" \
+            | sh -s -- -b /usr/local/bin "${SYFT_VERSION}"
+          syft version
+
+      - name: Generate source CycloneDX SBOM
+        run: |
+          set -euo pipefail
+          SYFT_FORMAT_JSON_PRETTY=true \
+            syft . -o cyclonedx-json=sbom-source-cyclonedx.json
+          test -s sbom-source-cyclonedx.json
+
+      - name: Generate source SPDX SBOM
+        run: |
+          set -euo pipefail
+          SYFT_FORMAT_JSON_PRETTY=true \
+            syft . -o spdx-json=sbom-source-spdx.json
+          test -s sbom-source-spdx.json
+
+      - name: Generate installed CycloneDX SBOM
+        run: |
+          set -euo pipefail
+          SYFT_FORMAT_JSON_PRETTY=true \
+            syft "dir:${{ steps.sitepkg.outputs.path }}" \
+              -o cyclonedx-json=sbom-installed-cyclonedx.json
+          test -s sbom-installed-cyclonedx.json
+
+      - name: Generate installed SPDX SBOM
+        run: |
+          set -euo pipefail
+          SYFT_FORMAT_JSON_PRETTY=true \
+            syft "dir:${{ steps.sitepkg.outputs.path }}" \
+              -o spdx-json=sbom-installed-spdx.json
+          test -s sbom-installed-spdx.json
+
+      - name: Pull pinned CycloneDX validator
+        run: |
+          set -euo pipefail
+          docker pull "cyclonedx/cyclonedx-cli:${CYCLONEDX_CLI_VERSION}"
+
+      - name: Validate source CycloneDX SBOM
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            "cyclonedx/cyclonedx-cli:${CYCLONEDX_CLI_VERSION}" \
+            validate \
+            --input-file /workspace/sbom-source-cyclonedx.json \
+            --fail-on-errors
+
+      - name: Validate installed CycloneDX SBOM
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            "cyclonedx/cyclonedx-cli:${CYCLONEDX_CLI_VERSION}" \
+            validate \
+            --input-file /workspace/sbom-installed-cyclonedx.json \
+            --fail-on-errors
+
+      - name: Validate SPDX JSON syntax
+        run: |
+          set -euo pipefail
+          jq empty sbom-source-spdx.json
+          jq empty sbom-installed-spdx.json
+
+      - name: Install SPDX Tools
+        run: |
+          set -euo pipefail
+          python -m pip install "spdx-tools==${SPDX_TOOLS_VERSION}"
+
+      - name: Validate SPDX documents
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          from spdx_tools.spdx.parser.json.json_parser import parse_from_file
+          from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
+
+          files = [
+              Path("sbom-source-spdx.json"),
+              Path("sbom-installed-spdx.json"),
+          ]
+
+          failed = False
+          for path in files:
+              doc = parse_from_file(str(path))
+              messages = validate_full_spdx_document(doc)
+
+              if messages:
+                  failed = True
+                  print(f"{path} validation errors:")
+                  for msg in messages:
+                      print(f"- {msg.validation_message} @ {msg.context}")
+              else:
+                  print(f"{path} is valid.")
+
+          raise SystemExit(1 if failed else 0)
+          PY
+
+      - name: Write workflow summary
+        if: always()
+        run: |
+          {
+            echo "## SBOM Generation"
+            echo
+            echo "Generated inventories:"
+            echo "- Source — CycloneDX"
+            echo "- Source — SPDX"
+            echo "- Installed environment — CycloneDX"
+            echo "- Installed environment — SPDX"
+            echo
+            echo "The workflow is intended for ad-hoc/manual SBOM generation and validation."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload SBOM artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-files
+          path: |
+            sbom-source-cyclonedx.json
+            sbom-source-spdx.json
+            sbom-installed-cyclonedx.json
+            sbom-installed-spdx.json
+          if-no-files-found: warn
+          retention-days: ${{ fromJSON(env.ARTIFACT_RETENTION_DAYS) }}

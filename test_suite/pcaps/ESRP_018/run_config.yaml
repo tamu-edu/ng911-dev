@@ -1,0 +1,371 @@
+"run_config":
+  "output_folder": "results/ESRP_2026-07-08T161322_ESRP_ALL_TESTS"
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": ""
+      "prefix": "ESRP"
+      "suffix": "ESRP_ALL_TESTS"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "ENTER NAME"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "ENTER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": "ENTER ADDRESS"
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+        "eng_name": "ENTER NAME"
+      "supplier":
+        "name": "ENTER SUPPLIER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": ""
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+      "iut":
+        "type": "ESRP"
+        "name": "IF_ESRP_CHFE"
+        "version": "0.0.0.1"
+        "date_of_receipt": "ENTER CURRENT DATE"
+        "location": "ENTER LOCATION"
+        "cs_id": "CS00001"
+        "cs_static_conform": false
+      "test_env":
+        "ixit_id": "11111"
+        "test_method": "test_method"
+        "spec_name": "STA-010"
+        "spec_version": "3.0"
+        "test_period_start": "ENTER CURRENT DATE"
+        "test_period_end": "ENTER CURRENT DATE"
+        "log_ref": "00001"
+        "log_ret_date": "ENTER CURRENT DATE"
+    "log":
+      "level": "DEBUG"
+      "output_file": "results/ESRP_2026-07-08T161322_ESRP_ALL_TESTS/CHFE_DEBUG.log"
+      "dev_mode": false
+    "comments":
+    - "author": "ENTER AUTHOR NAME"
+      "comment": "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  "tests":
+  - "name": "ESRP_CS00001"
+    "requirements":
+    - "name": "RQ_ESRP_121"
+      "variations":
+      - "Logging of ServiceStateChangeLogEvent on ESRP Security Posture changes"
+      - "Logging of ServiceStateChangeLogEvent on ESRP Service State changes"
+    - "name": "RQ_ESRP_122"
+      "variations":
+      - "Logging of ServiceStateChangeLogEvent on ESRP Security Posture changes"
+      - "Logging of ServiceStateChangeLogEvent on ESRP Service State changes"
+    "variations":
+    - "name": "Logging of ServiceStateChangeLogEvent on ESRP Security Posture changes"
+      "description": "Verify that ESRP logs a valid ServiceStateChangeLogEvent when\
+        \ Security Posture state changes."
+      "interfaces":
+      - "name": "IF_LOG_ESRP"
+        "port_names": []
+      - "name": "IF_BCF_ESRP"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/ESRP_018/ESRP_018_v1_pass.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "receive"
+          "if_name": "IF_LOG_ESRP"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "LOG"
+              "extract_field": "interfaces"
+            "save_result_as": "var.log_interfaces"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.log_interfaces"
+              "where_field": "name"
+              "where_value": "IF_LOG_ESRP"
+              "extract_field": "fqdn"
+            "save_result_as": "var.log_fqdn"
+          - "method_name": "generate_identifier"
+            "kwargs":
+              "identifier_type": "logid"
+              "fqdn": "var.log_fqdn"
+              "set_default": "True"
+            "save_result_as": "var.logid"
+          - "method_name": "save_to_file"
+            "kwargs":
+              "input_str": "{\"logEventId\": \"test\"}"
+              "filename": "/tmp/ESRP_018/logeventid.json"
+          - "method_name": "modify_json_file"
+            "kwargs":
+              "json_input_file": "file./tmp/ESRP_018/logeventid.json"
+              "param_name": "logEventId"
+              "value": "var.logid"
+              "output_file": "file./tmp/ESRP_018/logeventid.json"
+          "type": "HTTP"
+          "method":
+          - "POST"
+          - "GET"
+          "response_code":
+          - "201"
+          - "200"
+          "http_url":
+          - "/LogEvents"
+          - "/Versions"
+          "body":
+          - "file./tmp/ESRP_018/logeventid.json"
+          - "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json"
+          "sipp_scenario": {}
+          "run_in_background": "True"
+        - "action": "send"
+          "if_name": "IF_BCF_ESRP"
+          "if_port_name": ""
+          "id": "send_subscribe_servicestate"
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_BCF_ESRP"
+            "save_result_as": "var.IF_BCF_ESRP"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "interfaces"
+            "save_result_as": "var.esrp_interfaces"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.esrp_interfaces"
+              "where_field": "name"
+              "where_value": "IF_ESRP_BCF"
+              "extract_field": "ip"
+            "save_result_as": "var.esrp_ip"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.esrp_interfaces"
+              "where_field": "name"
+              "where_value": "IF_ESRP_BCF"
+              "extract_field": "fqdn"
+            "save_result_as": "var.esrp_fqdn"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.esrp_interfaces"
+              "where_field": "name"
+              "where_value": "IF_ESRP_BCF"
+              "extract_field": "port_mapping"
+            "save_result_as": "var.esrp_port_mapping"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.esrp_port_mapping"
+              "where_field": "protocol"
+              "where_value": "HTTP"
+              "extract_field": "port"
+            "save_result_as": "var.esrp_port"
+          - "method_name": "generate_url"
+            "kwargs":
+              "protocol": "http"
+              "address": "list.[var.esrp_fqdn, var.esrp_ip]"
+              "port": "var.esrp_port"
+              "path": "/LoST"
+            "save_result_as": "var.esrp_url"
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file./tmp/ESRP_018/SIP_SUBSCRIBE_ServiceState.xml"
+            "kwargs": {}
+            "save_response_as": "ESRP_018_var1_ServiceState_response.log"
+            "save_log_as": "ESRP_018_var1_ServiceState.log"
+          "run_in_background": "True"
+        - "action": "manual"
+          "if_name": ""
+          "instead": ""
+          "type": "SIP"
+          "method": ""
+          "prompt": "MANUAL ACTION REQUIRED - please simulate change of Security Posture\
+            \ to 'Orange' and press any key to continue..."
+          "next_action": "send_subscribe_servicestate"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_BCF_ESRP"
+        "dst_interface": "IF_ESRP_BCF"
+        "sip_method": "SUBSCRIBE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": ""
+        "header_contains": "Event: emergency-ServiceState"
+      - "message_type": "output"
+        "src_interface": "IF_ESRP_LOG"
+        "dst_interface": "IF_LOG_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "body_contains": ""
+        "header_contains": ""
+    - "name": "Logging of ServiceStateChangeLogEvent on ESRP Service State changes"
+      "description": "Verify that ESRP logs a valid ServiceStateChangeLogEvent when\
+        \ Service State changes."
+      "interfaces":
+      - "name": "IF_LOG_ESRP"
+        "port_names": []
+      - "name": "IF_BCF_ESRP"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/ESRP_018/ESRP_018_v2_pass.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "receive"
+          "if_name": "IF_LOG_ESRP"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "LOG"
+              "extract_field": "interfaces"
+            "save_result_as": "var.log_interfaces"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.log_interfaces"
+              "where_field": "name"
+              "where_value": "IF_LOG_ESRP"
+              "extract_field": "fqdn"
+            "save_result_as": "var.log_fqdn"
+          - "method_name": "generate_identifier"
+            "kwargs":
+              "identifier_type": "logid"
+              "fqdn": "var.log_fqdn"
+              "set_default": "True"
+            "save_result_as": "var.logid"
+          - "method_name": "save_to_file"
+            "kwargs":
+              "input_str": "{\"logEventId\": \"test\"}"
+              "filename": "/tmp/ESRP_018/logeventid.json"
+          - "method_name": "modify_json_file"
+            "kwargs":
+              "json_input_file": "file./tmp/ESRP_018/logeventid.json"
+              "param_name": "logEventId"
+              "value": "var.logid"
+              "output_file": "file./tmp/ESRP_018/logeventid.json"
+          "type": "HTTP"
+          "method":
+          - "POST"
+          - "GET"
+          "response_code":
+          - "201"
+          - "200"
+          "http_url":
+          - "/LogEvents"
+          - "/Versions"
+          "body":
+          - "file./tmp/ESRP_018/logeventid.json"
+          - "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json"
+          "sipp_scenario": {}
+          "run_in_background": "True"
+        - "action": "send"
+          "if_name": "IF_BCF_ESRP"
+          "if_port_name": ""
+          "id": "send_subscribe_servicestate"
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_BCF_ESRP"
+            "save_result_as": "var.IF_BCF_ESRP"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "interfaces"
+            "save_result_as": "var.esrp_interfaces"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.esrp_interfaces"
+              "where_field": "name"
+              "where_value": "IF_ESRP_BCF"
+              "extract_field": "ip"
+            "save_result_as": "var.esrp_ip"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.esrp_interfaces"
+              "where_field": "name"
+              "where_value": "IF_ESRP_BCF"
+              "extract_field": "fqdn"
+            "save_result_as": "var.esrp_fqdn"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.esrp_interfaces"
+              "where_field": "name"
+              "where_value": "IF_ESRP_BCF"
+              "extract_field": "port_mapping"
+            "save_result_as": "var.esrp_port_mapping"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.esrp_port_mapping"
+              "where_field": "protocol"
+              "where_value": "HTTP"
+              "extract_field": "port"
+            "save_result_as": "var.esrp_port"
+          - "method_name": "generate_url"
+            "kwargs":
+              "protocol": "http"
+              "address": "list.[var.esrp_fqdn, var.esrp_ip]"
+              "port": "var.esrp_port"
+              "path": "/LoST"
+            "save_result_as": "var.esrp_url"
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file./tmp/ESRP_018/SIP_SUBSCRIBE_ServiceState.xml"
+            "kwargs": {}
+            "save_response_as": "ESRP_018_var2_ServiceState_response.log"
+            "save_log_as": "ESRP_018_var2_ServiceState.log"
+          "run_in_background": "True"
+        - "action": "manual"
+          "if_name": ""
+          "instead": ""
+          "type": "SIP"
+          "method": ""
+          "prompt": "MANUAL ACTION REQUIRED - please simulate change of Security Posture\
+            \ to 'Orange' and press any key to continue..."
+          "next_action": "send_subscribe_servicestate"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_BCF_ESRP"
+        "dst_interface": "IF_ESRP_BCF"
+        "sip_method": "SUBSCRIBE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": ""
+        "header_contains": "Event: emergency-ServiceState"
+      - "message_type": "output"
+        "src_interface": "IF_ESRP_LOG"
+        "dst_interface": "IF_LOG_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "body_contains": ""
+        "header_contains": ""
+    "preamble_list": []
+    "postamble_list": []

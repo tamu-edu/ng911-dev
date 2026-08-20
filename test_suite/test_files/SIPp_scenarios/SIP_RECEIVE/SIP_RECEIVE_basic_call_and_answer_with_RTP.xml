@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+
+  Version:   012.3f.5.0.1
+  Date:      20260709
+
+-->
+<scenario name="SIP_RECEIVE_basic_call_and_answer_with_RTP">
+  <recv request="INVITE" crlf="true">
+  </recv>
+  <send>
+    <![CDATA[
+
+      SIP/2.0 180 Ringing
+      [last_Via:]
+      [last_From:]
+      [last_To:];tag=[call_number]
+      [last_Call-ID:]
+      [last_CSeq:]
+      Contact: <sip:[local_ip]:[local_port];transport=[transport]>
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <send retrans="500">
+    <![CDATA[
+
+      SIP/2.0 200 OK
+      [last_Via:]
+      [last_From:]
+      [last_To:];tag=[call_number]
+      [last_Call-ID:]
+      [last_CSeq:]
+      Contact: <sip:[local_ip]:[local_port];transport=[transport]>
+      Content-Type: application/sdp
+      Content-Length: [len]
+
+      v=0
+      o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+      s=-
+      t=0 0
+      c=IN IP[media_ip_type] [media_ip]
+      m=audio [media_port] RTP/AVP 0
+      a=rtpmap:0 PCMU/8000
+
+    ]]>
+  </send>
+  <recv request="ACK" rtd="true" crlf="true">
+  </recv>
+  <nop>
+    <action>
+      <exec play_pcap_audio="audio_media_rtp.pcap"/>
+    </action>
+  </nop>
+  <!-- hold the call open so real RTP media can be exchanged and captured; the OSP-side
+       scenario never sends a BYE, so this instance idles the same way until the test
+       framework stops the SIPp process -->
+  <recv response="999" timeout="30000"></recv>
+</scenario>

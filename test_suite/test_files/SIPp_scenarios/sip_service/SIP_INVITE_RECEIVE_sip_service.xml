@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.5.1.3
+  Date:      20260216
+
+-->
+<scenario name="SIP_INVITE_RECEIVE">
+    <subscribe request="OPTIONS" reset_socket="true" optional="true">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+        <send>
+            <![CDATA[
+
+                SIP/2.0 200 OK
+                [$last_Via]
+                [$last_From]
+                [$last_To]
+                [$last_Call_ID]
+                [$last_CSeq]
+                Contact: sip:SENDER@[local_ip]:[local_port]
+                Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REGISTER, MESSAGE, INFO, SUBSCRIBE, NOTIFY, REFER, UPDATE, PRACK
+                Accept: */*
+                Supported: replaces, timer, 100rel
+                Content-Length:0
+
+            ]]>
+        </send>
+    </subscribe>
+    <subscribe request="INVITE" reset_socket="true" timeout="600000"> </subscribe>
+    <pause milliseconds="600000"/>
+</scenario>

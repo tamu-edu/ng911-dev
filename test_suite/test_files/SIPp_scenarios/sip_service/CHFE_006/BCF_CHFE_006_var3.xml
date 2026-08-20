@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+
+  Version:   010.3d.5.0.1
+  Date:      20251205
+
+-->
+<scenario name="BCF_CHFE_006_var3">
+    <Global variables="IF_OSP_BCF, IF_ESRP_BCF, IF_BCF_ESRP, INVITE_OSP_BCF_Call_ID,
+                        INVITE_BCF_BRIDGE_Call_ID, IF_CHFE_BCF, OSP_tel, IF_TS-CA_CHFE,
+                        IF_BCF_BRIDGE"/>
+    <recv request="INVITE">
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="Call-ID:"
+            ctx_key="INVITE_OSP_BCF_Call_ID"
+        />
+        <operate
+                method_name="replace_string"
+                replace_from="[$IF_OSP_BCF]"
+                replace_to="[$IF_BCF_ESRP]"
+        />
+        <operate
+                method_name="replace_string"
+                replace_from="m=audio 5012 RTP/AVP 0"
+                replace_to="m=audio 5026 RTP/AVP 0"
+        />
+        <operate
+                method_name="rewrite_invite_for_bcf"
+                src_ip="[$IF_OSP_BCF]"
+                dst_ip="[$IF_ESRP_BCF]"
+                dst_port="[local_port]"
+        />
+    </recv>
+    <recv response="100" optional="true">
+        <operate
+                method_name="replace_string"
+                replace_from="[$IF_BCF_ESRP]"
+                replace_to="[$IF_OSP_BCF]"
+        />
+        <operate
+                method_name="replace_string"
+                replace_from="m=audio 5026 RTP/AVP 0"
+                replace_to="m=audio 5012 RTP/AVP 0"
+        />
+        <operate
+                method_name="forward_message"
+                src_ip="[$IF_CHFE_BCF]"
+                dst_ip="[$IF_OSP_BCF]"
+                dst_port="[local_port]"
+        />
+    </recv>
+    <recv response="180" optional="true">
+        <operate
+                method_name="replace_string"
+                replace_from="[$IF_BCF_ESRP]"
+                replace_to="[$IF_OSP_BCF]"
+        />
+        <operate
+                method_name="replace_string"
+                replace_from="m=audio 5026 RTP/AVP 0"
+                replace_to="m=audio 5012 RTP/AVP 0"
+        />
+        <operate
+                method_name="forward_message"
+                src_ip="[$IF_CHFE_BCF]"
+                dst_ip="[$IF_OSP_BCF]"
+                dst_port="[local_port]"
+        />
+    </recv>
+    <recv response="200" optional="true">
+        <operate
+                method_name="replace_string"
+                replace_from="[$IF_BCF_ESRP]"
+                replace_to="[$IF_OSP_BCF]"
+        />
+        <operate
+                method_name="replace_string"
+                replace_from="m=audio 5026 RTP/AVP 0"
+                replace_to="m=audio 5012 RTP/AVP 0"
+        />
+        <operate
+                method_name="forward_message"
+                src_ip="[$IF_CHFE_BCF]"
+                dst_ip="[$IF_OSP_BCF]"
+                dst_port="[local_port]"
+        />
+    </recv>
+    <recv request="ACK">
+        <operate
+                method_name="replace_string"
+                replace_from="[$IF_BCF_OSP]"
+                replace_to="[$IF_CHFE_BCF]"
+        />
+        <operate
+                method_name="replace_string"
+                replace_from="m=audio 5012 RTP/AVP 0"
+                replace_to="m=audio 5026 RTP/AVP 0"
+        />
+        <operate
+                method_name="forward_message"
+                src_ip="[$IF_OSP_BCF]"
+                dst_ip="[$IF_CHFE_BCF]"
+                dst_port="[local_port]"
+        />
+    </recv>
+    <media
+            type="rtp_proxy"
+            proxy_ip="[local_ip]"
+            proxy_port="5012"
+            src_ip="[$IF_OSP_BCF]"
+            dst_ip="[$IF_CHFE_BCF]"
+            dst_port="5026"
+    />
+    <media
+            type="rtp_proxy"
+            proxy_ip="[local_ip]"
+            proxy_port="5026"
+            src_ip="[$IF_CHFE_BCF]"
+            dst_ip="[$IF_OSP_BCF]"
+            dst_port="5012"
+    />
+    <recv request="INVITE">
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="Call-ID:"
+            ctx_key="INVITE_BCF_BRIDGE_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_BRIDGE_BCF]:[local_port]">
+        <![CDATA[
+
+            SIP/2.0 200 OK
+            [$last_Via]
+            [$last_From]
+            [$last_To]
+            [$last_Call-ID]
+            [$last_CSeq]
+            Contact: <sip:[$conference_id]@[$IF_BRIDGE_BCF]:[local_port]>;isfocus
+            Content-Type: application/sdp
+            Content-Length: [len]
+
+            v=0
+            o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+            s=-
+            t=0 0
+            c=IN IP[media_ip_type] [media_ip]
+            m=audio 5024 RTP/AVP 0
+            a=rtpmap:0 PCMU/8000
+
+    ]]>
+    </send>
+    <recv request="ACK"> </recv>
+    <stop_media
+            type="rtp_proxy"
+            proxy_ip="[local_ip]"
+            proxy_port="5012"
+            src_ip="[$IF_OSP_BCF]"
+            dst_ip="[$IF_CHFE_BCF]"
+            dst_port="5026"
+    />
+    <stop_media
+            type="rtp_proxy"
+            proxy_ip="[local_ip]"
+            proxy_port="5026"
+            src_ip="[$IF_CHFE_BCF]"
+            dst_ip="[$IF_OSP_BCF]"
+            dst_port="5012"
+    />
+    <media
+            type="rtp_proxy"
+            proxy_ip="[local_ip]"
+            proxy_port="5012"
+            src_ip="[$IF_OSP_BCF]"
+            dst_ip="[$IF_BRIDGE_BCF]"
+            dst_port="5024"
+    />
+    <media
+            type="rtp_proxy"
+            proxy_ip="[local_ip]"
+            proxy_port="5024"
+            src_ip="[$IF_BRIDGE_BCF]"
+            dst_ip="[$IF_OSP_BCF]"
+            dst_port="5012"
+    />
+    <send to="[$IF_CHFE_BCF]:[local_port]">
+    <![CDATA[
+
+          BYE sip:[$conference_id]@[$IF_CHFE_BCF]:[local_port] SIP/2.0
+          Via: SIP/2.0/[transport] [local_ip]:[local_port]
+          From: <sip:[$OSP_tel]@[$IF_OSP_BCF]:[local_port]>
+          To: urn:service:sos
+          Call-ID: [$INVITE_OSP_BCF_Call_ID]
+          CSeq: 2 BYE
+          Max-Forwards: 70
+          Contact: <sip:[$conference_id]@[$IF_TS-CA_CHFE]:[local_port];isfocus>
+          Content-Length: 0
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+    <recv request="INVITE">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_TS-CHFE_BCF]:[local_port]">
+    <![CDATA[
+
+          SIP/2.0 200 OK
+          [$last_Via]
+          [$last_From]
+          [$last_To]
+          [$last_Call-ID]
+          [$last_CSeq]
+          Contact: <sip:[$conference_id]@[$IF_TS-CA_CHFE]:[local_port];isfocus>
+          Content-Type: application/sdp
+          Content-Length: [len]
+
+          v=0
+          o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+          s=-
+          t=0 0
+          c=IN IP[media_ip_type] [media_ip]
+          m=audio 5027 RTP/AVP 0
+          a=rtpmap:0 PCMU/8000
+
+    ]]>
+    </send>
+    <recv request="ACK"> </recv>
+    <stop_media
+            type="rtp_proxy"
+            proxy_ip="[local_ip]"
+            proxy_port="5012"
+            src_ip="[$IF_OSP_BCF]"
+            dst_ip="[$IF_BRIDGE_BCF]"
+            dst_port="5024"
+    />
+    <stop_media
+            type="rtp_proxy"
+            proxy_ip="[local_ip]"
+            proxy_port="5024"
+            src_ip="[$IF_BRIDGE_BCF]"
+            dst_ip="[$IF_OSP_BCF]"
+            dst_port="5012"
+    />
+    <media
+            type="rtp_proxy"
+            proxy_ip="[local_ip]"
+            proxy_port="5012"
+            src_ip="[$IF_OSP_BCF]"
+            dst_ip="[$IF_TS-CHFE_BCF]"
+            dst_port="5027"
+    />
+    <media
+            type="rtp_proxy"
+            proxy_ip="[local_ip]"
+            proxy_port="5027"
+            src_ip="[$IF_TS-CHFE_BCF]"
+            dst_ip="[$IF_OSP_BCF]"
+            dst_port="5012"
+    />
+    <send to="[$IF_BRIDGE_BCF]:[local_port]">
+    <![CDATA[
+
+      BYE sip:[$conference_id]@[$IF_BRIDGE_BCF]:[local_port] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      From: <sip:[$OSP_tel]@[$IF_BCF_BRIDGE]:[local_port]>
+      To: urn:service:sos
+      Call-ID: [$INVITE_BCF_BRIDGE_Call_ID]
+      CSeq: 2 BYE
+      Max-Forwards: 70
+      Contact: <sip:[$conference_id]@[$IF_TS-CA_CHFE]:[local_port];isfocus>
+      Content-Length: 0
+
+    ]]>
+    </send>
+    <recv response="200"> </recv>
+</scenario>

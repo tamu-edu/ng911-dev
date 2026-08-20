@@ -1,0 +1,45 @@
+{
+  "name": "anujakumthekar",
+  "displayName": "tplan",
+  "description": "test Purpose Plan Syntax",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.88.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "tplan",
+        "aliases": [
+          "test purpose",
+          "tplan"
+        ],
+        "extensions": [
+          ".tp",
+          ".tplan"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "tplan",
+        "scopeName": "source.tplan",
+        "path": "./syntaxes/tplan.tmLanguage.json"
+      }
+    ],
+    "themes": [
+      {
+        "label": "TPLan Color Theme",
+        "uiTheme": "vs",
+        "path": "./themes/tplang-color-theme.json"
+      }
+    ]
+  },
+  "dependencies": {
+    "papaparse": "^5.4.1"
+  }
+}

@@ -1,0 +1,638 @@
+name: Dependency Security Scan
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  SYFT_VERSION: "v1.50.0"
+  TRIVY_VERSION: "v0.72.0"
+  GRYPE_VERSION: "v0.116.1"
+  OSV_VERSION: "v1.7.3"
+  BOMBER_VERSION: "v0.5.0"
+  ARTIFACT_RETENTION_DAYS: "14"
+
+jobs:
+  security_scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Syft
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          curl -sSfL "https://raw.githubusercontent.com/anchore/syft/${SYFT_VERSION}/install.sh" \
+            | sh -s -- -b /usr/local/bin "${SYFT_VERSION}"
+          syft version
+
+      - name: Generate SBOM
+        continue-on-error: true
+        id: sbom
+        run: |
+          set -euo pipefail
+          SYFT_FORMAT_JSON_PRETTY=true \
+            syft . -o cyclonedx-json@1.5=sbom.cdx.json
+
+          test -s sbom.cdx.json
+          python -m json.tool sbom.cdx.json >/dev/null
+
+      - name: Install Trivy
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          curl -sSfL "https://raw.githubusercontent.com/aquasecurity/trivy/${TRIVY_VERSION}/contrib/install.sh" \
+            | sudo sh -s -- -b /usr/local/bin "${TRIVY_VERSION}"
+          trivy --version
+
+      - name: Run Trivy filesystem scan
+        continue-on-error: true
+        id: trivy
+        run: |
+          set +e
+          trivy fs --format json -o trivy.json .
+          EXIT_CODE=$?
+          set -e
+
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
+
+          test "$EXIT_CODE" -eq 0
+          test -s trivy.json
+          python -m json.tool trivy.json >/dev/null
+
+      - name: Install Grype
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          curl -sSfL "https://raw.githubusercontent.com/anchore/grype/${GRYPE_VERSION}/install.sh" \
+            | sh -s -- -b /usr/local/bin "${GRYPE_VERSION}"
+          grype version
+
+      - name: Run Grype SBOM scan
+        continue-on-error: true
+        id: grype
+        run: |
+          set +e
+          grype sbom:sbom.cdx.json -o json > grype.json
+          EXIT_CODE=$?
+          set -e
+
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
+
+          test "$EXIT_CODE" -eq 0
+          test -s grype.json
+          python -m json.tool grype.json >/dev/null
+
+      - name: Install OSV-Scanner
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          curl -sSfL \
+            "https://github.com/google/osv-scanner/releases/download/${OSV_VERSION}/osv-scanner_linux_amd64" \
+            -o osv-scanner
+
+          chmod +x osv-scanner
+          sudo mv osv-scanner /usr/local/bin/osv-scanner
+          osv-scanner --version
+
+      - name: Run OSV scan
+        continue-on-error: true
+        id: osv
+        run: |
+          set +e
+          osv-scanner scan \
+            --lockfile test_suite/requirements.txt \
+            --format json \
+            --output osv.json
+          EXIT_CODE=$?
+          set -e
+
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
+
+          # OSV may return non-zero when vulnerabilities are found.
+          # The generated report is therefore authoritative.
+          test -s osv.json
+          python -m json.tool osv.json >/dev/null
+
+      - name: Install Bomber
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          go install "github.com/devops-kung-fu/bomber@${BOMBER_VERSION}"
+          sudo mv "$HOME/go/bin/bomber" /usr/local/bin/bomber
+          bomber --version
+
+      - name: Run Bomber SBOM scan
+        continue-on-error: true
+        id: bomber
+        run: |
+          set +e
+          bomber scan sbom.cdx.json --output json > bomber.json
+          EXIT_CODE=$?
+          set -e
+
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
+
+          # Bomber may return non-zero when findings exist and also prepends
+          # informational text before its JSON output.
+          # The report is normalized and validated later.
+          test -s bomber.json
+
+      - name: Validate scanner reports
+        id: validation
+        if: always()
+        run: |
+          python <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          reports = [
+              "sbom.cdx.json",
+              "trivy.json",
+              "grype.json",
+              "osv.json",
+              "bomber.json",
+          ]
+
+          def load_report(path: Path):
+              text = path.read_text(encoding="utf-8")
+
+              # Bomber v0.5.0 prints informational text before the JSON object.
+              if path.name == "bomber.json":
+                  start = text.find("{")
+                  if start == -1:
+                      raise ValueError("No JSON object found in Bomber output.")
+                  text = text[start:]
+
+              return json.loads(text)
+
+          problems = []
+
+          for name in reports:
+              path = Path(name)
+
+              if not path.exists() or path.stat().st_size == 0:
+                  problems.append(f"{name}: missing or empty")
+                  continue
+
+              try:
+                  load_report(path)
+              except (OSError, json.JSONDecodeError, ValueError) as exc:
+                  problems.append(f"{name}: invalid JSON ({exc})")
+
+          output = Path(os.environ["GITHUB_OUTPUT"])
+
+          with output.open("a", encoding="utf-8") as f:
+              f.write(f"valid={'false' if problems else 'true'}\n")
+
+          if problems:
+              print("Dependency security assessment incomplete:")
+              for problem in problems:
+                  print(f"- {problem}")
+              raise SystemExit(1)
+
+          print("All dependency security reports are present and valid.")
+          PY
+
+      - name: Merge vulnerability results
+        id: merge
+        if: always() && steps.validation.outputs.valid == 'true'
+        run: |
+          python <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          def load(path):
+              text = Path(path).read_text(encoding="utf-8")
+
+              # Bomber v0.5.0 prepends informational text before JSON.
+              if path == "bomber.json":
+                  start = text.find("{")
+                  if start == -1:
+                      raise ValueError("No JSON object found in Bomber output.")
+                  text = text[start:]
+
+              return json.loads(text)
+
+          def norm_sev(value):
+              if not value:
+                  return "UNKNOWN"
+
+              value = str(value).upper()
+
+              if value == "CRIT":
+                  return "CRITICAL"
+
+              if value == "MODERATE":
+                  return "MEDIUM"
+
+              if value in {"UNDEFINED", "UNSPECIFIED"}:
+                  return "UNKNOWN"
+
+              return value
+
+          def parse_purl_coordinates(value):
+              if not value:
+                  return None, None
+
+              # Example:
+              # pkg:pypi/cryptography@49.0.0
+              match = re.match(r"^pkg:[^/]+/([^@]+)@(.+)$", value)
+
+              if not match:
+                  return value, None
+
+              return match.group(1), match.group(2)
+
+          weights = {
+              "UNKNOWN": 0,
+              "LOW": 1,
+              "MEDIUM": 2,
+              "HIGH": 3,
+              "CRITICAL": 4,
+          }
+
+          merged = {}
+
+          def add(key, source, severity):
+              vuln_id, package, version = key
+
+              if not vuln_id:
+                  return
+
+              severity = norm_sev(severity)
+
+              normalized_key = (
+                  str(vuln_id),
+                  str(package or ""),
+                  str(version or ""),
+              )
+
+              if normalized_key not in merged:
+                  merged[normalized_key] = {
+                      "sources": set(),
+                      "severity": severity,
+                  }
+              else:
+                  current = merged[normalized_key]["severity"]
+
+                  if weights.get(severity, 0) > weights.get(current, 0):
+                      merged[normalized_key]["severity"] = severity
+
+              merged[normalized_key]["sources"].add(source)
+
+          # --------------------------------------
+          # Trivy
+          # --------------------------------------
+
+          trivy = load("trivy.json")
+
+          for result in trivy.get("Results", []) or []:
+              for vuln in result.get("Vulnerabilities", []) or []:
+                  add(
+                      (
+                          vuln.get("VulnerabilityID"),
+                          vuln.get("PkgName"),
+                          vuln.get("InstalledVersion"),
+                      ),
+                      "trivy",
+                      vuln.get("Severity"),
+                  )
+
+          # --------------------------------------
+          # Grype
+          # --------------------------------------
+
+          grype = load("grype.json")
+
+          for match in grype.get("matches", []) or []:
+              vuln = match.get("vulnerability", {}) or {}
+              artifact = match.get("artifact", {}) or {}
+
+              add(
+                  (
+                      vuln.get("id"),
+                      artifact.get("name"),
+                      artifact.get("version"),
+                  ),
+                  "grype",
+                  vuln.get("severity"),
+              )
+
+          # --------------------------------------
+          # OSV
+          # --------------------------------------
+
+          osv = load("osv.json")
+
+          for result in osv.get("results", []) or []:
+              for package_entry in result.get("packages", []) or []:
+                  package = package_entry.get("package", {}) or {}
+
+                  package_name = package.get("name")
+                  package_version = package.get("version")
+
+                  for vuln in package_entry.get("vulnerabilities", []) or []:
+                      add(
+                          (
+                              vuln.get("id"),
+                              package_name,
+                              package_version,
+                          ),
+                          "osv",
+                          "UNKNOWN",
+                      )
+
+              # Support older/alternative OSV JSON structure.
+              if result.get("vulnerabilities"):
+                  package_name = None
+                  package_version = None
+
+                  packages = result.get("packages", []) or []
+
+                  if packages:
+                      package = packages[0].get("package", {}) or {}
+                      package_name = package.get("name")
+                      package_version = package.get("version")
+
+                  for vuln in result.get("vulnerabilities", []) or []:
+                      add(
+                          (
+                              vuln.get("id"),
+                              package_name,
+                              package_version,
+                          ),
+                          "osv",
+                          "UNKNOWN",
+                      )
+
+          # --------------------------------------
+          # Bomber
+          # --------------------------------------
+
+          bomber = load("bomber.json")
+
+          for package_entry in bomber.get("packages", []) or []:
+              package_name, package_version = parse_purl_coordinates(
+                  package_entry.get("coordinates")
+              )
+
+              for vuln in package_entry.get("vulnerabilities", []) or []:
+                  vuln_id = vuln.get("id") or vuln.get("cve")
+
+                  add(
+                      (
+                          vuln_id,
+                          package_name,
+                          package_version,
+                      ),
+                      "bomber",
+                      vuln.get("severity"),
+                  )
+
+          # --------------------------------------
+          # Build merged output
+          # --------------------------------------
+
+          final = []
+
+          for (vuln_id, package, version), data in merged.items():
+              severity = data["severity"]
+              sources = sorted(data["sources"])
+
+              final.append(
+                  {
+                      "id": vuln_id,
+                      "package": package or None,
+                      "version": version or None,
+                      "severity": severity,
+                      "sources": sources,
+                      "score": (
+                          weights.get(severity, 0) * 25
+                          + max(len(sources) - 1, 0) * 10
+                      ),
+                  }
+              )
+
+          final.sort(
+              key=lambda item: (
+                  -weights.get(item["severity"], 0),
+                  str(item.get("id") or ""),
+                  str(item.get("package") or ""),
+                  str(item.get("version") or ""),
+              )
+          )
+
+          Path("merged-vulns.json").write_text(
+              json.dumps(final, indent=2),
+              encoding="utf-8",
+          )
+
+          counts = {
+              name: 0
+              for name in [
+                  "CRITICAL",
+                  "HIGH",
+                  "MEDIUM",
+                  "LOW",
+                  "UNKNOWN",
+              ]
+          }
+
+          for item in final:
+              severity = item["severity"]
+
+              if severity not in counts:
+                  severity = "UNKNOWN"
+
+              counts[severity] += 1
+
+          output = Path(os.environ["GITHUB_OUTPUT"])
+
+          with output.open("a", encoding="utf-8") as f:
+              f.write(f"critical={counts['CRITICAL']}\n")
+              f.write(f"high={counts['HIGH']}\n")
+              f.write(f"medium={counts['MEDIUM']}\n")
+              f.write(f"low={counts['LOW']}\n")
+              f.write(f"unknown={counts['UNKNOWN']}\n")
+              f.write(f"total={len(final)}\n")
+
+          print(f"Merged vulnerability findings: {len(final)}")
+          print(
+              "Severity counts: "
+              f"CRITICAL={counts['CRITICAL']}, "
+              f"HIGH={counts['HIGH']}, "
+              f"MEDIUM={counts['MEDIUM']}, "
+              f"LOW={counts['LOW']}, "
+              f"UNKNOWN={counts['UNKNOWN']}"
+          )
+          PY
+
+      - name: Write workflow summary
+        if: always()
+        run: |
+          {
+            echo "## Dependency Security Scan"
+            echo
+
+            if [ "${{ steps.validation.outputs.valid }}" != "true" ]; then
+              echo "**Assessment incomplete.** One or more scanner reports are missing or invalid."
+            else
+              echo "| Severity | Findings |"
+              echo "| --- | ---: |"
+              echo "| CRITICAL | ${{ steps.merge.outputs.critical }} |"
+              echo "| HIGH | ${{ steps.merge.outputs.high }} |"
+              echo "| MEDIUM | ${{ steps.merge.outputs.medium }} |"
+              echo "| LOW | ${{ steps.merge.outputs.low }} |"
+              echo "| UNKNOWN | ${{ steps.merge.outputs.unknown }} |"
+              echo "| **Total** | **${{ steps.merge.outputs.total }}** |"
+              echo
+              echo "Current policy blocks HIGH and CRITICAL findings."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-security-reports
+          path: |
+            sbom.cdx.json
+            trivy.json
+            grype.json
+            osv.json
+            bomber.json
+            merged-vulns.json
+          if-no-files-found: warn
+          retention-days: ${{ fromJSON(env.ARTIFACT_RETENTION_DAYS) }}
+
+      - name: Comment PR with dependency security summary
+        if: ${{ github.event_name == 'pull_request' && always() }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            const runUrl =
+              `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+
+            const marker = "<!-- SECURITY_SCAN_COMMENT -->";
+
+            const valid =
+              "${{ steps.validation.outputs.valid }}" === "true";
+
+            const critical =
+              Number("${{ steps.merge.outputs.critical }}" || 0);
+
+            const high =
+              Number("${{ steps.merge.outputs.high }}" || 0);
+
+            const medium =
+              Number("${{ steps.merge.outputs.medium }}" || 0);
+
+            const low =
+              Number("${{ steps.merge.outputs.low }}" || 0);
+
+            const unknown =
+              Number("${{ steps.merge.outputs.unknown }}" || 0);
+
+            const total =
+              Number("${{ steps.merge.outputs.total }}" || 0);
+
+            const blocked =
+              critical > 0 || high > 0;
+
+            const { data: comments } =
+              await github.rest.issues.listComments({
+                owner,
+                repo,
+                issue_number,
+                per_page: 100
+              });
+
+            for (const comment of comments) {
+              if (
+                comment.body &&
+                comment.body.includes(marker)
+              ) {
+                await github.rest.issues.deleteComment({
+                  owner,
+                  repo,
+                  comment_id: comment.id
+                });
+              }
+            }
+
+            if (valid && !blocked) {
+              console.log(
+                "No HIGH/CRITICAL dependency vulnerabilities — skipping comment."
+              );
+              return;
+            }
+
+            let body;
+
+            if (!valid) {
+              body =
+                "## ⚠️ Dependency Security Assessment Incomplete\n\n";
+
+              body +=
+                "One or more scanners did not produce a valid report. ";
+
+              body +=
+                "The assessment is treated as failed rather than as a clean scan.\n\n";
+            } else {
+              body =
+                "## ❌ Dependency Security Scan Failed\n\n";
+
+              body +=
+                `**Total merged findings:** ${total}\n\n`;
+
+              body += `- CRITICAL: ${critical}\n`;
+              body += `- HIGH: ${high}\n`;
+              body += `- MEDIUM: ${medium}\n`;
+              body += `- LOW: ${low}\n`;
+              body += `- UNKNOWN: ${unknown}\n\n`;
+
+              body +=
+                "Current policy blocks **HIGH or CRITICAL vulnerabilities**.\n\n";
+            }
+
+            body +=
+              `📎 Full reports and logs: ${runUrl}\n\n`;
+
+            body += marker;
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body
+            });
+
+      - name: Enforce dependency security gate
+        if: always()
+        run: |
+          if [ "${{ steps.validation.outputs.valid }}" != "true" ]; then
+            echo "Dependency security assessment incomplete."
+            exit 1
+          fi
+
+          if [ "${{ steps.merge.outputs.critical }}" -gt 0 ] || \
+             [ "${{ steps.merge.outputs.high }}" -gt 0 ]; then
+            echo "Dependency security gate failed due to HIGH/CRITICAL vulnerabilities."
+            exit 1
+          fi
+
+          echo "Dependency security gate passed."

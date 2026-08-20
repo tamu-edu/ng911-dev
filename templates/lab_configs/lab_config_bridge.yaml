@@ -1,0 +1,1004 @@
+# This configuration file defines the physical and network layout of the test environment.
+# It tells the test suite which network entities are involved in the test (e.g. OSP, BCF, ESRP),
+# how they are connected to each other, and what network settings and protocols each connection uses.
+# The test suite loads this file at startup, validates it, and uses it to automatically launch and
+# configure stub server entities before each test run. This file is specific to the functional element
+# being tested (e.g. BCF, ESRP) and will need to be filled out to match your actual lab network setup.
+lab_config:
+
+  # Path to the Certificate Authority certificate used to validate TLS/mTLS connections between lab entities.
+  # Only required if one or more interfaces are configured with mTLSv1.2 or mTLSv1.3 transport. e.g. /path/to/ca.crt
+  pca_certificate_file: ""
+
+  # Path to the private key corresponding to the CA certificate above.
+  # Only required if one or more interfaces are configured with mTLSv1.2 or mTLSv1.3 transport. e.g. /path/to/ca.key
+  pca_certificate_key: ""
+
+  # IP address of the machine running the test suite; must match one of its local network interface IPs. e.g. 192.168.1.10
+  test_suite_host_ip: ""
+
+  # Entities represent each network element involved in the test scenario.
+  # Each entity is either a real device on the network (REAL_DEVICE) or simulated by the test suite (STUB_SERVER).
+  # The test suite launches and manages stub server entities automatically during test execution,
+  # while real device entities are expected to already be running on the network.
+  entities:
+
+      # OSP (Originating Service Provider) represents the network or carrier from which an emergency call originates
+      # before it enters the ESInet. In a real deployment this would be a third-party provider, but in the test
+      # environment it is simulated as a STUB_SERVER that sends SIP INVITE and SIP MESSAGE requests to the BCF,
+      # acting as the stimulus that triggers the BRIDGE behaviour being tested.
+    - name: "OSP"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "OSP"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      # Multiple roles can be assigned e.g. role: ["SENDER", "RECEIVER"] if the entity does both in a given test
+      role: ["SENDER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Free-form dictionary of entity-specific values that the test suite extracts at runtime
+      # and injects into SIP message bodies and scenario files during test execution.
+      # The values here are referenced by name in the test config prep_steps via extract_field.
+      api:
+
+        # The telephone number associated with the OSP caller; injected into SIP INVITE bodies
+        # by test configs to identify the calling party
+        tel_number: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_OSP_BCF = OSP connecting to BCF)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_OSP_BCF -> IF_BCF_OSP).
+      interfaces:
+
+          # Network interface connecting OSP to BCF
+        - name: "IF_OSP_BCF"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the OSP side of the OSP-BCF connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the OSP-BCF interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the OSP-BCF Docker network; used when creating the Docker network that connects the OSP and BCF containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the OSP-BCF connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_OSP_BCF_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting OSP to CHFE
+        - name: "IF_OSP_CHFE"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the OSP side of the OSP-CHFE connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the OSP-CHFE interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the OSP-CHFE Docker network; used when creating the Docker network that connects the OSP and CHFE containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the OSP-CHFE connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_OSP_CHFE_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting OSP to BRIDGE
+        - name: "IF_OSP_BRIDGE"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the OSP side of the OSP-BRIDGE connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the OSP-BRIDGE interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the OSP-BRIDGE Docker network; used when creating the Docker network that connects the OSP and BRIDGE containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the OSP-BRIDGE connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_OSP_BRIDGE_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # BCF (Border Control Function) is simulated as a STUB_SERVER that acts as the entry point for SIP calls
+      # from the OSP into the ESInet. In BRIDGE tests it sits between the OSP and the ESRP,
+      # forwarding calls into the network so the BRIDGE's handling can be tested.
+    - name: "BCF"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "BCF"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      # Multiple roles can be assigned e.g. role: ["SENDER", "RECEIVER"] if the entity does both in a given test
+      role: ["SENDER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_BCF_OSP = BCF connecting to OSP)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_BCF_OSP -> IF_OSP_BCF).
+      interfaces:
+
+          # Network interface connecting BCF to OSP
+        - name: "IF_BCF_OSP"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the BCF side of the BCF-OSP connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the BCF-OSP interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the BCF-OSP Docker network; used when creating the Docker network that connects the BCF and OSP containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the BCF-OSP connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BCF_OSP_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting BCF to ESRP
+        - name: "IF_BCF_ESRP"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the BCF side of the BCF-ESRP connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the BCF-ESRP interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the BCF-ESRP Docker network; used when creating the Docker network that connects the BCF and ESRP containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the BCF-ESRP connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BCF_ESRP_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting BCF to BRIDGE
+        - name: "IF_BCF_BRIDGE"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the BCF side of the BCF-BRIDGE connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the BCF-BRIDGE interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the BCF-BRIDGE Docker network; used when creating the Docker network that connects the BCF and BRIDGE containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the BCF-BRIDGE connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BCF_BRIDGE_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # ESRP (Emergency Services Routing Proxy) is simulated as a STUB_SERVER that acts as the receiving end
+      # of the SIP session inside the ESInet. In BRIDGE tests it both receives calls forwarded by the BCF
+      # and initiates SIP INVITEs toward the BRIDGE as part of conference transfer scenarios.
+    - name: "ESRP"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "ESRP"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # OTHER = participates in the test flow but is neither the primary stimulus sender nor the primary receiver;
+      # used when the entity plays an intermediate or supporting role (e.g. relaying a conference ID mid-session)
+      role: ["OTHER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Free-form dictionary of entity-specific values that the test suite extracts at runtime
+      # and injects into SIP message bodies and scenario files during test execution.
+      # The values here are referenced by name in the test config prep_steps via extract_field.
+      api:
+
+        # The SIP conference ID used by the ESRP during conference transfer scenarios; extracted by
+        # test configs and injected into SIP INVITE Contact headers
+        conference_id: "test_conference_id"
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_ESRP_BCF = ESRP connecting to BCF)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_ESRP_BCF -> IF_BCF_ESRP).
+      interfaces:
+
+          # Network interface connecting ESRP to BCF
+        - name: "IF_ESRP_BCF"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the ESRP side of the ESRP-BCF connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the ESRP-BCF interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the ESRP-BCF Docker network; used when creating the Docker network that connects the ESRP and BCF containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the ESRP-BCF connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_ESRP_BCF_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting ESRP to CHFE
+        - name: "IF_ESRP_CHFE"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the ESRP side of the ESRP-CHFE connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the ESRP-CHFE interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the ESRP-CHFE Docker network; used when creating the Docker network that connects the ESRP and CHFE containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the ESRP-CHFE connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_ESRP_CHFE_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # TS-CA (Test System Conference App) simulates the Conference Application entity that the CHFE
+      # contacts during call transfer scenarios. When the CHFE initiates a transfer it sends a SIP INVITE
+      # to the Conference App, which responds with a 302 Moved Contact containing the conference ID that
+      # the CHFE then uses to route the call to the BRIDGE.
+      #
+      # NOTE: If the Conference App is physically part of the BRIDGE device in your lab, configure
+      # IF_TS-CA_CHFE with the same IP and port settings as IF_BRIDGE_CHFE instead.
+    - name: "TS-CA"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "CHFE"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      # Multiple roles can be assigned e.g. role: ["SENDER", "RECEIVER"] if the entity does both in a given test
+      role: ["RECEIVER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Free-form dictionary of entity-specific values that the test suite extracts at runtime
+      # and injects into SIP message bodies and scenario files during test execution.
+      # The values here are referenced by name in the test config prep_steps via extract_field.
+      api:
+
+        # The SIP conference ID returned by the Conference App in the 302 Moved Contact response;
+        # the CHFE uses this value to build the request URI for its subsequent SIP INVITE to the BRIDGE
+        conference_id: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_TS-CA_CHFE = TS-CA connecting to CHFE)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_TS-CA_CHFE -> IF_CHFE_TS-CA).
+      interfaces:
+
+          # Network interface connecting TS-CA to CHFE
+        - name: "IF_TS-CA_CHFE"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the TS-CA side of the TS-CA-CHFE connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the TS-CA-CHFE interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the TS-CA-CHFE Docker network; used when creating the Docker network that connects the TS-CA and CHFE containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the TS-CA-CHFE connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_TS-CA_CHFE_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # BRIDGE (Conference Bridge) is the device under test in this lab configuration. It acts as a
+      # multi-party conference bridge inside the ESInet, receiving SIP INVITEs from the CHFE and OSP,
+      # managing conference sessions, and exchanging media with connected endpoints.
+      # As the IUT, its behaviour is what the test suite is validating.
+    - name: "BRIDGE"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "REAL_DEVICE"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "BRIDGE"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      role: ["IUT"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Free-form dictionary of entity-specific values that the test suite extracts at runtime
+      # and injects into SIP message bodies and scenario files during test execution.
+      # The values here are referenced by name in the test config prep_steps via extract_field.
+      api:
+
+        # The SIP URI username used to address the BRIDGE's conference endpoint; extracted by test configs
+        # and injected into SIP INVITE request URIs sent to the BRIDGE
+        conference_sip_uri_username: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_BRIDGE_OSP = BRIDGE connecting to OSP)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_BRIDGE_OSP -> IF_OSP_BRIDGE).
+      interfaces:
+
+          # Network interface connecting BRIDGE to OSP
+        - name: "IF_BRIDGE_OSP"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the BRIDGE side of the BRIDGE-OSP connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the BRIDGE-OSP interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the BRIDGE-OSP Docker network; used when creating the Docker network that connects the BRIDGE and OSP containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the BRIDGE-OSP connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BRIDGE_OSP_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting BRIDGE to BCF
+        - name: "IF_BRIDGE_BCF"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the BRIDGE side of the BRIDGE-BCF connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the BRIDGE-BCF interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the BRIDGE-BCF Docker network; used when creating the Docker network that connects the BRIDGE and BCF containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the BRIDGE-BCF connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BRIDGE_BCF_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting BRIDGE to CHFE
+        - name: "IF_BRIDGE_CHFE"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the BRIDGE side of the BRIDGE-CHFE connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the BRIDGE-CHFE interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the BRIDGE-CHFE Docker network; used when creating the Docker network that connects the BRIDGE and CHFE containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the BRIDGE-CHFE connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BRIDGE_CHFE_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting BRIDGE to LOG
+        - name: "IF_BRIDGE_LOG"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the BRIDGE side of the BRIDGE-LOG connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the BRIDGE-LOG interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the BRIDGE-LOG Docker network; used when creating the Docker network that connects the BRIDGE and LOG containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: []
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the BRIDGE-LOG connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_BRIDGE_LOG_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # CHFE (Conference Handling Functional Entity) is simulated as a STUB_SERVER that acts as
+      # the call transfer agent in conference scenarios. It receives SIP INVITEs from the ESRP and OSP,
+      # contacts the Conference App (TS-CA) to obtain a conference ID, then sends SIP INVITEs to the
+      # BRIDGE to establish the multi-party conference session.
+    - name: "CHFE"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "CHFE"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      # Multiple roles can be assigned e.g. role: ["SENDER", "RECEIVER"] if the entity does both in a given test
+      role: ["RECEIVER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Free-form dictionary of entity-specific values that the test suite extracts at runtime
+      # and injects into SIP message bodies and scenario files during test execution.
+      # The values here are referenced by name in the test config prep_steps via extract_field.
+      api:
+
+        # The telephone number associated with the CHFE transfer target; injected into SIP INVITE bodies
+        # by test configs to identify the CHFE as the transfer destination
+        tel_number: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_CHFE_ESRP = CHFE connecting to ESRP)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_CHFE_ESRP -> IF_ESRP_CHFE).
+      interfaces:
+
+          # Network interface connecting CHFE to ESRP
+        - name: "IF_CHFE_ESRP"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the CHFE side of the CHFE-ESRP connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the CHFE-ESRP interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the CHFE-ESRP Docker network; used when creating the Docker network that connects the CHFE and ESRP containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the CHFE-ESRP connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_CHFE_ESRP_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting CHFE to OSP
+        - name: "IF_CHFE_OSP"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the CHFE side of the CHFE-OSP connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the CHFE-OSP interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the CHFE-OSP Docker network; used when creating the Docker network that connects the CHFE and OSP containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the CHFE-OSP connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_CHFE_OSP_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting CHFE to TS-CA (Conference App)
+        - name: "IF_CHFE_TS-CA"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the CHFE side of the CHFE-TS-CA connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the CHFE-TS-CA interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the CHFE-TS-CA Docker network; used when creating the Docker network that connects the CHFE and TS-CA containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the CHFE-TS-CA connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_CHFE_TS-CA_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+          # Network interface connecting CHFE to BRIDGE
+        - name: "IF_CHFE_BRIDGE"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the CHFE side of the CHFE-BRIDGE connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the CHFE-BRIDGE interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the CHFE-BRIDGE Docker network; used when creating the Docker network that connects the CHFE and BRIDGE containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the CHFE-BRIDGE connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_CHFE_BRIDGE_SIP_5060_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "SIP"
+
+              # Port number (0-65535)
+              port: 5060
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"
+
+      # LOG (Logging Service) is simulated as a STUB_SERVER that acts as the receiving end for HTTP log events
+      # sent by the BRIDGE. The BRIDGE is expected to send log events such as CallStartLogEvent, CallEndLogEvent,
+      # MessageLogEvent and CallSignalingMessageLogEvent to this service, and these tests validate that behaviour.
+    - name: "LOG"
+
+      # STUB_SERVER = simulated by the test suite; REAL_DEVICE = a real physical device on the network
+      mode: "STUB_SERVER"
+
+      # The functional role of this entity; used by the test suite to determine which protocol
+      # (SIP or HTTP) to use when communicating with this entity. Valid values: OSP, BCF, ESRP, LIS, LOG, ECRF-LVF, PS, BRIDGE, CHFE, ADR
+      function: "LOG"
+
+      # How this entity behaves in tests. Accepts one or more values as a list.
+      # SENDER = initiates requests, RECEIVER = listens for incoming requests, IUT = the real device being tested
+      # Multiple roles can be assigned e.g. role: ["SENDER", "RECEIVER"] if the entity does both in a given test
+      role: ["RECEIVER"]
+
+      # Fully qualified domain name of this entity; used to build request URIs (e.g. sip:host:port or https://host:port).
+      # Priority order when building URIs: interface-level FQDN -> entity-level FQDN -> interface IP.
+      # Leave empty if the interface-level FQDN or IP should be used instead.
+      fqdn: ""
+
+      # Path to this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_file: ""
+
+      # Path to the private key for this entity's TLS certificate; required for TLS and mTLS connections
+      certificate_key: ""
+
+      # Interfaces define the individual network connections this entity has with other entities in the lab.
+      # Each interface maps to a directional link between two entities (e.g. IF_LOG_BRIDGE = LOG connecting to BRIDGE)
+      # and specifies the network settings and protocols the test suite will use when sending or receiving traffic on that link.
+      # The naming convention IF_<source>_<target> is enforced by the test suite, which splits the interface name
+      # to locate the corresponding interface on the target entity (e.g. IF_LOG_BRIDGE -> IF_BRIDGE_LOG).
+      interfaces:
+
+          # Network interface connecting LOG to BRIDGE
+        - name: "IF_LOG_BRIDGE"
+
+          # FQDN for this specific interface; takes priority over the entity-level FQDN when building URIs
+          fqdn: ""
+
+          # IP address the test suite will assign to this machine to represent the LOG side of the LOG-BRIDGE connection (e.g. 192.168.1.10)
+          ip: ""
+
+          # Subnet mask for the LOG-BRIDGE interface IP above; used to calculate which subnet this connection belongs to (e.g. 255.255.255.0)
+          mask: ""
+
+          # Default gateway for the LOG-BRIDGE Docker network; used when creating the Docker network that connects the LOG and BRIDGE containers. Leave empty if not required
+          gateway: ""
+
+          # List of DNS server IP addresses for this interface; must be valid IPv4 or IPv6 addresses. Leave empty if not required
+          dns: [ ]
+
+          # Defines the protocol and port combinations this interface uses during tests.
+          # Each entry results in the test suite launching a separate stub server instance bound to the specified
+          # port and transport protocol on the LOG-BRIDGE connection. The port mapping name is also used by the
+          # test suite to match this interface against the relevant variation in the test config, so only the
+          # port mappings required for the tests being run need to be active.
+          port_mapping:
+
+              # Naming convention: IF_<source>_<target>_<protocol>_<port>_<transport>;
+              # this name is matched against the test variation config to determine which stub server to launch for a given test
+            - name: "IF_LOG_BRIDGE_HTTP_8080_TCP"
+
+              # Application protocol; valid values: SIP, HTTP, HTTPS, DNS, TCP, UDP, ICMP, ARP
+              protocol: "HTTP"
+
+              # Port number (0-65535)
+              port: 8080
+
+              # Transport protocol; valid values: TCP, UDP, SCTP, TLSv1.2, TLSv1.3, mTLSv1.2, mTLSv1.3
+              transport_protocol: "TCP"

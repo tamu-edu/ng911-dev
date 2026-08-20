@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.3.0.1
+  Date:      20250317
+
+-->
+<scenario name="SIP_SUBSCRIBE_LIS">
+  <recv receive="SUBSCRIBE"> </recv>
+    <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:];tag=[call_number]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: sip:SENDER@[local_ip]:[local_port]
+        Content-Length:0 
+    
+      ]]>
+    </send>
+    <send>
+      <![CDATA[
+  
+          NOTIFY sip:user@watcherhost.example.com SIP/2.0
+          Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+          From: sipp <sip:sipp@[local_ip]:[local_port]>;tag=[pid]tag[call_number]
+          To: IUT <sip:[service]@[remote_ip]:[remote_port]>
+          Call-ID: [call_id]
+          Event: presence
+          Subscription-State: active;expires=599
+          Max-Forwards: 70
+          CSeq: 1 NOTIFY
+          Contact: sip:sipp@[local_ip]:[local_port]
+          Content-Type: application/pidf+xml
+          Content-Length: 1150
+  
+           <?xml version="1.0"?>
+           <locationResponse xmlns="urn:ietf:params:xml:ns:geopriv:held">
+           <presence xmlns="urn:ietf:params:xml:ns:pidf"
+                     entity="pres:3650n87934c@ls.example.com">
+             <tuple id="b650sf789nd">
+             <status>
+              <geopriv xmlns="urn:ietf:params:xml:ns:pidf:geopriv10"
+                xmlns:gbp="urn:ietf:params:xml:ns:pidf:geopriv10:basic-policy">
+               <location-info>
+                  <Point xmlns="http://www.opengis.net/gml"
+                         srsName="urn:ogc:def:crs:EPSG::4326">
+                    <pos>-34.407 150.88001</pos>
+                  </Point>
+                </location-info>
+                <usage-rules>
+                  <gbp:retransmission-allowed>
+                    false</gbp:retransmission-allowed>
+                  <gbp:retention-expiry>
+                    2011-01-11T03:42:29+00:00</gbp:retention-expiry>
+                </usage-rules>
+                <method>Wiremap</method>
+              </geopriv>
+             </status>
+             <timestamp>2006-01-10T03:42:28+00:00</timestamp>
+             </tuple>
+           </presence>
+           </locationResponse>
+      
+      ]]>
+    </send>
+    <recv response="200"></recv>
+</scenario>

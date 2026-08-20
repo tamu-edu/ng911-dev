@@ -1,0 +1,25 @@
+# Default
+*                                   @swadolowski-waverleysoftware @lpylyp-waverley
+
+# Core
+test_suite/                         @artemr-waverley
+proxy_server/                       @artemr-waverley
+main.py                             @artemr-waverley
+parser.py                           @artemr-waverley
+shutdown.py                         @artemr-waverley
+
+# TC
+test_suite/tests/                   @lpylyp-waverley
+test_suite/checks/                  @lpylyp-waverley
+
+# TD
+test_descriptions/                  @swadolowski-waverleysoftware
+test_configs/                       @swadolowski-waverleysoftware 
+templates/                          @swadolowski-waverleysoftware 
+test_suite/test_files/              @swadolowski-waverleysoftware 
+test_suite/pcaps/                   @swadolowski-waverleysoftware
+test_suite/services/config/schemas  @swadolowski-waverleysoftware
+
+# Checks
+mypy.ini                            @artemr-waverley
+bandit.yaml                         @artemr-waverley

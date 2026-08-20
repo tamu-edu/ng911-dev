@@ -1,0 +1,387 @@
+"run_config":
+  "output_folder": "/tmp/BCF_011/results"
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": ""
+      "prefix": "CACN"
+      "suffix": "BCF_011"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "ENTER NAME"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "ENTER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": "ENTER ADDRESS"
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+        "eng_name": "ENTER NAME"
+      "supplier":
+        "name": "ENTER SUPPLIER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": ""
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+      "iut":
+        "type": "BCF"
+        "name": "IF_BCF_OSP"
+        "version": "0.0.0.1"
+        "date_of_receipt": "ENTER CURRENT DATE"
+        "location": "ENTER LOCATION"
+        "cs_id": "CS00001"
+        "cs_static_conform": false
+      "test_env":
+        "ixit_id": "11111"
+        "test_method": "test_method"
+        "spec_name": "STA-010"
+        "spec_version": "3.0"
+        "test_period_start": "ENTER CURRENT DATE"
+        "test_period_end": "ENTER CURRENT DATE"
+        "log_ref": "00001"
+        "log_ret_date": "ENTER CURRENT DATE"
+    "log":
+      "level": "DEBUG"
+      "output_file": "results/CACN_ENTER_TIMESTAMP_BCF_011/BCF_DEBUG.log"
+      "dev_mode": false
+    "comments":
+    - "author": "ENTER AUTHOR NAME"
+      "comment": "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  "tests":
+  - "name": "BCF_011_CS00001"
+    "requirements":
+    - "name": "RQ_BCF_022"
+      "variations":
+      - "Audio_via_SRTP"
+      - "Audio_via_RTP"
+      - "Video_via_RTP"
+      - "Text_via_RTP"
+    - "name": "RQ_BCF_044"
+      "variations":
+      - "Audio_via_SRTP"
+      - "Audio_via_RTP"
+      - "Video_via_RTP"
+      - "Text_via_RTP"
+    "variations":
+    - "name": "Audio_via_SRTP"
+      "description": "Call from OSP with SIP signaling over TLS and audio media via SRTP"
+      "interfaces":
+      - "name": "IF_OSP_BCF"
+        "port_names": []
+      - "name": "IF_ESRP_BCF"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/BCF_011/BCF_011_var1_audio_srtp.pcap"
+      "ssl_keys_file_path": "test_suite/pcaps/BCF_011/BCF_011_var1_sslkeys.log"
+      "params":
+        "messages":
+        - "action": "receive"
+          "prep_steps": []
+          "if_name": "IF_ESRP_BCF"
+          "if_port_name": "IF_ESRP_BCF_SIP_5061_TLSv1.2"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_RECEIVE_basic_call_and_answer_with_RTP_encrypted.xml"
+            "kwargs": {}
+            "save_response_as": "BCF_011_var1_ESRP_response.log"
+            "save_log_as": "BCF_011_var1_ESRP.log"
+          "run_in_background": "True"
+        - "action": "send"
+          "if_name": "IF_OSP_BCF"
+          "if_port_name": "IF_OSP_BCF_SIP_5061_TLSv1.2"
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.osp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.osp_certificate_key"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_INVITE/SIP_basic_call_with_SRTP.xml"
+            "kwargs": {}
+            "save_response_as": "BCF_011_var1_OSP_response.log"
+            "save_log_as": "BCF_011_var1_OSP.log"
+          "run_in_background": "False"
+          "next_action": "manual_delay"
+        - "action": "manual"
+          "id": "manual_delay"
+          "if_name": ""
+          "instead": ""
+          "type": "SIP"
+          "method": ""
+          "timeout": 2
+          "prompt": "Waiting 2 seconds for IUT..."
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_OSP_BCF"
+        "dst_interface": "IF_BCF_OSP"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": "AES_256_CM_HMAC_SHA1_80"
+        "header_contains": ""
+      - "message_type": "output"
+        "src_interface": "IF_BCF_ESRP"
+        "dst_interface": "IF_ESRP_BCF"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": "a=fingerprint"
+        "header_contains": ""
+    - "name": "Audio_via_RTP"
+      "description": "Call from OSP with SIP over TCP and audio media via RTP"
+      "interfaces":
+      - "name": "IF_OSP_BCF"
+        "port_names": []
+      - "name": "IF_ESRP_BCF"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/BCF_011/BCF_011_var2_audio_rtp.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "receive"
+          "prep_steps": []
+          "if_name": "IF_ESRP_BCF"
+          "if_port_name": "IF_ESRP_BCF_SIP_5061_TLSv1.2"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_RECEIVE_basic_call_and_answer_with_RTP_encrypted.xml"
+            "kwargs": {}
+            "save_response_as": "BCF_011_var2_ESRP_response.log"
+            "save_log_as": "BCF_011_var2_ESRP.log"
+          "run_in_background": "True"
+        - "action": "send"
+          "if_name": "IF_OSP_BCF"
+          "if_port_name": "IF_OSP_BCF_SIP_5060_TCP"
+          "prep_steps": []
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_INVITE/SIP_basic_call_with_RTP.xml"
+            "kwargs": {}
+            "save_response_as": "BCF_011_var2_OSP_response.log"
+            "save_log_as": "BCF_011_var2_OSP.log"
+          "run_in_background": "False"
+          "next_action": "manual_delay"
+        - "action": "manual"
+          "id": "manual_delay"
+          "if_name": ""
+          "instead": ""
+          "type": "SIP"
+          "method": ""
+          "timeout": 2
+          "prompt": "Waiting 2 seconds for IUT..."
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_OSP_BCF"
+        "dst_interface": "IF_BCF_OSP"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": ""
+        "header_contains": ""
+      - "message_type": "output"
+        "src_interface": "IF_BCF_ESRP"
+        "dst_interface": "IF_ESRP_BCF"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": "a=fingerprint"
+        "header_contains": ""
+    - "name": "Video_via_RTP"
+      "description": "Call from OSP with SIP over TCP and video media via RTP"
+      "interfaces":
+      - "name": "IF_OSP_BCF"
+        "port_names": []
+      - "name": "IF_ESRP_BCF"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/BCF_011/BCF_011_var3_video_rtp.pcap"
+      "ssl_keys_file_path": "test_suite/pcaps/BCF_011/BCF_011_var3_sslkeys.log"
+      "params":
+        "messages":
+        - "action": "receive"
+          "prep_steps": []
+          "if_name": "IF_ESRP_BCF"
+          "if_port_name": "IF_ESRP_BCF_SIP_5061_TLSv1.2"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_RECEIVE_basic_call_and_answer_with_RTP.xml"
+            "kwargs": {}
+            "save_response_as": "BCF_011_var3_ESRP_response.log"
+            "save_log_as": "BCF_011_var3_ESRP.log"
+          "run_in_background": "True"
+        - "action": "send"
+          "if_name": "IF_OSP_BCF"
+          "if_port_name": "IF_OSP_BCF_SIP_5061_TLSv1.2"
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.osp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.osp_certificate_key"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_INVITE/SIP_basic_call_from_OSP_Video_RTP.xml"
+            "kwargs": {}
+            "save_response_as": "BCF_011_var3_OSP_response.log"
+            "save_log_as": "BCF_011_var3_OSP.log"
+          "run_in_background": "False"
+          "next_action": "manual_delay"
+        - "action": "manual"
+          "id": "manual_delay"
+          "if_name": ""
+          "instead": ""
+          "type": "SIP"
+          "method": ""
+          "timeout": 2
+          "prompt": "Waiting 2 seconds for IUT..."
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_OSP_BCF"
+        "dst_interface": "IF_BCF_OSP"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": "a=fingerprint"
+        "header_contains": ""
+      - "message_type": "output"
+        "src_interface": "IF_BCF_ESRP"
+        "dst_interface": "IF_ESRP_BCF"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": "a=fingerprint"
+        "header_contains": ""
+    - "name": "Text_via_RTP"
+      "description": "Call from OSP with SIP over TCP and text media via RTP"
+      "interfaces":
+      - "name": "IF_OSP_BCF"
+        "port_names": []
+      - "name": "IF_ESRP_BCF"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/BCF_011/BCF_011_var4_text_rtp.pcap"
+      "ssl_keys_file_path": "test_suite/pcaps/BCF_011/BCF_011_var4_sslkeys.log"
+      "params":
+        "messages":
+        - "action": "receive"
+          "prep_steps": []
+          "if_name": "IF_ESRP_BCF"
+          "if_port_name": "IF_ESRP_BCF_SIP_5061_TLSv1.2"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_RECEIVE_basic_call_and_answer_with_RTP.xml"
+            "kwargs": {}
+            "save_response_as": "BCF_011_var4_ESRP_response.log"
+            "save_log_as": "BCF_011_var4_ESRP.log"
+          "run_in_background": "True"
+        - "action": "send"
+          "if_name": "IF_OSP_BCF"
+          "if_port_name": "IF_OSP_BCF_SIP_5061_TLSv1.2"
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.osp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.osp_certificate_key"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_INVITE/SIP_basic_call_from_OSP_Text_RTP.xml"
+            "kwargs": {}
+            "save_response_as": "BCF_011_var4_OSP_response.log"
+            "save_log_as": "BCF_011_var4_OSP.log"
+          "run_in_background": "False"
+          "next_action": "manual_delay"
+        - "action": "manual"
+          "id": "manual_delay"
+          "if_name": ""
+          "instead": ""
+          "type": "SIP"
+          "method": ""
+          "timeout": 2
+          "prompt": "Waiting 2 seconds for IUT..."
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_OSP_BCF"
+        "dst_interface": "IF_BCF_OSP"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": "a=fingerprint"
+        "header_contains": ""
+      - "message_type": "output"
+        "src_interface": "IF_BCF_ESRP"
+        "dst_interface": "IF_ESRP_BCF"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": "a=fingerprint"
+        "header_contains": ""
+    "preamble_list": []
+    "postamble_list": []

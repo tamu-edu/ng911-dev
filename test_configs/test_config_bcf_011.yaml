@@ -1,0 +1,309 @@
+test_config:
+  conformance:
+    tests:
+      - name: "BCF_011"
+        variations:
+          - name: "Audio_via_SRTP"
+            description: "Call from OSP with SIP signaling over TLS and audio media via SRTP"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps:
+                    - "method_name": "get_interface_address"
+                      "kwargs":
+                        "interface_name": "IF_BCF_ESRP"
+                      "save_result_as": "var.IF_BCF_ESRP"
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: "IF_ESRP_BCF_SIP_5061_TLSv1.2"  # Optional
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/CALLS/SIP_RECEIVE_basic_call_and_answer_DTLS_SRTP_audio.xml",
+                    kwargs: {
+                      set: {
+                        remote_media_ip: "var.IF_BCF_ESRP",
+                      }
+                    },
+                    save_response_as: "BCF_011_var1_ESRP_response.log",
+                    save_log_as: "BCF_011_var1_ESRP.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5061_TLSv1.2"  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call_with_SRTP.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_011_var1_OSP_response.log",
+                    save_log_as: "BCF_011_var1_OSP.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "manual_delay"
+                - action: "manual"
+                  id: "manual_delay"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 2  # timeout in seconds
+                  prompt: "Waiting 2 seconds for IUT..."
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: ""
+                body_contains: "AES_256_CM_HMAC_SHA1_80"
+              - message_type: "output"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: ""
+                body_contains: "a=fingerprint"
+
+          - name: "Audio_via_RTP"
+            description: "Call from OSP with SIP over TCP and audio media via RTP"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps:
+                    - "method_name": "get_interface_address"
+                      "kwargs":
+                        "interface_name": "IF_BCF_ESRP"
+                      "save_result_as": "var.IF_BCF_ESRP"
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: "IF_ESRP_BCF_SIP_5061_TLSv1.2"  # Optional
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/CALLS/SIP_RECEIVE_basic_call_and_answer_DTLS_SRTP_audio.xml",
+                    kwargs: {
+                      set: {
+                        remote_media_ip: "var.IF_BCF_ESRP",
+                      }
+                    },
+                    save_response_as: "BCF_011_var2_ESRP_response.log",
+                    save_log_as: "BCF_011_var2_ESRP.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5060_TCP"  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call_with_RTP.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_011_var2_OSP_response.log",
+                    save_log_as: "BCF_011_var2_OSP.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "manual_delay"
+                - action: "manual"
+                  id: "manual_delay"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 2  # timeout in seconds
+                  prompt: "Waiting 2 seconds for IUT..."
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: ""
+                body_contains: "a=fingerprint"
+
+          - name: "Video_via_RTP"
+            description: "Call from OSP with SIP over TCP and video media via RTP"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps:
+                    - "method_name": "get_interface_address"
+                      "kwargs":
+                        "interface_name": "IF_BCF_ESRP"
+                      "save_result_as": "var.IF_BCF_ESRP"
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: "IF_ESRP_BCF_SIP_5061_TLSv1.2"  # Optional
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/CALLS/SIP_RECEIVE_basic_call_and_answer_DTLS_SRTP_video.xml",
+                    kwargs: {
+                      set: {
+                        remote_media_ip: "var.IF_BCF_ESRP",
+                      }
+                    },
+                    save_response_as: "BCF_011_var3_ESRP_response.log",
+                    save_log_as: "BCF_011_var3_ESRP.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5061_TLSv1.2"  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call_from_OSP_Video_RTP.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_011_var3_OSP_response.log",
+                    save_log_as: "BCF_011_var3_OSP.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "manual_delay"
+                - action: "manual"
+                  id: "manual_delay"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 2  # timeout in seconds
+                  prompt: "Waiting 2 seconds for IUT..."
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: ""
+                body_contains: "a=fingerprint"
+              - message_type: "output"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: ""
+                body_contains: "a=fingerprint"
+
+          - name: "Text_via_RTP"
+            description: "Call from OSP with SIP over TCP and text media via RTP"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps:
+                    - "method_name": "get_interface_address"
+                      "kwargs":
+                        "interface_name": "IF_BCF_ESRP"
+                      "save_result_as": "var.IF_BCF_ESRP"
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: "IF_ESRP_BCF_SIP_5061_TLSv1.2"  # Optional
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/CALLS/SIP_RECEIVE_basic_call_and_answer_DTLS_SRTP_text.xml",
+                    kwargs: {
+                      set: {
+                        remote_media_ip: "var.IF_BCF_ESRP",
+                      }
+                    },
+                    save_response_as: "BCF_011_var4_ESRP_response.log",
+                    save_log_as: "BCF_011_var4_ESRP.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5061_TLSv1.2"  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call_from_OSP_Text_RTP.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_011_var4_OSP_response.log",
+                    save_log_as: "BCF_011_var4_OSP.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "manual_delay"
+                - action: "manual"
+                  id: "manual_delay"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 2  # timeout in seconds
+                  prompt: "Waiting 2 seconds for IUT..."
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: ""
+                body_contains: "a=fingerprint"
+              - message_type: "output"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: ""
+                body_contains: "a=fingerprint"
+        requirements:
+          - name: "RQ_BCF_022"
+            variations: ["all"]
+          - name: "RQ_BCF_044"
+            variations: ["all"]

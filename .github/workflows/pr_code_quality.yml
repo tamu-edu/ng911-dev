@@ -1,0 +1,259 @@
+name: PR Code Quality Gate
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-code-quality-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  RUFF_VERSION: "0.15.22"
+  BLACK_VERSION: "26.5.1"
+  MYPY_VERSION: "2.3.0"
+  TYPES_REQUESTS_VERSION: "2.33.0.20260712"
+  TYPES_PYYAML_VERSION: "6.0.12.20260518"
+  TYPES_DATEUTIL_VERSION: "2.9.0.20260716"
+  ARTIFACT_RETENTION_DAYS: "14"
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install tools
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install \
+            "ruff==${RUFF_VERSION}" \
+            "black==${BLACK_VERSION}" \
+            "mypy==${MYPY_VERSION}" \
+            "types-requests==${TYPES_REQUESTS_VERSION}" \
+            "types-PyYAML==${TYPES_PYYAML_VERSION}" \
+            "types-python-dateutil==${TYPES_DATEUTIL_VERSION}"
+
+      - name: Run Ruff
+        id: ruff
+        run: |
+          set +e
+          ruff check . --output-format=json > ruff_report.json
+          EXIT_CODE=$?
+          set -e
+
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
+
+          # Ruff: 0 = clean, 1 = findings, 2 = execution/configuration error.
+          if [ "$EXIT_CODE" -gt 1 ]; then
+            echo "Ruff assessment failed to execute correctly."
+            exit 1
+          fi
+
+          python -m json.tool ruff_report.json >/dev/null
+          ruff check . --output-format=github || true
+
+      - name: Run Black formatting check
+        id: black
+        run: |
+          set +e
+          black --check --diff . > black_report.txt 2>&1
+          EXIT_CODE=$?
+          set -e
+
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
+
+          # Black: 0 = formatted, 1 = files would be reformatted, 123 = internal error.
+          if [ "$EXIT_CODE" -ne 0 ] && [ "$EXIT_CODE" -ne 1 ]; then
+            echo "Black assessment failed to execute correctly."
+            cat black_report.txt
+            exit 1
+          fi
+
+      - name: Run MyPy type check
+        id: mypy
+        run: |
+          set +e
+          PYTHONPATH=test_suite mypy test_suite \
+            --explicit-package-bases \
+            --ignore-missing-imports \
+            --show-error-codes \
+            --pretty \
+            --no-error-summary > mypy_report.txt 2>&1
+          EXIT_CODE=$?
+          set -e
+
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
+
+          # MyPy: 0 = clean, 1 = type errors, 2 = execution/configuration error.
+          if [ "$EXIT_CODE" -gt 1 ]; then
+            echo "MyPy assessment failed to execute correctly."
+            cat mypy_report.txt
+            exit 1
+          fi
+
+      - name: Calculate issue totals
+        id: totals
+        if: always()
+        run: |
+          python <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          output = Path(os.environ["GITHUB_OUTPUT"])
+
+          def fail(reason: str) -> None:
+              with output.open("a", encoding="utf-8") as f:
+                  f.write("valid=false\n")
+                  f.write("ruff=0\nblack=0\nmypy=0\ntotal=0\n")
+              print(reason)
+              raise SystemExit(1)
+
+          ruff_path = Path("ruff_report.json")
+          black_path = Path("black_report.txt")
+          mypy_path = Path("mypy_report.txt")
+
+          if not ruff_path.exists() or not black_path.exists() or not mypy_path.exists():
+              fail("Code quality assessment incomplete: one or more reports are missing.")
+
+          try:
+              ruff_data = json.loads(ruff_path.read_text(encoding="utf-8"))
+          except (OSError, json.JSONDecodeError) as exc:
+              fail(f"Code quality assessment incomplete: invalid Ruff report: {exc}")
+
+          if not isinstance(ruff_data, list):
+              fail("Code quality assessment incomplete: Ruff report is not a list.")
+
+          black_text = black_path.read_text(encoding="utf-8", errors="replace")
+          mypy_text = mypy_path.read_text(encoding="utf-8", errors="replace")
+
+          ruff_total = len(ruff_data)
+          black_total = len(re.findall(r"would reformat ", black_text))
+          mypy_total = len(re.findall(r"^[^:\n]+:\d+:\s+error:", mypy_text, flags=re.MULTILINE))
+          total = ruff_total + black_total + mypy_total
+
+          with output.open("a", encoding="utf-8") as f:
+              f.write("valid=true\n")
+              f.write(f"ruff={ruff_total}\n")
+              f.write(f"black={black_total}\n")
+              f.write(f"mypy={mypy_total}\n")
+              f.write(f"total={total}\n")
+
+          print(f"Ruff: {ruff_total}, Black: {black_total}, MyPy: {mypy_total}, Total: {total}")
+          PY
+
+      - name: Write workflow summary
+        if: always()
+        run: |
+          {
+            echo "## PR Code Quality"
+            echo
+            if [ "${{ steps.totals.outputs.valid }}" = "true" ]; then
+              echo "| Tool | Findings |"
+              echo "| --- | ---: |"
+              echo "| Ruff | ${{ steps.totals.outputs.ruff }} |"
+              echo "| Black | ${{ steps.totals.outputs.black }} |"
+              echo "| MyPy | ${{ steps.totals.outputs.mypy }} |"
+              echo "| **Total** | **${{ steps.totals.outputs.total }}** |"
+            else
+              echo "**Assessment incomplete.** One or more tools or reports could not be validated."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload quality reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-quality-reports
+          path: |
+            ruff_report.json
+            mypy_report.txt
+            black_report.txt
+          if-no-files-found: warn
+          retention-days: ${{ fromJSON(env.ARTIFACT_RETENTION_DAYS) }}
+
+      - name: Comment quality summary
+        if: ${{ github.event_name == 'pull_request' && always() }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const marker = "<!-- CODE_QUALITY_COMMENT -->";
+
+            const valid = "${{ steps.totals.outputs.valid }}" === "true";
+            const ruffTotal = Number("${{ steps.totals.outputs.ruff }}" || 0);
+            const blackTotal = Number("${{ steps.totals.outputs.black }}" || 0);
+            const mypyTotal = Number("${{ steps.totals.outputs.mypy }}" || 0);
+            const total = Number("${{ steps.totals.outputs.total }}" || 0);
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner, repo, issue_number, per_page: 100
+            });
+
+            for (const comment of comments) {
+              if (comment.body && comment.body.includes(marker)) {
+                await github.rest.issues.deleteComment({
+                  owner, repo, comment_id: comment.id
+                });
+              }
+            }
+
+            if (valid && total === 0) {
+              console.log("Code quality check passed — skipping comment.");
+              return;
+            }
+
+            let body;
+
+            if (!valid) {
+              body = "## ⚠️ Code Quality Assessment Incomplete\n\n";
+              body += "One or more quality tools failed to execute correctly or did not produce a valid report. ";
+              body += "The assessment is treated as failed rather than as zero findings.\n\n";
+            } else {
+              body = "## ❌ Code Quality Check Failed\n\n";
+              body += `**Total issues detected:** ${total}\n\n`;
+              body += `- Ruff: ${ruffTotal}\n`;
+              body += `- Black: ${blackTotal}\n`;
+              body += `- MyPy: ${mypyTotal}\n\n`;
+            }
+
+            body += `📎 Full reports and logs: ${runUrl}\n\n`;
+            body += marker;
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number, body
+            });
+
+      - name: Enforce code quality gate
+        if: always()
+        run: |
+          if [ "${{ steps.totals.outputs.valid }}" != "true" ]; then
+            echo "Code quality assessment incomplete."
+            exit 1
+          fi
+
+          if [ "${{ steps.totals.outputs.total }}" -ne 0 ]; then
+            echo "Code quality gate failed."
+            exit 1
+          fi
+
+          echo "Code quality gate passed."

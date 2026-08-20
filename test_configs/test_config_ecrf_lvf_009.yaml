@@ -1,0 +1,692 @@
+test_config:
+  conformance:
+    tests:
+      - name: "ECRF_LVF_009"
+        variations:
+          # Variation 1
+          - name: "LostResponseLogEvent members after ECRF-LVF sends a valid Response"
+            description: "ECRF-LVF send valid Response"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: []
+              - name: "IF_LOG_ECRF-LVF"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_LOG_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "LOG",
+                        extract_field: 'interfaces'
+                      }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "var.log_interfaces",
+                        where_field: "name",
+                        where_value: "IF_LOG_ECRF-LVF",
+                        extract_field: 'fqdn'
+                      }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "logid",
+                        fqdn: "var.log_fqdn",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/ECRF-LVF_009/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/ECRF-LVF_009/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/ECRF-LVF_009/logeventid.json"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "201", "200" ]
+                  http_url: [ "/LogEvents", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/ECRF-LVF_009/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_ECRF-LVF"
+                      "save_result_as": "var.IF_ESRP_ECRF-LVF"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_ECRF-LVF",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_ECRF-LVF",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findService_geodetic_point.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "ECRF-LVF"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.ecrf_interfaces"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "ip"
+                      "save_result_as": "var.ecrf_ip"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "fqdn"
+                      "save_result_as": "var.ecrf_fqdn"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.ecrf_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "HTTP"
+                        "extract_field": "port"
+                      "save_result_as": "var.ecrf_port"
+                    - method_name: "generate_url"
+                      kwargs:
+                        protocol: "http"
+                        address: "list.[var.ecrf_fqdn, var.ecrf_ip]"
+                        port: "var.ecrf_port"
+                        path: "/LoST"
+                      save_result_as: "var.ecrf_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.ecrf_url"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_ECRF-LVF"
+                  dst_interface: "IF_ECRF-LVF_ESRP"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "POST" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_ECRF-LVF_LOG"
+                  dst_interface: "IF_LOG_ECRF-LVF"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "POST" #  leave empty if not needed
+                  response_status_code: "201" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_TS-ECRF-LVF_ECRF-LVF"
+                  dst_interface: "IF_ECRF-LVF_TS-ECRF-LVF"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "POST" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+
+          # Variation 2
+          - name: "LostResponseLogEvent members after ECRF-LVF receives a valid Response"
+            description: "ECRF-LVF receive Valid Response"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: [ ]
+              - name: "IF_LOG_ECRF-LVF"
+                port_names: [ ]
+              - name: "IF_TS-ECRF-LVF_ECRF-LVF"
+                port_names: [ ]
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_LOG_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "lab_config['lab_config']['entities']",
+                                where_field: "name",
+                                where_value: "LOG",
+                                extract_field: 'interfaces' }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "var.log_interfaces",
+                                where_field: "name",
+                                where_value: "IF_LOG_ECRF-LVF",
+                                extract_field: 'fqdn' }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "logid",
+                                fqdn: "var.log_fqdn",
+                                set_default: "True" }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/ECRF-LVF_009/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/ECRF-LVF_009/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/ECRF-LVF_009/logeventid.json"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "201", "200" ]
+                  http_url: [ "/LogEvents", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/ECRF-LVF_009/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+                - action: "receive"
+                  if_name: "IF_TS-ECRF-LVF_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "lab_config['lab_config']['entities']",
+                                where_field: "name",
+                                where_value: "TS-ECRF-LVF",
+                                extract_field: 'interfaces' }
+                      save_result_as: "var.ts-ecrf-lvf_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "var.ts-ecrf-lvf_interfaces",
+                                where_field: "name",
+                                where_value: "IF_TS-ECRF-LVF_ECRF-LVF",
+                                extract_field: 'fqdn' }
+                      save_result_as: "var.ts-ecrf-lvf_fqdn"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "200", "200" ]
+                  http_url: [ "/LoST", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findServiceResponse_for_not_in_ecrf.xml",
+                          "file.test_suite/test_files/JSON/versions/ECRF-LVF_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_ECRF-LVF"
+                      "save_result_as": "var.IF_ESRP_ECRF-LVF"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "callid",
+                                fqdn: "var.IF_ESRP_ECRF-LVF",
+                                set_default: "True" }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "incidentid",
+                                fqdn: "var.IF_ESRP_ECRF-LVF",
+                                set_default: "True" }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findService_geodetic_point.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "ECRF-LVF"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.ecrf_interfaces"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "ip"
+                      "save_result_as": "var.ecrf_ip"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "fqdn"
+                      "save_result_as": "var.ecrf_fqdn"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.ecrf_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "HTTP"
+                        "extract_field": "port"
+                      "save_result_as": "var.ecrf_port"
+                    - method_name: "generate_url"
+                      kwargs:
+                        protocol: "http"
+                        address: "list.[var.ecrf_fqdn, var.ecrf_ip]"
+                        port: "var.ecrf_port"
+                        path: "/LoST"
+                      save_result_as: "var.ecrf_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.ecrf_url"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                  sipp_scenario: { }
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_ECRF-LVF"
+                dst_interface: "IF_ECRF-LVF_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output" # stimulus/output/other
+                src_interface: "IF_ECRF-LVF_LOG"
+                dst_interface: "IF_LOG_ECRF-LVF"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "201" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_TS-ECRF-LVF_ECRF-LVF"
+                dst_interface: "IF_ECRF-LVF_TS-ECRF-LVF"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+
+          # Variation 3
+          - name: "LostResponseLogEvent members after ECRF-LVF receives malformed Response"
+            description: "ECRF-LVF receive Malformed Response"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: [ ]
+              - name: "IF_LOG_ECRF-LVF"
+                port_names: [ ]
+              - name: "IF_TS-ECRF-LVF_ECRF-LVF"
+                port_names: [ ]
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_LOG_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "lab_config['lab_config']['entities']",
+                                where_field: "name",
+                                where_value: "LOG",
+                                extract_field: 'interfaces' }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "var.log_interfaces",
+                                where_field: "name",
+                                where_value: "IF_LOG_ECRF-LVF",
+                                extract_field: 'fqdn' }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "logid",
+                                fqdn: "var.log_fqdn",
+                                set_default: "True" }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/ECRF-LVF_009/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/ECRF-LVF_009/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/ECRF-LVF_009/logeventid.json"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "201", "200" ]
+                  http_url: [ "/LogEvents", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/ECRF-LVF_009/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+                - action: "receive"
+                  if_name: "IF_TS-ECRF-LVF_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "lab_config['lab_config']['entities']",
+                                where_field: "name",
+                                where_value: "TS-ECRF-LVF",
+                                extract_field: 'interfaces' }
+                      save_result_as: "var.ts-ecrf-lvf_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "var.ts-ecrf-lvf_interfaces",
+                                where_field: "name",
+                                where_value: "IF_TS-ECRF-LVF_ECRF-LVF",
+                                extract_field: 'fqdn' }
+                      save_result_as: "var.ts-ecrf-lvf_fqdn"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "200", "200" ]
+                  http_url: [ "/LoST", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findServiceResponse_malformed.xml",
+                          "file.test_suite/test_files/JSON/versions/ECRF-LVF_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_ECRF-LVF"
+                      "save_result_as": "var.IF_ESRP_ECRF-LVF"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "callid",
+                                fqdn: "var.IF_ESRP_ECRF-LVF",
+                                set_default: "True" }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "incidentid",
+                                fqdn: "var.IF_ESRP_ECRF-LVF",
+                                set_default: "True" }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findService_geodetic_point.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "ECRF-LVF"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.ecrf_interfaces"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "ip"
+                      "save_result_as": "var.ecrf_ip"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "fqdn"
+                      "save_result_as": "var.ecrf_fqdn"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.ecrf_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "HTTP"
+                        "extract_field": "port"
+                      "save_result_as": "var.ecrf_port"
+                    - method_name: "generate_url"
+                      kwargs:
+                        protocol: "http"
+                        address: "list.[var.ecrf_fqdn, var.ecrf_ip]"
+                        port: "var.ecrf_port"
+                        path: "/LoST"
+                      save_result_as: "var.ecrf_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.ecrf_url"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                  sipp_scenario: { }
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_ECRF-LVF"
+                dst_interface: "IF_ECRF-LVF_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output" # stimulus/output/other
+                src_interface: "IF_ECRF-LVF_LOG"
+                dst_interface: "IF_LOG_ECRF-LVF"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "201" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_TS-ECRF-LVF_ECRF-LVF"
+                dst_interface: "IF_ECRF-LVF_TS-ECRF-LVF"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+
+          # Variation 4
+          - name: "LostResponseLogEvent members after ECRF-LVF does not receive a response"
+            description: "ECRF-LVF does not receive a response(timeout on recursive request)"
+            interfaces:
+              - name: "IF_ESRP_ECRF-LVF"
+                port_names: [ ]
+              - name: "IF_LOG_ECRF-LVF"
+                port_names: [ ]
+              - name: "IF_TS-ECRF-LVF_ECRF-LVF"
+                port_names: [ ]
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_LOG_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "lab_config['lab_config']['entities']",
+                                where_field: "name",
+                                where_value: "LOG",
+                                extract_field: 'interfaces' }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "var.log_interfaces",
+                                where_field: "name",
+                                where_value: "IF_LOG_ECRF-LVF",
+                                extract_field: 'fqdn' }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "logid",
+                                fqdn: "var.log_fqdn",
+                                set_default: "True" }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/ECRF-LVF_009/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/ECRF-LVF_009/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/ECRF-LVF_009/logeventid.json"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "201", "200" ]
+                  http_url: [ "/LogEvents", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/ECRF-LVF_009/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_ESRP_ECRF-LVF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_ECRF-LVF"
+                      "save_result_as": "var.IF_ESRP_ECRF-LVF"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "callid",
+                                fqdn: "var.IF_ESRP_ECRF-LVF",
+                                set_default: "True" }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "incidentid",
+                                fqdn: "var.IF_ESRP_ECRF-LVF",
+                                set_default: "True" }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findService_geodetic_point.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "ECRF-LVF"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.ecrf_interfaces"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "ip"
+                      "save_result_as": "var.ecrf_ip"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "fqdn"
+                      "save_result_as": "var.ecrf_fqdn"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ECRF-LVF_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.ecrf_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "HTTP"
+                        "extract_field": "port"
+                      "save_result_as": "var.ecrf_port"
+                    - method_name: "generate_url"
+                      kwargs:
+                        protocol: "http"
+                        address: "list.[var.ecrf_fqdn, var.ecrf_ip]"
+                        port: "var.ecrf_port"
+                        path: "/LoST"
+                      save_result_as: "var.ecrf_url"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "var.ecrf_url"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/ECRF-LVF_009/findService_geodetic_point.xml"
+                  sipp_scenario: { }
+                  run_in_background: "False"
+                  next_action: "manual_ecrf-lvf"
+                - action: "manual"
+                  if_name: ""
+                  id: "manual_ecrf-lvf"
+                  type: "HTTP"
+                  method: ""
+                  instead: ""
+                  prompt: "MANUAL ACTION REQUIRED – Please wait until the ECRF-LVF request to the TS-ECRF-LVF times out."
+                  next_action: ""
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_ECRF-LVF"
+                dst_interface: "IF_ECRF-LVF_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output" # stimulus/output/other
+                src_interface: "IF_ECRF-LVF_LOG"
+                dst_interface: "IF_LOG_ECRF-LVF"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "201" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_TS-ECRF-LVF_ECRF-LVF"
+                dst_interface: "IF_ECRF-LVF_TS-ECRF-LVF"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+        requirements:
+          - name: "RQ_ECRF-LVF_085"
+            variations: ["all"]

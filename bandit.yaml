@@ -1,0 +1,19 @@
+exclude_dirs:
+  - test_suite/checks
+  - test_suite/tests
+  - test_suite/services/config/config_service_old.py
+
+skips:
+  - B101   # assert used intentionally
+  - B311   # pseudo-random acceptable for non-cryptographic use
+  - B314   # XML processing is required for NG911 PIDF-LO/HELD/LIS payloads
+  - B404   # subprocess is a core design decision
+  - B405   # XML parsing intentionally used for standards compliance
+  - B406   # xml.sax.saxutils escape()/unescape() only; no SAX parser usage
+  - B603   # subprocess arguments are application-controlled
+  - B607   # executable resolution intentionally delegated to runtime
+  - B112   # continue-on-exception used intentionally in selected cases
+  - B104   # proxy services intentionally bind to all interfaces in the lab environment
+  - B108   # project intentionally uses a fixed runtime artifact directory under /tmp
+  - B110   # cleanup/teardown intentionally ignores best-effort exceptions
+  - B107  # Project intentionally processes passwords, tokens, certificates, keys and secret patterns as test data; hardcoded-secret detection is not applicable.

@@ -1,0 +1,13 @@
+{
+	"logEventType": "LostQueryLogEvent",
+	"timestamp": "2015-08-21T12:58:03.01-05:00",
+	"elementId": "bcf.ng911.test",
+	"agencyId": "bcf.ng911.test",
+	"callId": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:bcf.ng911.test",
+	"incidentId": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:bcf.ng911.test",
+	"callIdSip": "7dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test",
+	"direction": "incoming",
+	"queryAdapter": "<findService xmlns=\\\"urn:ietf:params:xml:ns:lost1\\\"\\n             xmlns:p2=\\\"http://www.opengis.net/gml\\\"\\n             xmlns:nena=\\\"urn:emergency:xml:ns:lostExt:Ids\\\"\\n             serviceBoundary=\\\"value\\\"\\n             recursive=\\\"true\\\">\\n  <location id=\\\"123456789\\\" profile=\\\"geodetic-2d\\\">\\n    <p2:Point id=\\\"point1\\\" srsName=\\\"urn:ogc:def:crs:EPSG::4326\\\">\\n      <p2:pos>40.71668300756087 -73.99069756654683</p2:pos>\\n    </p2:Point>\\n  </location>\\n  <service>urn:service:sos</service>\\n  <nena:emergencyCallIncidentId\\n    callId=\\\"urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:bcf.ng911.test\"\\\"\\n    incidentTrackingId=\\\"urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:bcf.ng911.test\"\\\"/>\\n</findService>\"",
+	"queryId": "urn:emergency:uid:queryid:f47ac10b-58cc-4372-a567-0e02b2c3d479:ecrf.maryland.us",
+	"ipAddressPort": "192.168.64.15:5061"
+}
