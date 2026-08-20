@@ -1,8 +1,0 @@
-POST URL/Policies HTTP/1.1
-Host: TEST_SYSTEM_IP_ADDRESS:TEST_SYSTEM_PORT
-Content-Type: application/json
-Content-Length: 16
-Test-File-Version: 010.3f.3.0.1
-Test-File-Date: 20250203
-
-GciOiJFZERTQSIsI
