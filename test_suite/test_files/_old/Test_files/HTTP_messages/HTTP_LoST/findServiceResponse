@@ -1,0 +1,42 @@
+GET /LoST_URL HTTP/1.1
+Host: IF_ECRF_TS_IP_ADDRESS
+Content-Type: application/xml
+Content-Length: 1162
+Test-File-Version: 010.3d.2.0.1
+Test-File-Date: 20241025
+
+<?xml version="1.0" encoding="UTF-8"?>
+<findServiceResponse xmlns="urn:ietf:params:xml:ns:lost1"
+ xmlns:p2="http://www.opengis.net/gml">
+ <mapping
+   expires="2030-10-01T01:44:33Z"
+   lastUpdated="2006-11-01T01:00:00Z"
+   source="authoritative.example"
+   sourceId="7e3f40b098c711dbb6060800200c9a66">
+   <displayName xml:lang="en">
+     New York City Police Department
+   </displayName>
+   <service>urn:service:sos.police</service>
+   <serviceBoundary profile="geodetic-2d">
+     <p2:Polygon srsName="urn:ogc:def::crs:EPSG::4326">
+       <p2:exterior>
+         <p2:LinearRing>
+           <p2:pos>37.775 -122.4194</p2:pos>
+           <p2:pos>37.555 -122.4194</p2:pos>
+           <p2:pos>37.555 -122.4264</p2:pos>
+           <p2:pos>37.775 -122.4264</p2:pos>
+           <p2:pos>37.775 -122.4194</p2:pos>
+         </p2:LinearRing>
+       </p2:exterior>
+     </p2:Polygon>
+   </serviceBoundary>
+   <uri>sip:nypd@example.com</uri>
+   <uri>xmpp:nypd@example.com</uri>
+   <serviceNumber>911</serviceNumber>
+ </mapping>
+ <path>
+   <via source="resolver.example"/>
+   <via source="authoritative.example"/>
+ </path>
+ <locationUsed id="6020688f1ce1896d"/>
+</findServiceResponse>

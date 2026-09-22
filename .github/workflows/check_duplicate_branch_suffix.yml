@@ -1,0 +1,70 @@
+name: Check Duplicate Branch Suffix
+
+on:
+  create:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  check-duplicate-branch-suffix:
+    if: github.event_name != 'create' || github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine current branch
+        id: branch
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            CURRENT="${{ github.head_ref }}"
+          else
+            CURRENT="${{ github.ref_name }}"
+          fi
+          echo "Current branch: $CURRENT"
+          echo "name=$CURRENT" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch all branch names
+        run: |
+          git ls-remote --heads origin \
+            | awk '{print $2}' \
+            | sed 's#^refs/heads/##' > all_branches.txt
+          echo "All branches:"
+          cat all_branches.txt
+
+      - name: Check for duplicate suffix
+        run: |
+          current="${{ steps.branch.outputs.name }}"
+
+          suffix() {
+            local name="$1"
+            if [[ "$name" == */* ]]; then
+              echo "${name#*/}"
+            else
+              echo "$name"
+            fi
+          }
+
+          current_suffix="$(suffix "$current")"
+          echo "Current branch : $current"
+          echo "Current suffix : $current_suffix"
+
+          conflict=0
+          while IFS= read -r branch; do
+            [ -z "$branch" ] && continue
+            [ "$branch" = "$current" ] && continue
+            other_suffix="$(suffix "$branch")"
+            if [ "$other_suffix" = "$current_suffix" ]; then
+              echo "::error::Branch '$current' conflicts with existing branch '$branch' (duplicate suffix: '$current_suffix')"
+              conflict=1
+            fi
+          done < all_branches.txt
+
+          if [ "$conflict" -eq 1 ]; then
+            exit 1
+          fi
+
+          echo "No duplicate suffix found."

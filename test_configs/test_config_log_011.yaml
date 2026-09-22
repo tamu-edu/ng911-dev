@@ -1,0 +1,484 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LOG_011"
+        variations:
+          - name: "Tampered_payload_signature_mismatch"
+            description: "Validate 434 warning response (not error/retry) for a LogEvent whose \
+                          payload was altered after signing, so the signature no longer matches \
+                          the content. Confirm the event is still recorded via GET /IncidentIds."
+            interfaces:
+              - name: "IF_ESRP_LOG-write"
+                port_names: [ ]
+              - name: "IF_ESRP_LOG-read"
+                port_names: [ ]
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    # Prepare URL to send LogEvent
+                    - "method_name": "get_interface_address"
+                      "kwargs":
+                        "interface_name": "IF_LOG-write_ESRP"
+                      "save_result_as": "var.IF_LOG-write_ESRP"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "LOG-write"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.log_interfaces"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.log_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_LOG-write_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.log_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.log_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "HTTP"
+                        "extract_field": "port"
+                      "save_result_as": "var.log_port"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "LOG-write"
+                        "extract_field": "api_http_url_prefix"
+                      "save_result_as": "var.log_prefix"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "{0}/LogEvents"
+                        variables: "list.[var.log_prefix,]"
+                      save_result_as: "var.log_path"
+                    - method_name: "generate_url"
+                      kwargs:
+                        protocol: "http"
+                        address: "var.IF_LOG-write_ESRP"
+                        port: "var.log_port"
+                        path: "var.log_path"
+                      save_result_as: "var.log_url"
+                    # Prepare payload
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_LOG-write"
+                      "save_result_as": "var.IF_ESRP_LOG-write"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_LOG-write",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_LOG-write",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json"
+                        "param_name": "urn:emergency:uid:callid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/LOG_011/LogEvent_var1.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_011/LogEvent_var1.json"
+                        "param_name": "urn:emergency:uid:incidentid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/LOG_011/LogEvent_var1.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_011/LogEvent_var1.json"
+                        "param_name": "7dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "value": "var17dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "output_file": "file./tmp/LOG_011/LogEvent_var1.json"
+                    # Generate initial JWS
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "ESRP"
+                        "extract_field": "certificate_file"
+                      "save_result_as": "var.esrp_certificate_file"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "ESRP"
+                        "extract_field": "certificate_key"
+                      "save_result_as": "var.esrp_certificate_key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/LOG_011/LogEvent_var1.json"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        output_file: "file./tmp/jws_body"
+                    # Edit payload and encode to base64url
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/LOG_011/LogEvent_var1.json"
+                        param_name: "timestamp"
+                        value: "2005-08-21T12:58:03.01-05:00"
+                        output_file: "file./tmp/LOG_011/LogEvent_var1.json"
+                    - method_name: "get_file_string_content"
+                      kwargs:
+                        path: "file./tmp/LOG_011/LogEvent_var1.json"
+                      save_result_as: "var.payload"
+                    - method_name: "encode_base64url"
+                      kwargs:
+                        payload: "var.payload"
+                      save_result_as: "var.payload"
+                    # Tamper existing JWS payload
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/jws_body"
+                        param_name: "payload"
+                        value: "var.payload"
+                        output_file: "file./tmp/jws_body"
+                    # Send HTTP POST with tampered LogEvent
+                    - method_name: "send_http_request"
+                      kwargs:
+                        url: "var.log_url"
+                        method: "POST"
+                        content_type: "application/jose+json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "var.http_post_response"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/IncidentIds"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-write"
+                dst_interface: "IF_LOG-write_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: "/IncidentIds"
+                body_contains: ""
+
+          - name: "Untrusted_certificate_signature"
+            description: "Validate 434 warning response (not error/retry) for a LogEvent JWS \
+                          signed with a certificate/key not trusted by the Logging Service's \
+                          configured PCA/CA. Confirm the event is still recorded via \
+                          GET /IncidentIds."
+            interfaces:
+              - name: "IF_ESRP_LOG-write"
+                port_names: [ ]
+              - name: "IF_ESRP_LOG-read"
+                port_names: [ ]
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    # Prepare URL to send LogEvent
+                    - "method_name": "get_interface_address"
+                      "kwargs":
+                        "interface_name": "IF_LOG-write_ESRP"
+                      "save_result_as": "var.IF_LOG-write_ESRP"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "LOG-write"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.log_interfaces"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.log_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_LOG-write_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.log_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.log_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "HTTP"
+                        "extract_field": "port"
+                      "save_result_as": "var.log_port"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "LOG-write"
+                        "extract_field": "api_http_url_prefix"
+                      "save_result_as": "var.log_prefix"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "{0}/LogEvents"
+                        variables: "list.[var.log_prefix,]"
+                      save_result_as: "var.log_path"
+                    - method_name: "generate_url"
+                      kwargs:
+                        protocol: "http"
+                        address: "var.IF_LOG-write_ESRP"
+                        port: "var.log_port"
+                        path: "var.log_path"
+                      save_result_as: "var.log_url"
+                    # Generate self-signed certificate
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_LOG-write"
+                      "save_result_as": "var.IF_ESRP_LOG-write"
+                    - method_name: "generate_random_certificate"
+                      kwargs:
+                        output_certificate_file: "file./tmp/LOG_011/temp.crt"
+                        output_key_file: "file./tmp/LOG_011/temp.key"
+                        common_name: "var.IF_ESRP_LOG-write"
+                    # Prepare payload
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_LOG-write",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_LOG-write",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/log_event/CallSignalingMessageLogEvent_example_v010.3f.3.0.1.json"
+                        "param_name": "urn:emergency:uid:callid:123456789qwerty:bcf.ng911.test"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/LOG_011/LogEvent_var2.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_011/LogEvent_var2.json"
+                        "param_name": "urn:emergency:uid:incidentid:123456789qwerty:bcf.ng911.test"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/LOG_011/LogEvent_var2.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_011/LogEvent_var2.json"
+                        "param_name": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6@osp.test"
+                        "value": "var2f81d4fae-7dec-11d0-a765-00a0c91e6bf6@osp.test"
+                        "output_file": "file./tmp/LOG_011/LogEvent_var2.json"
+                    # Generate JWS
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/LOG_011/LogEvent_var2.json"
+                        cert_path: "/tmp/LOG_011/temp.crt"
+                        key_path: "/tmp/LOG_011/temp.key"
+                        output_file: "file./tmp/jws_body"
+                    # Send HTTP POST with LogEvent
+                    - method_name: "send_http_request"
+                      kwargs:
+                        url: "var.log_url"
+                        method: "POST"
+                        content_type: "application/jose+json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "var.http_post_response"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/IncidentIds"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-write"
+                dst_interface: "IF_LOG-write_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: "/IncidentIds"
+                body_contains: ""
+
+          - name: "Corrupted_signature_value"
+            description: "Validate 434 warning response (not error/retry) for a LogEvent JWS \
+                          with a corrupted/truncated signature segment. Confirm the event is \
+                          still recorded via GET /IncidentIds."
+            interfaces:
+              - name: "IF_ESRP_LOG-write"
+                port_names: [ ]
+              - name: "IF_ESRP_LOG-read"
+                port_names: [ ]
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    # Prepare URL to send LogEvent
+                    - "method_name": "get_interface_address"
+                      "kwargs":
+                        "interface_name": "IF_LOG-write_ESRP"
+                      "save_result_as": "var.IF_LOG-write_ESRP"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "LOG-write"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.log_interfaces"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.log_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_LOG-write_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.log_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.log_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "HTTP"
+                        "extract_field": "port"
+                      "save_result_as": "var.log_port"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "LOG-write"
+                        "extract_field": "api_http_url_prefix"
+                      "save_result_as": "var.log_prefix"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "{0}/LogEvents"
+                        variables: "list.[var.log_prefix,]"
+                      save_result_as: "var.log_path"
+                    - method_name: "generate_url"
+                      kwargs:
+                        protocol: "http"
+                        address: "var.IF_LOG-write_ESRP"
+                        port: "var.log_port"
+                        path: "var.log_path"
+                      save_result_as: "var.log_url"
+                    # Prepare payload
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_LOG-write"
+                      "save_result_as": "var.IF_ESRP_LOG-write"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_LOG-write",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_LOG-write",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/log_event/CallEndLogEvent_object_example_v010.3f.3.0.1.json"
+                        "param_name": "urn:emergency:uid:callid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/LOG_011/LogEvent_var3.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_011/LogEvent_var3.json"
+                        "param_name": "urn:emergency:uid:incidentid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/LOG_011/LogEvent_var3.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_011/LogEvent_var3.json"
+                        "param_name": "7dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "value": "var37dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "output_file": "file./tmp/LOG_011/LogEvent_var3.json"
+                    # Generate JWS
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "ESRP"
+                        "extract_field": "certificate_file"
+                      "save_result_as": "var.esrp_certificate_file"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "ESRP"
+                        "extract_field": "certificate_key"
+                      "save_result_as": "var.esrp_certificate_key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/LOG_011/LogEvent_var3.json"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        output_file: "file./tmp/jws_body"
+                    # Corrupt the signature part
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/jws_body"
+                        param_name: "signature"
+                        value: "NG911_TEST"
+                        output_file: "file./tmp/jws_body"
+                    # Send HTTP POST with LogEvent
+                    - method_name: "send_http_request"
+                      kwargs:
+                        url: "var.log_url"
+                        method: "POST"
+                        content_type: "application/jose+json"
+                        body: "file./tmp/jws_body"
+                      save_result_as: "var.http_post_response"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "/IncidentIds"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { }
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-write"
+                dst_interface: "IF_LOG-write_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/LogEvents"
+                body_contains: ""
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: "/IncidentIds"
+                body_contains: ""
+        requirements:
+          - name: "RQ_LOG_197"
+            variations: ["all"]
+          - name: "RQ_LOG_198"
+            variations: ["all"]

@@ -1,0 +1,161 @@
+# This configuration file is the top-level configuration file used to run the test suite.
+# It defines where results are saved, which tests to run, which requirements to validate,
+# and what information appears in the generated conformance test report.
+# The test suite loads this file at startup and uses it to build the full run configuration
+# before launching any tests.
+launch_config:
+
+  # Root output folder where all test results, logs, pcaps and configs will be saved.
+  # The test suite will append a generated test ID (built from prefix, timestamp and suffix) to this path,
+  # creating a unique subfolder for each run (e.g. /results/1/TAMU_2025-06-15T120000_test/)
+  output_folder: "/results/1/"
+
+  # Defines settings that apply to all tests in this launch, including
+  # report output, logging, identification summary and any reviewer comments.
+  global_config:
+
+    # Path to the lab_info YAML file containing the test laboratory's details.
+    lab_info: "templates/lab_configs/lab__info.yaml"
+
+    # The type of testing being performed.
+    type: "conformance"
+
+    # Controls how the conformance test report is generated and where it is saved.
+    report_files:
+
+      # Prefix used when generating the test run ID and output folder name (e.g. "TAMU" -> TAMU_2025-06-15T120000_test)
+      prefix: "TAMU"
+
+      # Optional suffix appended to the test run ID and output folder name (e.g. "test" -> TAMU_2025-06-15T120000_test). Leave empty if not required
+      suffix: "test"
+
+      # Optional override for the report output folder path. If left empty, reports are saved to the output_folder above
+      output_folder_path: ""
+
+      # Whether to include a detailed breakdown of each test variation in the report.
+      # true = include per-variation results; false = summary only
+      detailed_view: true
+
+      # List of report formats to generate. Valid values: "docx", "pdf", "xml"
+      types:
+        - "docx"
+        - "pdf"
+
+    # Defines the identification information that appears in the identification summary section of the generated conformance test report.
+    id_summary:
+
+      # Name of the engineer running the tests; included in the lab section of the report
+      eng_name: "Arty"
+
+      # Defines the details of the organisation supplying the IUT (device under test).
+      supplier:
+
+        # Name of the supplier organisation
+        name: "Arty"
+
+        # First line of the supplier's address (e.g. street number and name)
+        addr_line_1: "1"
+
+        # Second line of the supplier's address (e.g. suite, floor, building); leave empty if not required
+        addr_line_2: "2"
+
+        # City where the supplier is located
+        city: "Web"
+
+        # State or province where the supplier is located
+        state: "Internet"
+
+        # Country where the supplier is located
+        country: "Earth"
+
+        # Postal/ZIP code of the supplier
+        zip: "001001"
+
+        # Website URL of the supplier
+        url: "www"
+
+      # Defines the testing environment details that appear under the testing environment section of the generated conformance test report.
+      test_env:
+
+        # IXIT (Implementation eXtra Information for Testing) identifier; references the IXIT document
+        # that describes the specific configuration of the IUT used during testing
+        ixit_id: "11111"
+
+        # The testing method used
+        test_method: "test_method"
+
+        # Start date of the test period (format: DD.MM.YYYY)
+        test_period_start: "15.06.2025"
+
+        # End date of the test period (format: DD.MM.YYYY)
+        test_period_end: "15.06.2025"
+
+        # Reference identifier for the test log or log file associated with this test run
+        log_ref: "123412"
+
+        # Log retention date; the date until which the test logs must be retained
+        log_ret_date: "1234124"
+
+    # Controls the test suite's logging behaviour during test execution.
+    log:
+
+      # Log verbosity level. Valid values: DEBUG, INFO, WARNING, ERROR, CRITICAL, FATAL, NOTSET
+      level: "DEBUG"
+
+      # Name of the log output file. If no path separator is present, the file is saved inside the output_folder.
+      # If a full path is provided, the file is saved at that path directly.
+      output_file: "BCF_001_logger.log"
+
+    # Optional reviewer comments to include in the conformance test report.
+    # Each entry requires an author and a comment. Multiple comments can be added.
+    comments:
+
+        # Name or identifier of the person leaving the comment
+      - author: "Lab"
+
+        # The comment text
+        comment: "this is test env"
+
+        # Name or identifier of the person leaving the comment
+      - author: "Arty"
+
+        # The comment text
+        comment: "This is my own test env"
+
+  # Defines the list of IUT test runs to execute. Each entry specifies the device under test,
+  # which requirements to validate, and which lab config to use for that test.
+  tests:
+    - iut:
+        # The functional type of the device under test (e.g. BCF, ESRP, LIS).
+        # Must match the prefix of the requirements listed below (e.g. "BCF" matches "RQ_BCF_*")
+        type: "BCF"
+
+        # A descriptive name for this IUT instance; included in the conformance test report
+        name: "IUT_BCF"
+
+        # Software or firmware version of the IUT; included in the conformance test report
+        version: "0.0.0.1"
+
+#        test_period: "Sun 15 Jun"
+
+        # Date the IUT was received for testing (format: DD.MM.YYYY)
+        date_of_receipt: "15.06.2025"
+
+        # Location of the IUT during testing
+        location: "Web"
+
+        # Conformance Statement identifier for the IUT; used to name the test run and included in the report
+        cs_id: "11111"
+
+        # Whether the IUT statically conforms to the specification without dynamic testing.
+        # false = dynamic conformance testing will be performed (default)
+        cs_static_conform: false
+
+      # Path to the lab_config YAML file that defines the network topology for this specific IUT test
+      lab_config: "templates/lab_configs/lab_config_bcf.yaml"
+
+      # List of requirement IDs to validate in this test run. The test suite will load only the test
+      # configurations associated with these requirements and run their corresponding variations.
+      # Format: "RQ_<type>_<number>"
+      # Use "RQ_<type>_*" to run all requirements for a given type.
+      requirements: ["RQ_BCF_001","RQ_BCF_002","RQ_BCF_003","RQ_BCF_005","RQ_BCF_007","RQ_BCF_009","RQ_BCF_010"]

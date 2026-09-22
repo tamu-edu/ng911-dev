@@ -1,0 +1,216 @@
+test_config:
+  conformance:
+    tests:
+      - name: "BCF_004"
+        variations:
+          - name: "Adding_source_id"
+            description: "Adding sourceID to outgoing SIP INVITE"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: "IF_ESRP_BCF_SIP_5060_TCP"  # Optional
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_INVITE_RECEIVE_sip_service.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_004_V1_RECEIVE_response.log",
+                    save_log_as: "BCF_004_V1_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5060_TCP"  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_from_OSP.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_004_V1_response.log",
+                    save_log_as: "BCF_004_V1.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "delay"
+                - action: "manual"
+                  id: "delay"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 5  # timeout in seconds
+                  prompt: "Waiting 5 seconds until all SIP INVITE messages will be sent..."
+                  next_action: ""
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output" # stimulus/output/other
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: "purpose=emergency-source"
+                body_contains: ""
+          - name: "Error_response_for_unknown_source_id"
+            description: "Responding with 433 error response for HTTP POST to /BadActors with unknown sourceID"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: "IF_ESRP_BCF_SIP_5060_TCP"  # Optional
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_INVITE_RECEIVE_sip_service.xml",
+                    kwargs: {
+                              -m: "100"
+                    },
+                    save_response_as: "BCF_004_RECEIVE_response.log",
+                    save_log_as: "BCF_004_RECEIVE.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  id: "INVITE_1"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5060_TCP"  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_from_OSP.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_004_OTHER_1_response.log",
+                    save_log_as: "BCF_004_OTHER_1.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "INVITE_2"
+                - action: "send"
+                  id: "INVITE_2"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5060_TCP"  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_from_OSP.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_004_OTHER_2_response.log",
+                    save_log_as: "BCF_004_OTHER_2.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "INVITE_3"
+                - action: "send"
+                  id: "INVITE_3"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5060_TCP"  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_from_OSP.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_004_OTHER_3_response.log",
+                    save_log_as: "BCF_004_OTHER_3.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "delay"
+                - action: "manual"
+                  id: "delay"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 5  # timeout in seconds
+                  prompt: "Waiting 5 seconds until all SIP INVITE messages will be sent..."
+                  next_action: "send_http_post"
+                - action: "send"
+                  id: "send_http_post"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_HTTP_8080_TCP"  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "BCF"
+                        extract_field: "interfaces"
+                      "save_result_as": "var.bcf_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                         config_part: "var.bcf_interfaces"
+                         where_field: "name"
+                         where_value: "IF_BCF_OSP"
+                         extract_field: 'fqdn'
+                      save_result_as: "var.bcf_fqdn"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                         config_part: "var.bcf_interfaces"
+                         where_field: "name"
+                         where_value: "IF_BCF_OSP"
+                         extract_field: 'ip'
+                      save_result_as: "var.bcf_ip"
+                    - method_name: "generate_source_id"
+                      kwargs:
+                        address: "list.[var.bcf_fqdn, var.bcf_ip]"
+                      save_result_as: "var.bcf_source_id"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "433"
+                  http_url: "/BadActors"  # part after f.e. http://IP:PORT
+                  body: "var.bcf_source_id"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "433" #  leave empty if not needed
+                header_contains: "/BadActors"
+                body_contains: ""
+        requirements:
+          - name: "RQ_BCF_026"
+            variations: ["Adding_source_id"]
+          - name: "RQ_BCF_027"
+            variations: ["Adding_source_id"]
+          - name: "RQ_BCF_030"
+            variations: ["Error_response_for_unknown_source_id"]

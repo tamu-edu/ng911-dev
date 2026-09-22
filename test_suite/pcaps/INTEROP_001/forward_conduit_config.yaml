@@ -1,0 +1,41 @@
+forward_conduits:
+
+  - name: "OSP_to_BCF"
+    from_if: "IF_OSP_BCF"
+    to_if:   "IF_BCF_OSP"
+    proxy_if: "IF_BCF_OSP_PRS"
+
+  - name: "BCF_to_OSP"
+    from_if: "IF_BCF_OSP"
+    to_if:   "IF_OSP_BCF"
+    proxy_if: "IF_OSP_BCF_PRS"
+
+  - name: "BCF_to_ESRP"
+    from_if: "IF_BCF_ESRP"
+    to_if:   "IF_ESRP_BCF"
+    proxy_if: "IF_ESRP_BCF_PRS"
+
+  - name: "BCF_to_CHFE"
+    from_if: "IF_BCF_CHFE"
+    to_if: "IF_CHFE_BCF"
+    proxy_if: "IF_CHFE_BCF_PRS"
+
+  - name: "ESRP_to_BCF"
+    from_if: "IF_ESRP_BCF"
+    to_if:   "IF_BCF_ESRP"
+    proxy_if: "IF_BCF_ESRP_PRS"
+
+  - name: "ESRP_to_CHFE"
+    from_if: "IF_ESRP_CHFE"
+    to_if:   "IF_CHFE_ESRP"
+    proxy_if: "IF_CHFE_ESRP_PRS"
+
+  - name: "CHFE_to_ESRP"
+    from_if: "IF_CHFE_ESRP"
+    to_if:   "IF_ESRP_CHFE"
+    proxy_if: "IF_ESRP_CHFE_PRS"
+
+  - name: "CHFE_to_BCF"
+    from_if: "IF_CHFE_BCF"
+    to_if:   "IF_BCF_CHFE"
+    proxy_if: "IF_BCF_CHFE_PRS"

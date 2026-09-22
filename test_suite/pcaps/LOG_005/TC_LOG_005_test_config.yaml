@@ -1,0 +1,221 @@
+test_config:
+  test_case_name: "TC_LOG_005"
+  global:
+    response_timeout: 30
+  report_files:
+    - type: "xml"
+      path: "TC_LOG_005_CTR.xml"
+  log:
+    level: "DEBUG"
+    output_file: "test_files/logs/logger.log"
+  scenarios:
+    - name: "TC_LOG_005_pass"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/LOG_005/TC_LOG_005_pass.pcap"
+      tests:
+        - name: "LOG_005 pass variation 1"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?limit=test"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 pass variation 2"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?start=0"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 pass variation 3"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?start=test"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 pass variation 4"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?callid=urn:emergency:uid:callid:t:ng911.example"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 pass variation 5"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?incidentid=urn:emergency:uid:incidentid:t:ng911.example"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 pass variation 6"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds"
+            body_contains: ""
+            response_status_code: "200" #  leave empty if not needed
+    - name: "TC_LOG_005_fail"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/LOG_005/TC_LOG_005_fail.pcap"
+      tests:
+        - name: "LOG_005 fail variation 1"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?limit=test"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 fail variation 2"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?start=0"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 fail variation 3"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?start=test"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 fail variation 4"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?callid=urn:emergency:uid:callid:t:ng911.example"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 fail variation 5"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?incidentid=urn:emergency:uid:incidentid:t:ng911.example"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 fail variation 6"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds"
+            body_contains: ""
+            response_status_code: "200" #  leave empty if not needed
+    - name: "TC_LOG_005_fail2"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/LOG_005/TC_LOG_005_fail2.pcap"
+      tests:
+        - name: "LOG_005 fail variation 1"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?limit=test"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 fail variation 2"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?start=0"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 fail variation 3"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?start=test"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 fail variation 4"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?callid=urn:emergency:uid:callid:t:ng911.example"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 fail variation 5"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds?incidentid=urn:emergency:uid:incidentid:t:ng911.example"
+            body_contains: ""
+            response_status_code: "4xx" #  leave empty if not needed
+        - name: "LOG_005 fail variation 6"
+          test_id: "LOG_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_LOG"
+            dst_interface: "IF_LOG_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "GET" #  leave empty if not needed
+            header_contains: "/LogEventIds"
+            body_contains: ""
+            response_status_code: "200" #  leave empty if not needed

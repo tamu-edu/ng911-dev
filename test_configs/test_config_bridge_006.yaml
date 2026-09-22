@@ -1,0 +1,97 @@
+test_config:
+  conformance:
+    tests:
+      - name: "BRIDGE_006"
+        variations:
+          - name: "Outgoing_SIP_INVITE_to_a_secondary_PSAP"
+            description: "Validate outgoing SIP INVITE to the secondary PSAP while adding to the conference"
+            interfaces:
+              - name: "IF_CHFE_BRIDGE"
+                port_names: []
+              - name: "IF_BRIDGE_CHFE-2"
+                port_names: []
+            params:
+              messages:
+                  # Test System CH
+                - action: "receive"
+                  if_name: "IF_BRIDGE_CHFE-2"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE_100_Trying.xml",
+                    kwargs: {},
+                    save_response_as: "CHFE-2_BRIDGE_006_response.log",
+                    save_log_as: "CHFE-2_BRIDGE_006.log"
+                  }
+                  run_in_background: "True"
+
+                  # Test System CHFE
+                - action: "send"
+                  if_name: "IF_CHFE_BRIDGE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "CHFE"
+                        "extract_field": "api"
+                      "save_result_as": "var.api"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.api"
+                        "extract_field": "tel_number"
+                      "save_result_as": "var.CHFE_tel"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BRIDGE_CHFE"
+                      "save_result_as": "var.IF_BRIDGE_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE-2_BRIDGE"
+                      "save_result_as": "var.IF_CHFE-2_BRIDGE"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/BRIDGE_006/CHFE_BRIDGE_006.xml",
+                    kwargs: {
+                      set: {
+                             CHFE_tel: "var.CHFE_tel",
+                             IF_BRIDGE_CHFE: "var.IF_BRIDGE_CHFE",
+                             IF_CHFE-2_BRIDGE: "var.IF_CHFE-2_BRIDGE",
+                      }
+                    },
+                    save_response_as: "CHFE_BRIDGE_006_response.log",
+                    save_log_as: "CHFE_BRIDGE_006.log"
+                  }
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_CHFE_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE"
+                  sip_method: "REFER" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_BRIDGE_CHFE-2"
+                  dst_interface: "IF_CHFE-2_BRIDGE"
+                  sip_method: "INVITE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "100" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+        requirements:
+          - name: "RQ_BRG_009"
+            variations: ["all"]
+          - name: "RQ_BRG_010"
+            variations: ["all"]

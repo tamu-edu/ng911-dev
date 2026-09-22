@@ -1,0 +1,681 @@
+test_config:
+  conformance:
+    tests:
+      - name: "BCF_014"
+        variations:
+
+          - name: "Audio_media"
+            description: "Verify logging of anchored audio media using MediaStartLogEvent and MediaEndLogEvent"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+              - name: "IF_LOG_BCF"
+                port_names: []
+            params:
+              messages:
+
+                # Test System ESRP
+                - action: "receive"
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BCF_ESRP"
+                      save_result_as: "var.IF_BCF_ESRP"
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: "IF_ESRP_BCF_SIP_5061_TLSv1.2"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/CALLS/SIP_RECEIVE_basic_call_and_answer_with_SRTP_audio.xml",
+                    kwargs: {
+                      set: {
+                        remote_media_ip: "var.IF_BCF_ESRP",
+                      }
+                    },
+                    save_response_as: "BCF_014_var1_ESRP_response.log",
+                    save_log_as: "BCF_014_var1_ESRP.log"
+                  }
+                  run_in_background: "True"
+
+                # Test System Logging Service
+                - action: "receive"
+                  if_name: "IF_LOG_BCF"
+                  if_port_name: ""
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "LOG",
+                        extract_field: "interfaces"
+                      }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "var.log_interfaces",
+                        where_field: "name",
+                        where_value: "IF_LOG_BCF",
+                        extract_field: "fqdn"
+                      }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "logid",
+                        fqdn: "var.log_fqdn",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/BCF_014/var1_logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/BCF_014/var1_logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/BCF_014/var1_logeventid.json"
+                  type: "HTTP"
+                  method: ["POST", "GET"]
+                  response_code: ["201", "200"]
+                  http_url: ["/LogEvents", "/Versions"]
+                  body: [
+                    "file./tmp/BCF_014/var1_logeventid.json",
+                    "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json"
+                  ]
+                  sipp_scenario: {}
+                  run_in_background: "True"
+
+                # Test System OSP
+                - action: "send"
+                  prep_steps:
+                    - "method_name": "get_interface_address"
+                      "kwargs":
+                        "interface_name": "IF_OSP_BCF"
+                      "save_result_as": "var.IF_OSP_BCF"
+                    - "method_name": "generate_identifier"
+                      "kwargs":
+                        "identifier_type": "callid"
+                        "fqdn": "var.IF_OSP_BCF"
+                        "set_default": "True"
+                      "save_result_as": "var.callid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call_with_RTP.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/BCF_014/SIP_basic_call_with_RTP.xml"
+                    - "method_name": "generate_identifier"
+                      "kwargs":
+                        "identifier_type": "incidentid"
+                        "fqdn": "var.IF_OSP_BCF"
+                        "set_default": "True"
+                      "save_result_as": "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/BCF_014/SIP_basic_call_with_RTP.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/BCF_014/SIP_basic_call_with_RTP.xml"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5060_TCP"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/BCF_014/SIP_basic_call_with_RTP.xml",
+                    dependencies: ["file.test_suite/test_files/SIPp_scenarios/CALLS/g711ulaw_rtp_stream.pcap"],
+                    kwargs: {},
+                    save_response_as: "BCF_014_var1_OSP_response.log",
+                    save_log_as: "BCF_014_var1_OSP.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "var1_log_wait"
+
+                - action: "manual"
+                  id: "var1_log_wait"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 5
+                  prompt: "Waiting 10 seconds until IUT sends all LogEvents..."
+                  next_action: ""
+
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: "m=audio"
+
+              - message_type: "output"
+                src_interface: "IF_BCF_LOG"
+                dst_interface: "IF_LOG_BCF"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "201"
+                header_contains: "/LogEvents"
+                body_contains: ""
+
+              - message_type: "other"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: "m=audio"
+
+          - name: "Video_media"
+            description: "Verify logging of anchored video media using MediaStartLogEvent and MediaEndLogEvent"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+              - name: "IF_LOG_BCF"
+                port_names: []
+            params:
+              messages:
+
+                # Test System ESRP
+                - action: "receive"
+                  prep_steps: []
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: "IF_ESRP_BCF_SIP_5061_TLSv1.2"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/CALLS/SIP_RECEIVE_basic_call_and_answer_with_SRTP_video.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_014_var2_ESRP_response.log",
+                    save_log_as: "BCF_014_var2_ESRP.log"
+                  }
+                  run_in_background: "True"
+
+                # Test System Logging Service
+                - action: "receive"
+                  if_name: "IF_LOG_BCF"
+                  if_port_name: ""
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "LOG",
+                        extract_field: "interfaces"
+                      }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "var.log_interfaces",
+                        where_field: "name",
+                        where_value: "IF_LOG_BCF",
+                        extract_field: "fqdn"
+                      }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "logid",
+                        fqdn: "var.log_fqdn",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/BCF_014/var2_logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/BCF_014/var2_logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/BCF_014/var2_logeventid.json"
+                  type: "HTTP"
+                  method: ["POST", "GET"]
+                  response_code: ["201", "200"]
+                  http_url: ["/LogEvents", "/Versions"]
+                  body: [
+                    "file./tmp/BCF_014/var2_logeventid.json",
+                    "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json"
+                  ]
+                  sipp_scenario: {}
+                  run_in_background: "True"
+
+                # Test System OSP
+                - action: "send"
+                  prep_steps:
+                    - "method_name": "get_interface_address"
+                      "kwargs":
+                        "interface_name": "IF_OSP_BCF"
+                      "save_result_as": "var.IF_OSP_BCF"
+                    - "method_name": "generate_identifier"
+                      "kwargs":
+                        "identifier_type": "callid"
+                        "fqdn": "var.IF_OSP_BCF"
+                        "set_default": "True"
+                      "save_result_as": "var.callid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call_from_OSP_Video_RTP.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/BCF_014/SIP_basic_call_from_OSP_Video_RTP.xml"
+                    - "method_name": "generate_identifier"
+                      "kwargs":
+                        "identifier_type": "incidentid"
+                        "fqdn": "var.IF_OSP_BCF"
+                        "set_default": "True"
+                      "save_result_as": "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/BCF_014/SIP_basic_call_from_OSP_Video_RTP.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/BCF_014/SIP_basic_call_from_OSP_Video_RTP.xml"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5060_TCP"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/BCF_014/SIP_basic_call_from_OSP_Video_RTP.xml",
+                    dependencies: ["file.test_suite/test_files/SIPp_scenarios/CALLS/video_media_rtp.pcap"],
+                    kwargs: {},
+                    save_response_as: "BCF_014_var2_OSP_response.log",
+                    save_log_as: "BCF_014_var2_OSP.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "var2_log_wait"
+
+                - action: "manual"
+                  id: "var2_log_wait"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 5
+                  prompt: "Waiting 10 seconds until IUT sends all LogEvents..."
+                  next_action: ""
+
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: "m=video"
+
+              - message_type: "output"
+                src_interface: "IF_BCF_LOG"
+                dst_interface: "IF_LOG_BCF"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "201"
+                header_contains: "/LogEvents"
+                body_contains: ""
+
+              - message_type: "other"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: "m=video"
+
+          - name: "Real_Time_Text_media"
+            description: "Verify logging of anchored Real-Time Text media using MediaStartLogEvent and MediaEndLogEvent"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+              - name: "IF_LOG_BCF"
+                port_names: []
+            params:
+              messages:
+
+                # Test System ESRP
+                - action: "receive"
+                  prep_steps: []
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: "IF_ESRP_BCF_SIP_5061_TLSv1.2"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/CALLS/SIP_RECEIVE_basic_call_and_answer_with_SRTP_text.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_014_var3_ESRP_response.log",
+                    save_log_as: "BCF_014_var3_ESRP.log"
+                  }
+                  run_in_background: "True"
+
+                # Test System Logging Service
+                - action: "receive"
+                  if_name: "IF_LOG_BCF"
+                  if_port_name: ""
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "LOG",
+                        extract_field: "interfaces"
+                      }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "var.log_interfaces",
+                        where_field: "name",
+                        where_value: "IF_LOG_BCF",
+                        extract_field: "fqdn"
+                      }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "logid",
+                        fqdn: "var.log_fqdn",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/BCF_014/var3_logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/BCF_014/var3_logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/BCF_014/var3_logeventid.json"
+                  type: "HTTP"
+                  method: ["POST", "GET"]
+                  response_code: ["201", "200"]
+                  http_url: ["/LogEvents", "/Versions"]
+                  body: [
+                    "file./tmp/BCF_014/var3_logeventid.json",
+                    "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json"
+                  ]
+                  sipp_scenario: {}
+                  run_in_background: "True"
+
+                # Test System OSP
+                - action: "send"
+                  prep_steps:
+                    - "method_name": "get_interface_address"
+                      "kwargs":
+                        "interface_name": "IF_OSP_BCF"
+                      "save_result_as": "var.IF_OSP_BCF"
+                    - "method_name": "generate_identifier"
+                      "kwargs":
+                        "identifier_type": "callid"
+                        "fqdn": "var.IF_OSP_BCF"
+                        "set_default": "True"
+                      "save_result_as": "var.callid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call_from_OSP_Text_RTP.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/BCF_014/SIP_basic_call_from_OSP_Text_RTP.xml"
+                    - "method_name": "generate_identifier"
+                      "kwargs":
+                        "identifier_type": "incidentid"
+                        "fqdn": "var.IF_OSP_BCF"
+                        "set_default": "True"
+                      "save_result_as": "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/BCF_014/SIP_basic_call_from_OSP_Text_RTP.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/BCF_014/SIP_basic_call_from_OSP_Text_RTP.xml"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5060_TCP"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/BCF_014/SIP_basic_call_from_OSP_Text_RTP.xml",
+                    dependencies: ["file.test_suite/test_files/SIPp_scenarios/CALLS/text_media_rtp.pcap"],
+                    kwargs: {},
+                    save_response_as: "BCF_014_var3_OSP_response.log",
+                    save_log_as: "BCF_014_var3_OSP.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "var3_log_wait"
+
+                - action: "manual"
+                  id: "var3_log_wait"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 5
+                  prompt: "Waiting 10 seconds until IUT sends all LogEvents..."
+                  next_action: ""
+
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: "m=text"
+
+              - message_type: "output"
+                src_interface: "IF_BCF_LOG"
+                dst_interface: "IF_LOG_BCF"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "201"
+                header_contains: "/LogEvents"
+                body_contains: ""
+
+              - message_type: "other"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: "m=text"
+
+          - name: "MSRP_media"
+            description: "Verify logging of anchored MSRP media using MediaStartLogEvent and MediaEndLogEvent"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+              - name: "IF_LOG_BCF"
+                port_names: []
+            params:
+              messages:
+
+                # Test System ESRP
+                - action: "receive"
+                  prep_steps: []
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: "IF_ESRP_BCF_SIP_5061_TLSv1.2"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/CALLS/SIP_RECEIVE_basic_call_and_answer_MSRPS.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_014_var4_ESRP_response.log",
+                    save_log_as: "BCF_014_var4_ESRP.log"
+                  }
+                  run_in_background: "True"
+
+                # Test System Logging Service
+                - action: "receive"
+                  if_name: "IF_LOG_BCF"
+                  if_port_name: ""
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "LOG",
+                        extract_field: "interfaces"
+                      }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "var.log_interfaces",
+                        where_field: "name",
+                        where_value: "IF_LOG_BCF",
+                        extract_field: "fqdn"
+                      }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "logid",
+                        fqdn: "var.log_fqdn",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/BCF_014/var4_logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/BCF_014/var4_logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/BCF_014/var4_logeventid.json"
+                  type: "HTTP"
+                  method: ["POST", "GET"]
+                  response_code: ["201", "200"]
+                  http_url: ["/LogEvents", "/Versions"]
+                  body: [
+                    "file./tmp/BCF_014/var4_logeventid.json",
+                    "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json"
+                  ]
+                  sipp_scenario: {}
+                  run_in_background: "True"
+
+                # Test System OSP
+                - action: "send"
+                  prep_steps:
+                    - "method_name": "get_interface_address"
+                      "kwargs":
+                        "interface_name": "IF_OSP_BCF"
+                      "save_result_as": "var.IF_OSP_BCF"
+                    - "method_name": "generate_identifier"
+                      "kwargs":
+                        "identifier_type": "callid"
+                        "fqdn": "var.IF_OSP_BCF"
+                        "set_default": "True"
+                      "save_result_as": "var.callid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/sip_service/CALLS/SIP_basic_call_from_OSP_MSRP.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/BCF_014/SIP_basic_call_from_OSP_MSRP.xml"
+                    - "method_name": "generate_identifier"
+                      "kwargs":
+                        "identifier_type": "incidentid"
+                        "fqdn": "var.IF_OSP_BCF"
+                        "set_default": "True"
+                      "save_result_as": "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/BCF_014/SIP_basic_call_from_OSP_MSRP.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/BCF_014/SIP_basic_call_from_OSP_MSRP.xml"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5060_TCP"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/BCF_014/SIP_basic_call_from_OSP_MSRP.xml",
+                    dependencies: ["file.test_suite/test_files/SIPp_scenarios/CALLS/text_media_rtp.pcap"],
+                    kwargs: {},
+                    save_response_as: "BCF_014_var4_OSP_response.log",
+                    save_log_as: "BCF_014_var4_OSP.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "var4_log_wait"
+
+                - action: "manual"
+                  id: "var4_log_wait"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 5
+                  prompt: "Waiting 10 seconds until IUT sends all LogEvents..."
+                  next_action: ""
+
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: "m=message"
+
+              - message_type: "output"
+                src_interface: "IF_BCF_LOG"
+                dst_interface: "IF_LOG_BCF"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "201"
+                header_contains: "/LogEvents"
+                body_contains: ""
+
+              - message_type: "other"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: "m=message"
+
+        requirements:
+          - name: "RQ_BCF_075"
+            variations: ["all"]
+          - name: "RQ_BCF_076"
+            variations: ["all"]
+          - name: "RQ_BCF_120"
+            variations: ["all"]
+          - name: "RQ_BCF_124"
+            variations: ["all"]
+          - name: "RQ_BCF_163"
+            variations: ["all"]

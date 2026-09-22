@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+
+  Version:   010.3d.5.0.6
+  Date:      20260819
+
+  Plain-RTP counterpart of SIP_RECEIVE_basic_call_and_answer_DTLS_SRTP_audio.xml,
+  for use as the ESRP-side receive scenario in the Audio_via_RTP variation of
+  BCF_011, where the call to ESRP is plain SIP/TCP + RTP/AVP (no TLS, no SRTP).
+
+-->
+<scenario name="SIP_RECEIVE_basic_call_and_answer_RTP_audio">
+  <recv request="INVITE" crlf="true">
+  </recv>
+  <send>
+    <![CDATA[
+
+      SIP/2.0 180 Ringing
+      [last_Via:]
+      [last_From:]
+      [last_To:];tag=[call_number]
+      [last_Call-ID:]
+      [last_CSeq:]
+      Contact: <sip:receiver@[local_ip]:[local_port]>
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <send retrans="500">
+    <![CDATA[
+
+      SIP/2.0 200 OK
+      [last_Via:]
+      [last_From:]
+      [last_To:];tag=[call_number]
+      [last_Call-ID:]
+      [last_CSeq:]
+      Contact: <sip:receiver@[local_ip]:[local_port]>
+      Content-Type: application/sdp
+      Content-Length: [len]
+
+      v=0
+      o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+      s=-
+      t=0 0
+      c=IN IP[media_ip_type] [media_ip]
+      m=audio 5005 RTP/AVP 0
+      a=rtpmap:0 PCMU/8000
+      a=sendrecv
+
+    ]]>
+  </send>
+  <recv request="ACK" rtd="true" crlf="true"> </recv>
+  <media
+          type="rtp"
+          src_ip="[remote_ip]"
+          dst_ip="[local_ip]"
+          dst_port="5005"
+  />
+  <recv request="BYE" crlf="true"> </recv>
+  <send>
+    <![CDATA[
+
+      SIP/2.0 200 OK
+      [$last_Via]
+      [$last_From]
+      [$last_To]
+      [$last_Call-ID]
+      [$last_CSeq]
+      Contact: <sip:receiver@[local_ip]:[local_port]>
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <stop_media
+          type="rtp"
+          dst_ip="[local_ip]"
+          dst_port="5005"
+  />
+  <recv response="999" timeout="30000"></recv>
+</scenario>

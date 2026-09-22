@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+
+  Version:   010.3d.5.0.0
+  Date:      20260902
+
+-->
+<scenario name="BRIDGE_CHFE_018_var_2.xml">
+    <Global variables="CHFE_tel, conference_id, IF_CHFE_BRIDGE, IF_BRIDGE_CHFE"/>
+    <send>
+        <![CDATA[
+
+          INVITE sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+          Via: SIP/2.0/[transport] [$IF_BRIDGE_CHFE]:[local_port]
+          From: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>;tag=bridgetochfe
+          To: sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]
+          Call-ID: bridge_to_chfe@[$IF_BRIDGE_CHFE]
+          Cseq: 1 INVITE
+          Contact: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>;isfocus
+          Max-Forwards: 70
+          Supported: replaces
+          Content-Type: application/sdp
+          Content-Length: [len]
+
+          v=0
+          o=user1 53655765 2353687637 IN IP[local_ip_type] [$IF_BRIDGE_CHFE]
+          s=-
+          t=0 0
+          c=IN IP[media_ip_type] [media_ip]
+          m=audio 5004 RTP/AVP 0
+          a=rtpmap:0 PCMU/8000
+
+        ]]>
+    </send>
+    <recv response="100" optional="true"> </recv>
+    <recv response="180" optional="true"> </recv>
+    <recv response="200">
+        <operate
+            method_name="save_header_field_param_value"
+            header_field_name="to"
+            param_name="tag"
+            ctx_key="BRIDGE_to_CHFE_To_tag"
+        />
+    </recv>
+    <send>
+        <![CDATA[
+
+          ACK sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+          Via: SIP/2.0/[transport] [$IF_BRIDGE_CHFE]:[local_port]
+          From: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>;tag=bridgetochfe
+          To: sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port];tag=[$BRIDGE_to_CHFE_To_tag]
+          Call-ID: bridge_to_chfe@[$IF_BRIDGE_CHFE]
+          Cseq: 1 ACK
+          Contact: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>;isfocus
+          Content-Length: 0
+
+        ]]>
+    </send>
+    <media
+            type="rtp"
+            src_ip="[$IF_CHFE_BRIDGE]"
+            dst_ip="[local_ip]"
+            dst_port="5004"
+    />
+    <recv request="SUBSCRIBE">
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="Call-ID"
+            ctx_key="SUBSCRIBE_CHFE_conference_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send>
+        <![CDATA[
+
+          SIP/2.0 200 OK
+          [$last_Via]
+          [$last_From]
+          [$last_To]
+          [$last_Call_ID]
+          [$last_CSeq]
+          Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+          Content-Length: 0
+
+        ]]>
+    </send>
+    <send>
+        <![CDATA[
+
+           NOTIFY sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+           Via: SIP/2.0/[transport] [local_ip]:[local_port]
+           To: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+           From: <sip:[$conference_id]@[local_ip]:[local_port]>
+           Call-ID: [$SUBSCRIBE_CHFE_conference_Call_ID]
+           Max-Forwards: 70
+           CSeq: 1 NOTIFY
+           Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+           Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+           Event: conference
+           Accept: application/sdp, message/sipfrag
+           Subscription-State: active;expires=3600
+           Supported: replaces, join, gruu
+           Content-Type: application/conference-info+xml
+           Content-Length: [len]
+
+            <?xml version="1.0" encoding="UTF-8"?>
+            <conference-info
+                xmlns="urn:ietf:params:xml:ns:conference-info"
+                entity="sip:[$conference_id]@[local_ip]:[local_port]"
+                state="full"
+                version="4">
+              <conference-description>
+                  <conf-uris>
+                      <entry>
+                        <uri>sip:[$conference_id]@[local_ip]:[local_port]</uri>
+                      </entry>
+                 </conf-uris>
+              </conference-description>
+              <conference-state>
+                <user-count>3</user-count>
+                <active>true</active>
+              </conference-state>
+            <users>
+             <user entity="sip:BCF@bcf.ng911.test.example:[local_port]" state="full">
+              <display-text>BCF</display-text>
+              <endpoint entity="sip:BCF@bcf.ng911.test.example:[local_port]">
+               <status>connected</status>
+               <joining-method>dialed-in</joining-method>
+               <media id="2">
+                <display-text>Main Audio</display-text>
+                <type>audio</type>
+                <src-id>583399</src-id>
+                <status>sendrecv</status>
+               </media>
+               <call-info>
+                  <sip>
+                    <call-id>bcfconferencecallid@bcf.ng911.test.example</call-id>
+                    <from-tag>BCFfrom</from-tag>
+                    <to-tag>BCFto</to-tag>
+                  </sip>
+               </call-info>
+              </endpoint>
+             </user>
+             <user entity="sip:TS-CHFE@ts-chfe.ng911.test.example:[local_port]" state="full">
+              <display-text>TS-CHFE</display-text>
+              <endpoint entity="sip:TS-CHFE@ts-chfe.ng911.test.example:[local_port]">
+               <status>connected</status>
+               <joining-method>dialed-in</joining-method>
+               <media id="3">
+                <display-text>Main Audio</display-text>
+                <type>audio</type>
+                <src-id>583400</src-id>
+                <status>sendrecv</status>
+               </media>
+               <call-info>
+                  <sip>
+                    <call-id>tschfeconferencecallid@ts-chfe.ng911.test.example</call-id>
+                    <from-tag>TSCHFEfrom</from-tag>
+                    <to-tag>TSCHFEto</to-tag>
+                  </sip>
+               </call-info>
+              </endpoint>
+             </user>
+             <user entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]" state="full">
+              <display-text>CHFE</display-text>
+              <endpoint entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]">
+               <status>connected</status>
+               <joining-method>dialed-in</joining-method>
+               <media id="1">
+                <display-text>Main Audio</display-text>
+                <type>audio</type>
+                <src-id>583398</src-id>
+                <status>sendrecv</status>
+               </media>
+               <call-info>
+                  <sip>
+                    <call-id>bridge_to_chfe@[$IF_BRIDGE_CHFE]</call-id>
+                    <from-tag>bridgetochfe</from-tag>
+                    <to-tag>[$BRIDGE_to_CHFE_To_tag]</to-tag>
+                  </sip>
+               </call-info>
+              </endpoint>
+             </user>
+            </users>
+           </conference-info>
+
+        ]]>
+    </send>
+    <recv response="200"> </recv>
+    <pause milliseconds="2000"/>
+    <send>
+        <![CDATA[
+
+           NOTIFY sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port] SIP/2.0
+           Via: SIP/2.0/[transport] [local_ip]:[local_port]
+           To: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+           From: <sip:[$conference_id]@[local_ip]:[local_port]>
+           Call-ID: [$SUBSCRIBE_CHFE_conference_Call_ID]
+           Max-Forwards: 70
+           CSeq: 2 NOTIFY
+           Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+           Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+           Event: conference
+           Accept: application/sdp, message/sipfrag
+           Subscription-State: active;expires=3600
+           Supported: replaces, join, gruu
+           Content-Type: application/conference-info+xml
+           Content-Length: [len]
+
+            <?xml version="1.0" encoding="UTF-8"?>
+            <conference-info
+                xmlns="urn:ietf:params:xml:ns:conference-info"
+                entity="sip:[$conference_id]@[local_ip]:[local_port]"
+                state="full"
+                version="4">
+              <conference-description>
+                  <conf-uris>
+                      <entry>
+                        <uri>sip:[$conference_id]@[local_ip]:[local_port]</uri>
+                      </entry>
+                 </conf-uris>
+              </conference-description>
+              <conference-state>
+                <user-count>2</user-count>
+                <active>true</active>
+              </conference-state>
+            <users>
+             <user entity="sip:BCF@bcf.ng911.test.example:[local_port]" state="full">
+              <display-text>BCF</display-text>
+              <endpoint entity="sip:BCF@bcf.ng911.test.example:[local_port]">
+               <status>connected</status>
+               <joining-method>dialed-in</joining-method>
+               <media id="2">
+                <display-text>Main Audio</display-text>
+                <type>audio</type>
+                <src-id>583399</src-id>
+                <status>sendrecv</status>
+               </media>
+               <call-info>
+                  <sip>
+                    <call-id>bcfconferencecallid@bcf.ng911.test.example</call-id>
+                    <from-tag>BCFfrom</from-tag>
+                    <to-tag>BCFto</to-tag>
+                  </sip>
+               </call-info>
+              </endpoint>
+             </user>
+             <user entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]" state="full">
+              <display-text>CHFE</display-text>
+              <endpoint entity="sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]">
+               <status>connected</status>
+               <joining-method>dialed-in</joining-method>
+               <media id="1">
+                <display-text>Main Audio</display-text>
+                <type>audio</type>
+                <src-id>583398</src-id>
+                <status>sendrecv</status>
+               </media>
+               <call-info>
+                  <sip>
+                    <call-id>bridge_to_chfe@[$IF_BRIDGE_CHFE]</call-id>
+                    <from-tag>bridgetochfe</from-tag>
+                    <to-tag>[$BRIDGE_to_CHFE_To_tag]</to-tag>
+                  </sip>
+               </call-info>
+              </endpoint>
+             </user>
+            </users>
+           </conference-info>
+
+        ]]>
+    </send>
+    <recv response="200"> </recv>
+    <stop_media
+            type="rtp"
+            src_ip="[$IF_CHFE_BRIDGE]"
+            dst_ip="[local_ip]"
+            dst_port="5004"
+    />
+</scenario>

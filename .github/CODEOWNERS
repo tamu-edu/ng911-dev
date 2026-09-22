@@ -1,0 +1,29 @@
+# Framework
+test_suite/                         @artemr-waverley
+proxy_server/                       @artemr-waverley
+main.py                             @artemr-waverley @swadolowski-waverleysoftware
+parser.py                           @artemr-waverley
+shutdown.py                         @artemr-waverley
+README.md                           @artemr-waverley @swadolowski-waverleysoftware
+
+# TC
+test_suite/tests/                   @lpylyp-waverley
+test_suite/checks/                  @lpylyp-waverley
+
+# TD
+test_descriptions/                  @swadolowski-waverleysoftware
+test_configs/                       @swadolowski-waverleysoftware 
+templates/                          @swadolowski-waverleysoftware 
+test_suite/test_files/              @swadolowski-waverleysoftware 
+test_suite/pcaps/                   @swadolowski-waverleysoftware
+test_suite/services/config/schemas  @swadolowski-waverleysoftware @artemr-waverley
+
+# Checks
+mypy.ini                            @artemr-waverley
+bandit.yaml                         @artemr-waverley
+pyproject.toml                      @artemr-waverley
+
+# Core
+LICENSE                             @artemr-waverley @swadolowski-waverleysoftware
+__init__.py                         @artemr-waverley @swadolowski-waverleysoftware
+.gitignore                          @artemr-waverley @swadolowski-waverleysoftware

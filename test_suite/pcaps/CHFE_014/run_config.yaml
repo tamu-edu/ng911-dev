@@ -1,0 +1,199 @@
+"run_config":
+  "output_folder": "results/CHFE_014/CHFE_2026-07-29T120000_CHFE_014"
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": ""
+      "prefix": "CHFE"
+      "suffix": "CHFE_014"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "ENTER NAME"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "ENTER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": "ENTER ADDRESS"
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+        "eng_name": "ENTER NAME"
+      "supplier":
+        "name": "ENTER SUPPLIER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": ""
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+      "iut":
+        "type": "CHFE"
+        "name": "IUT_CHFE"
+        "version": "0.0.0.1"
+        "date_of_receipt": "ENTER CURRENT DATE"
+        "location": "ENTER LOCATION"
+        "cs_id": "CS00001"
+        "cs_static_conform": false
+      "test_env":
+        "ixit_id": "11111"
+        "test_method": "test_method"
+        "spec_name": "STA-010"
+        "spec_version": "3.0"
+        "test_period_start": "ENTER CURRENT DATE"
+        "test_period_end": "ENTER CURRENT DATE"
+        "log_ref": "00001"
+        "log_ret_date": "ENTER CURRENT DATE"
+    "log":
+      "level": "DEBUG"
+      "output_file": "results/CHFE_2026-07-29T120000_CHFE_014/CHFE_014_DEBUG.log"
+      "dev_mode": false
+    "comments":
+    - "author": "ENTER AUTHOR NAME"
+      "comment": "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  "tests":
+  - "name": "CHFE_CS00001"
+    "requirements":
+    - "name": "RQ_CHFE_406"
+      "variations":
+      - "Validate SIP 200 OK response for SIP INVITE with single multipart/mixed body containing SDP only"
+      - "Validate SIP 200 OK response for SIP INVITE with complex multipart/mixed body (SDP + PIDF-LO + Additional Data + NG-AACN)"
+      - "Validate SIP 200 OK response for SIP INVITE with nested multipart/mixed body"
+    "variations":
+    - "name": "Validate SIP 200 OK response for SIP INVITE with single multipart/mixed body containing SDP only"
+      "description": "SIP INVITE from Test System ESRP to CHFE with a multipart/mixed body containing exactly one SDP part. CHFE MUST respond with SIP 200 OK."
+      "interfaces":
+      - "name": "IF_ESRP_CHFE"
+        "port_names": []
+      - "name": "IF_CHFE_ESRP"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/CHFE_014/Variation_1_01_sip_invite_success_from_ESRP_single_multipart_mixed_SDP_only.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_CHFE"
+          "if_port_name": ""
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": "200"
+          "http_url": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_from_ESRP_with_single_multipart_mixed_SDP_only.xml"
+            "dependencies": []
+            "kwargs": {}
+            "save_response_as": "CHFE_014_var1_ESRP_response.log"
+            "save_log_as": "CHFE_014_var1_ESRP.log"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_CHFE"
+        "dst_interface": "IF_CHFE_ESRP"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": "200"
+        "body_contains": ""
+        "header_contains": ""
+      - "message_type": "output"
+        "src_interface": "IF_CHFE_ESRP"
+        "dst_interface": "IF_ESRP_CHFE"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": "200"
+        "body_contains": ""
+        "header_contains": ""
+    - "name": "Validate SIP 200 OK response for SIP INVITE with complex multipart/mixed body (SDP + PIDF-LO + Additional Data + NG-AACN)"
+      "description": "SIP INVITE from Test System ESRP to CHFE with a comprehensive multipart/mixed body: 1x SDP, 1x PIDF-LO XML, 3x Additional Data XML blocks (RFC 7852), 1x NG-AACN Control block and 1x VEDS Crash Data block. CHFE MUST respond with SIP 200 OK."
+      "interfaces":
+      - "name": "IF_ESRP_CHFE"
+        "port_names": []
+      - "name": "IF_CHFE_ESRP"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/CHFE_014/Variation_2_01_sip_invite_success_from_ESRP_complex_multipart_mixed_fixed.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_CHFE"
+          "if_port_name": ""
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": "200"
+          "http_url": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_from_ESRP_with_complex_multipart_mixed_SDP_PIDFLO_AddData_NGAACN.xml"
+            "dependencies": []
+            "kwargs": {}
+            "save_response_as": "CHFE_014_var2_ESRP_response.log"
+            "save_log_as": "CHFE_014_var2_ESRP.log"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_CHFE"
+        "dst_interface": "IF_CHFE_ESRP"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": "200"
+        "body_contains": ""
+        "header_contains": ""
+      - "message_type": "output"
+        "src_interface": "IF_CHFE_ESRP"
+        "dst_interface": "IF_ESRP_CHFE"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": "200"
+        "body_contains": ""
+        "header_contains": ""
+    - "name": "Validate SIP 200 OK response for SIP INVITE with nested multipart/mixed body"
+      "description": "SIP INVITE from Test System ESRP to CHFE with a nested multipart/mixed configuration where a MIME container is embedded inside another MIME container. CHFE MUST respond with SIP 200 OK."
+      "interfaces":
+      - "name": "IF_ESRP_CHFE"
+        "port_names": []
+      - "name": "IF_CHFE_ESRP"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/CHFE_014/Variation_3_01_sip_invite_success_from_ESRP_nested_multipart_mixed.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_CHFE"
+          "if_port_name": ""
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": "200"
+          "http_url": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_from_ESRP_with_nested_multipart_mixed.xml"
+            "dependencies": []
+            "kwargs": {}
+            "save_response_as": "CHFE_014_var3_ESRP_response.log"
+            "save_log_as": "CHFE_014_var3_ESRP.log"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_CHFE"
+        "dst_interface": "IF_CHFE_ESRP"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": "200"
+        "body_contains": ""
+        "header_contains": ""
+      - "message_type": "output"
+        "src_interface": "IF_CHFE_ESRP"
+        "dst_interface": "IF_ESRP_CHFE"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": "200"
+        "body_contains": ""
+        "header_contains": ""
+    "preamble_list": []
+    "postamble_list": []
