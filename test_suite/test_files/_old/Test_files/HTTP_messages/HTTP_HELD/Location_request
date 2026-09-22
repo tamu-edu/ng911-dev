@@ -1,9 +1,0 @@
-POST LOCATION_URI HTTP/1.1
-Host: LIS_FQDN:PORT
-Content-Type: application/held+xml
-Content-Length: 87
-Test-File-Version: 010.3d.2.0.1
-Test-File-Date: 2024.07.24
-
-<?xml version="1.0"?>
-  <locationRequest xmlns="urn:ietf:params:xml:ns:geopriv:held"/>

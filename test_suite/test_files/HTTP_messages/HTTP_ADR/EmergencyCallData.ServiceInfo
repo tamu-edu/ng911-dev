@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-    <svc:EmergencyCallData.ServiceInfo xmlns:svc="urn:ietf:params:xml:ns:EmergencyCallData:ServiceInfo">
-       <svc:DataProviderReference>ng911test@example.org</svc:DataProviderReference>
-       <svc:ServiceEnvironment>Business</svc:ServiceEnvironment>
-       <svc:ServiceType>VOIP</svc:ServiceType>
-       <svc:ServiceMobility>Unknown</svc:ServiceMobility>
-    </svc:EmergencyCallData.ServiceInfo>
