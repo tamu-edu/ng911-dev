@@ -1,0 +1,97 @@
+test_config:
+  conformance:
+    tests:
+      - name: "BRIDGE_008"
+        variations:
+          - name: "LogEvent_POST_Request_Properties"
+            description: "Verify BRIDGE's outgoing POST /LogEvents request contains no request parameters and a valid JWS JSON body (protected/header, payload, signature)"
+            interfaces:
+              - name: "IF_CHFE_BRIDGE"
+                port_names: []
+              - name: "IF_LOG_BRIDGE"
+                port_names: []
+            params:
+              messages:
+                # Test System Logging Service
+                - action: "receive"
+                  if_name: "IF_LOG_BRIDGE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "lab_config['lab_config']['entities']",
+                             where_field: "name",
+                             where_value: "LOG",
+                             extract_field: 'interfaces'
+                      }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "var.log_interfaces",
+                             where_field: "name",
+                             where_value: "IF_LOG_BRIDGE",
+                             extract_field: 'fqdn'
+                      }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                             identifier_type: "logid",
+                             fqdn: "var.log_fqdn"
+                      }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/bridge_008/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/bridge_008/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/bridge_008/logeventid.json"
+                  type: "HTTP"
+                  method: ["POST", "GET"]
+                  response_code: ["201", "200"]
+                  http_url: ["/LogEvents", "/Versions"] # part after f.e. http://IP:PORT
+                  body: ["file./tmp/bridge_008/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json"]
+                  sipp_scenario: {}
+                  run_in_background: "True"
+
+                # Test System CHFE
+                - action: "send"
+                  if_name: "IF_CHFE_BRIDGE"
+                  if_port_name: ""  # Optional
+                  prep_steps: []
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_with_CANCEL.xml",
+                    kwargs: {},
+                    save_response_as: "CHFE_BRIDGE_008_response.log",
+                    save_log_as: "CHFE_BRIDGE_008.log"
+                  }
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_CHFE_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE"
+                  sip_method: "INVITE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_BRIDGE_LOG"
+                  dst_interface: "IF_LOG_BRIDGE"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "POST" #  leave empty if not needed
+                  response_status_code: "201" #  leave empty if not needed
+                  header_contains: "/LogEvents"
+                  body_contains: ""
+
+        requirements:
+          - name: "RQ_BRG_120"
+            variations: ["all"]

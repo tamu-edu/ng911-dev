@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+
+  Version:   010.3d.5.0.0
+  Date:      20260319
+
+-->
+<scenario name="SIP_SUBSCRIBE_RECEIVE_ElementState_ServiceState">
+    <subscribe request="OPTIONS" reset_socket="true" optional="true">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+        <send>
+            <![CDATA[
+
+                SIP/2.0 200 OK
+                [$last_Via]
+                [$last_From]
+                [$last_To]
+                [$last_Call_ID]
+                [$last_CSeq]
+                Contact: sip:SENDER@[local_ip]:[local_port]
+                Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REGISTER, MESSAGE, INFO, SUBSCRIBE, NOTIFY, REFER, UPDATE, PRACK
+                Accept: */*
+                Supported: replaces, timer, 100rel
+                Content-Length:0
+
+            ]]>
+        </send>
+    </subscribe>
+    <subscribe request="SUBSCRIBE" reset_socket="true" timeout="600000">
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="Event"
+            ctx_key="EVENT"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="From"
+            ctx_key="last_From_value"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+        <operate
+                method_name="prepare_notify_body"
+                ctx_key_notify_body="NOTIFY_JSON"
+                ctx_key_content_length="NOTIFY_JSON_LENGTH"
+        />
+        <send>
+            <![CDATA[
+
+                SIP/2.0 200 OK
+                [$last_Via]
+                [$last_From]
+                [$last_To]
+                [$last_Call_ID]
+                [$last_CSeq]
+                Contact: sip:SENDER@[local_ip]:[local_port]
+                Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REGISTER, MESSAGE, INFO, SUBSCRIBE, NOTIFY, REFER, UPDATE, PRACK
+                Accept: */*
+                Supported: replaces, timer, 100rel
+                Content-Length:0
+
+            ]]>
+        </send>
+        <send>
+          <![CDATA[
+
+              NOTIFY [$last_From_value] SIP/2.0
+              Via: SIP/2.0/[transport] [local_ip]:[local_port]
+              From: sip:sip_service@[local_ip]:[local_port]
+              To: [$last_From_value]
+              [$last_Call_ID]
+              Event: [$EVENT]
+              Subscription-State: active;expires=599
+              Max-Forwards: 70
+              CSeq: 1 NOTIFY
+              Contact: sip:sip_service@[local_ip]:[local_port]
+              Content-Type: application/json
+              Content-Length: [$NOTIFY_JSON_LENGTH]
+
+              [$NOTIFY_JSON]
+
+          ]]>
+        </send>
+    </subscribe>
+    <pause milliseconds="600000"/>
+</scenario>

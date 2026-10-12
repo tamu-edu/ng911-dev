@@ -1,0 +1,3532 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>
+        {% if io_mode %}
+            NG9-1-1 Interoperability Test Report
+        {% else %}
+            NG9-1-1 Conformance Test Report
+        {% endif %}
+    </title>
+
+    <style>
+
+        /* ============================================================
+           GLOBAL
+           ============================================================ */
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            background: #dddddd;
+        }
+
+        body {
+            font-family:
+                "Times New Roman",
+                Times,
+                serif;
+
+            font-size: 10.5pt;
+            line-height: 1.25;
+
+            color: #111111;
+
+            background: #dddddd;
+
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+
+        /* ============================================================
+           PHYSICAL PAGE
+           ============================================================ */
+
+        /*
+         * We deliberately define the physical page ourselves.
+         *
+         * A4:
+         *
+         * 210 mm x 297 mm
+         *
+         * Vertical layout:
+         *
+         * 34 mm  header
+         * 243 mm content
+         * 20 mm  footer
+         * ----------------
+         * 297 mm total
+         */
+
+        .report-page {
+            width: 210mm;
+            height: 297mm;
+
+            display: grid;
+
+            grid-template-rows:
+                34mm
+                243mm
+                20mm;
+
+            margin: 10mm auto;
+
+            background: #ffffff;
+
+            overflow: hidden;
+
+            box-shadow:
+                0
+                1mm
+                5mm
+                rgba(0, 0, 0, 0.22);
+
+            break-after: page;
+            page-break-after: always;
+        }
+
+
+        /* ============================================================
+           PAGE HEADER
+           ============================================================ */
+
+        .page-header {
+            width: 100%;
+            height: 34mm;
+
+            padding:
+                4mm
+                20mm
+                1mm
+                20mm;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+        .page-header img {
+            display: block;
+
+            width: 156mm;
+            max-width: 100%;
+            max-height: 29mm;
+
+            object-fit: contain;
+
+            margin: 0 auto;
+        }
+
+
+        /* ============================================================
+           PAGE CONTENT
+           ============================================================ */
+
+        .page-content {
+            width: 100%;
+            height: 243mm;
+
+            padding:
+                0
+                20mm;
+
+            overflow: hidden;
+        }
+
+
+        /* ============================================================
+           PAGE FOOTER
+           ============================================================ */
+
+        .page-footer {
+            width: 100%;
+            height: 20mm;
+
+            padding:
+                3mm
+                20mm
+                4mm
+                20mm;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            font-size: 7.5pt;
+            line-height: 1.15;
+
+            color: #6b1d1d;
+
+            overflow: hidden;
+        }
+
+        .page-footer-inner {
+            width: 100%;
+            height: 100%;
+
+            display: grid;
+
+            grid-template-columns:
+                34%
+                20%
+                46%;
+
+            align-items: center;
+        }
+
+        .footer-left,
+        .footer-center,
+        .footer-right {
+            min-width: 0;
+        }
+
+        .footer-left {
+            text-align: left;
+        }
+
+        .footer-center {
+            text-align: center;
+
+            white-space: nowrap;
+        }
+
+        .footer-right {
+            text-align: right;
+
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+
+        /* ============================================================
+           SOURCE DOCUMENT
+           ============================================================ */
+
+        /*
+         * Jinja renders the complete canonical report here.
+         *
+         * It remains in the DOM so that the paginator can inspect
+         * and clone its nodes, but is positioned far outside the
+         * viewport.
+         *
+         * DO NOT use display:none because elements with display:none
+         * cannot be measured correctly.
+         */
+
+        #report-source {
+            position: absolute;
+
+            left: -100000px;
+            top: 0;
+
+            width: 170mm;
+
+            visibility: hidden;
+
+            pointer-events: none;
+
+            background: #ffffff;
+        }
+
+
+        /* ============================================================
+           GENERATED PAGE CONTAINER
+           ============================================================ */
+
+        #report-pages {
+            width: 100%;
+        }
+
+
+        /* ============================================================
+           TYPOGRAPHY
+           ============================================================ */
+
+        h1,
+        h2,
+        h3,
+        h4,
+        p {
+            margin-top: 0;
+        }
+
+        h1 {
+            margin-bottom: 7mm;
+
+            font-size: 24pt;
+            line-height: 1.08;
+
+            font-weight: bold;
+
+            color: #111111;
+        }
+
+        h2 {
+            margin-top: 6mm;
+            margin-bottom: 4mm;
+
+            font-size: 18pt;
+            line-height: 1.12;
+
+            font-weight: bold;
+
+            color: #641c1c;
+        }
+
+        h3 {
+            margin-top: 5mm;
+            margin-bottom: 1.5mm;
+
+            font-size: 14pt;
+            line-height: 1.12;
+
+            font-weight: bold;
+
+            color: #641c1c;
+        }
+
+        h4 {
+            margin-top: 3mm;
+            margin-bottom: 1.5mm;
+
+            font-size: 11pt;
+            line-height: 1.15;
+
+            font-weight: bold;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 2.5mm;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
+        em {
+            font-style: italic;
+        }
+
+
+        /* ============================================================
+           GENERIC REPORT BLOCK
+           ============================================================ */
+
+        .report-block {
+            margin-bottom: 4mm;
+        }
+
+
+        /* ============================================================
+           LABEL / VALUE TABLE
+           ============================================================ */
+
+        .field-table {
+            width: 100%;
+
+            margin: 0 0 4mm 0;
+
+            border-collapse: collapse;
+            border-spacing: 0;
+
+            table-layout: fixed;
+        }
+
+        .field-table td {
+            border: none;
+
+            padding:
+                0.15mm
+                1.5mm
+                0.15mm
+                0;
+
+            vertical-align: top;
+
+            overflow-wrap: anywhere;
+        }
+
+        .field-label {
+            width: 36%;
+
+            white-space: nowrap;
+        }
+
+        .field-value {
+            width: 64%;
+        }
+
+
+        /* ============================================================
+           ACRONYMS
+           ============================================================ */
+
+        .acronym-table {
+            width: auto;
+
+            margin: 0 0 4mm 0;
+
+            border-collapse: collapse;
+        }
+
+        .acronym-table td {
+            border: none;
+
+            padding:
+                0
+                5mm
+                0
+                0;
+
+            vertical-align: top;
+        }
+
+        .acronym {
+            width: 14mm;
+
+            white-space: nowrap;
+        }
+
+
+        /* ============================================================
+           SUMMARY
+           ============================================================ */
+
+        .summary-table {
+            width: auto;
+
+            margin:
+                3mm
+                0
+                5mm
+                0;
+
+            border-collapse: collapse;
+        }
+
+        .summary-table td {
+            border: none;
+
+            padding:
+                0.25mm
+                6mm
+                0.25mm
+                0;
+
+            vertical-align: top;
+        }
+
+        .summary-label {
+            min-width: 45mm;
+        }
+
+        /* ============================================================
+           SEQUENCE DIAGRAMS
+           ============================================================ */
+
+        .sequence-diagram-row td {
+            padding:
+                3mm
+                4mm !important;
+
+            background: #ffffff;
+        }
+
+        .sequence-diagrams {
+            width: 100%;
+
+            padding-left: 12mm;
+        }
+
+        .sequence-diagram-item {
+            width: 100%;
+
+            margin-bottom: 5mm;
+        }
+
+        .sequence-diagram-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .sequence-diagram-title {
+            margin-bottom: 2mm;
+
+            font-weight: bold;
+
+            color: #176786;
+        }
+
+        .sequence-diagram-description {
+            margin-bottom: 2mm;
+
+            font-size: 9pt;
+        }
+
+        .sequence-diagram-viewport {
+            width: 100%;
+            height: 95mm;
+
+            overflow: auto;
+
+            border:
+                0.25mm
+                solid
+                #d0d0d0;
+
+            background: #ffffff;
+        }
+
+        .sequence-diagram-inner {
+            display: flex;
+
+            width: max-content;
+            min-width: 100%;
+
+            justify-content: flex-start;
+            align-items: flex-start;
+
+            padding: 2mm;
+        }
+
+        .sequence-diagram-inner img {
+            display: block;
+
+            /*
+             * Do not force a wide sequence diagram into page width.
+             * Preserve readable scale and allow horizontal scrolling.
+             */
+            height: auto;
+            width: 1000px;
+
+            max-width: none;
+            max-height: none;
+
+            object-fit: contain;
+        }
+
+
+        /* ============================================================
+           RESULT TABLE
+           ============================================================ */
+
+        .results-table {
+            width: 100%;
+
+            margin:
+                2mm
+                0
+                5mm
+                0;
+
+            border-collapse: collapse;
+            border-spacing: 0;
+
+            table-layout: fixed;
+        }
+
+        .results-table th {
+            border:
+                0.25mm
+                solid
+                #5ab5d5;
+
+            padding:
+                1.2mm
+                2mm;
+
+            background: #176786;
+            color: #ffffff;
+
+            font-weight: bold;
+
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .results-table td {
+            border:
+                0.25mm
+                solid
+                #5ab5d5;
+
+            padding:
+                2mm;
+
+            background: #ffffff;
+
+            vertical-align: top;
+
+            overflow-wrap: anywhere;
+            word-wrap: break-word;
+        }
+
+        .requirement-column {
+            width: 18%;
+
+            font-weight: bold;
+
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        .description-column {
+            width: 65%;
+        }
+
+        .verdict-column {
+            width: 17%;
+
+            font-weight: bold;
+
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        .description-column p {
+            margin-bottom: 2mm;
+        }
+
+        .description-column p:last-child {
+            margin-bottom: 0;
+        }
+
+
+        /* ============================================================
+           DETAILED VIEW
+           ============================================================ */
+
+        .requirement-detail-row td {
+            background: #ffffff;
+        }
+
+        .check-row td {
+            background: #b9deed;
+
+            font-weight: bold;
+        }
+
+        .check-description {
+            padding-left: 5mm !important;
+        }
+
+        .variation-row td {
+            background: #f7fbfd;
+        }
+
+        .variation-description {
+            padding-left: 10mm !important;
+        }
+
+
+        /* ============================================================
+           COLLAPSE BUTTONS
+           ============================================================ */
+
+        .collapse-toggle {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 1.5mm;
+
+            margin-top: 2mm;
+
+            padding:
+                1mm
+                2mm;
+
+            border:
+                0.25mm
+                solid
+                #176786;
+
+            border-radius: 1mm;
+
+            background: #ffffff;
+            color: #176786;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            font-size: 7.5pt;
+            line-height: 1;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            user-select: none;
+        }
+
+        .collapse-toggle:hover {
+            background: #edf7fb;
+        }
+
+        .collapse-toggle:focus-visible {
+            outline:
+                0.5mm
+                solid
+                #176786;
+
+            outline-offset: 0.5mm;
+        }
+
+        .toggle-icon {
+            display: inline-block;
+
+            width: 2.5mm;
+
+            text-align: center;
+        }
+
+
+        /* ============================================================
+           VERDICTS
+           ============================================================ */
+
+        .verdict {
+            font-weight: bold;
+        }
+
+        .verdict-passed {
+            color: #008000;
+        }
+
+        .verdict-failed {
+            color: #c00000;
+        }
+
+        .verdict-inc,
+        .verdict-inconclusive,
+        .verdict-not-run {
+            color: #111111;
+        }
+
+
+        /* ============================================================
+           TERMINATION PAGE CONTENT
+           ============================================================ */
+
+        .full-page-center {
+            width: 100%;
+            height: 100%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+        }
+
+        .full-page-center h1 {
+            margin: 0;
+
+            font-size: 27pt;
+            line-height: 1.15;
+        }
+
+
+        /* ============================================================
+           ATTACHMENT
+           ============================================================ */
+
+        .attachment-title {
+            margin-top: 8mm;
+            margin-bottom: 9mm;
+
+            font-size: 26pt;
+
+            text-align: center;
+        }
+
+        .attachment-intro {
+            margin-bottom: 8mm;
+
+            text-align: center;
+        }
+
+        .attachment-list {
+            margin:
+                0
+                14mm;
+
+            padding-left: 7mm;
+        }
+
+        .attachment-list > li {
+            padding-left: 2mm;
+        }
+
+        .attachment-item-title {
+            margin-bottom: 1mm;
+
+            font-weight: bold;
+        }
+
+        .attachment-body {
+            text-align: justify;
+        }
+
+        .attachment-body p {
+            margin-bottom: 5mm;
+        }
+
+
+        /* ============================================================
+           PAGINATION MARKERS
+           ============================================================ */
+
+        /*
+         * This element never appears in the final report.
+         *
+         * It tells JavaScript:
+         *
+         * "The next content starts on a fresh physical page."
+         */
+
+        .page-break-marker {
+            display: block;
+
+            width: 0;
+            height: 0;
+
+            margin: 0;
+            padding: 0;
+        }
+
+
+        /* ============================================================
+           OVERSIZED FALLBACK
+           ============================================================ */
+
+        /*
+         * This should be exceptional.
+         *
+         * Normal result rows should always fit on one A4 content area.
+         */
+
+        .oversized-content {
+            font-size: 9pt;
+        }
+
+
+        /* ============================================================
+           PRINT
+           ============================================================ */
+
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        @media print {
+
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+
+                background: #ffffff;
+            }
+
+            .report-page {
+                margin: 0;
+
+                box-shadow: none;
+
+                break-after: page;
+                page-break-after: always;
+            }
+
+            .collapse-toggle {
+                display: none !important;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- ================================================================
+     PAGE HEADER TEMPLATE
+     ================================================================ -->
+
+<template id="page-header-template">
+
+    <header class="page-header">
+
+        <img
+            src="assets/tamu_header.png"
+            alt="The Texas A&M University System - Center for Applied Communications and Networks"
+        >
+
+    </header>
+
+</template>
+
+
+<!-- ================================================================
+     PAGE FOOTER TEMPLATE
+     ================================================================ -->
+
+<template id="page-footer-template">
+
+    <footer class="page-footer">
+
+        <div class="page-footer-inner">
+
+            <div class="footer-left">
+
+                Texas A&amp;M Center for Applied<br>
+                Communications and Networks
+
+            </div>
+
+
+            <div class="footer-center">
+
+                Page
+                <span class="current-page"></span>
+                of
+                <span class="total-pages"></span>
+
+            </div>
+
+
+            <div class="footer-right">
+
+                NG9-1-1 CTR {{ info.id }}<br>
+                {{ info.date }}
+
+            </div>
+
+        </div>
+
+    </footer>
+
+</template>
+
+
+<!-- ================================================================
+     CANONICAL REPORT SOURCE
+     ================================================================ -->
+
+<div id="report-source">
+
+
+    <!-- ============================================================
+         PAGE 1
+         ============================================================ -->
+
+    <div class="report-block">
+
+        <h1>
+
+            {% if io_mode %}
+
+                NG9-1-1 Interoperability Test Report
+
+            {% else %}
+
+                NG9-1-1 Conformance Test Report
+
+            {% endif %}
+
+        </h1>
+
+
+        <h2>
+            1. Identification Summary
+        </h2>
+
+    </div>
+
+
+    <!-- 1.1 -->
+
+    <section class="report-block">
+
+        <h3>
+            1.1. System {% if io_mode %} Interoperability {% else %} Conformance {% endif %} Test Report
+        </h3>
+
+
+        <table class="field-table">
+
+            <tr>
+
+                <td class="field-label">
+                    {% if io_mode %} Interoperability {% else %} Conformance {% endif %} Test Report ID:
+                </td>
+
+                <td class="field-value">
+                    {{ info.id }}
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td class="field-label">
+                    Date:
+                </td>
+
+                <td class="field-value">
+                    {{ info.date }}
+                </td>
+
+            </tr>
+
+        </table>
+
+    </section>
+
+
+    <!-- 1.2 -->
+
+    <section class="report-block">
+
+        <h3>
+            1.2. Test Laboratory
+        </h3>
+
+
+        <table class="field-table">
+
+            <tr>
+                <td class="field-label">Lab Name:</td>
+                <td class="field-value">{{ info.lab.name }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Accreditation Status:</td>
+                <td class="field-value">{{ info.lab.accred_status }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Accreditation Reference:</td>
+                <td class="field-value">{{ info.lab.accred_ref }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Accreditation Authority:</td>
+                <td class="field-value">{{ info.lab.accred_auth }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Address Line 1:</td>
+                <td class="field-value">{{ info.lab.addr_line_1 }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Address Line 2:</td>
+                <td class="field-value">{{ info.lab.addr_line_2 }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">City:</td>
+                <td class="field-value">{{ info.lab.city }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">State or Province:</td>
+                <td class="field-value">{{ info.lab.state }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Country:</td>
+                <td class="field-value">{{ info.lab.country }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">ZIP or Postal Code:</td>
+                <td class="field-value">{{ info.lab.zip }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Web Site:</td>
+                <td class="field-value">{{ info.lab.url }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Test Engineer:</td>
+                <td class="field-value">{{ info.lab.eng_name }}</td>
+            </tr>
+
+        </table>
+
+    </section>
+
+
+    <!-- 1.3 -->
+
+    <section class="report-block">
+
+        <h3>
+            1.3. Supplier
+        </h3>
+
+
+        <table class="field-table">
+
+            <tr>
+                <td class="field-label">Company Name:</td>
+                <td class="field-value">{{ info.supplier.name }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Address Line 1:</td>
+                <td class="field-value">{{ info.supplier.addr_line_1 }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Address Line 2:</td>
+                <td class="field-value">{{ info.supplier.addr_line_2 }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">City:</td>
+                <td class="field-value">{{ info.supplier.city }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">State or Province:</td>
+                <td class="field-value">{{ info.supplier.state }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Country:</td>
+                <td class="field-value">{{ info.supplier.country }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">ZIP or Postal Code:</td>
+                <td class="field-value">{{ info.supplier.zip }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Web Site:</td>
+                <td class="field-value">{{ info.supplier.url }}</td>
+            </tr>
+
+        </table>
+
+    </section>
+
+
+    <!-- 1.4 -->
+
+    <section class="report-block">
+
+        <h3>
+            1.4. Implementation Under Test
+        </h3>
+
+
+        <table class="field-table">
+
+            <tr>
+                <td class="field-label">NG9-1-1 FE Type:</td>
+                <td class="field-value">{{ info.iut.type }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Product Name:</td>
+                <td class="field-value">{{ info.iut.name }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Version:</td>
+                <td class="field-value">{{ info.iut.version }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Date of Receipt of IUT:</td>
+                <td class="field-value">{{ info.iut.date_of_receipt }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Location of IUT for Testing:</td>
+                <td class="field-value">{{ info.iut.location }}</td>
+            </tr>
+
+            <tr>
+                <td class="field-label">Conformance Statement ID:</td>
+                <td class="field-value">{{ info.iut.cs_id }}</td>
+            </tr>
+
+        </table>
+
+    </section>
+
+
+    <!-- ============================================================
+         EXPLICIT DOCX PAGE BOUNDARY
+         ============================================================ -->
+
+    <div class="page-break-marker"></div>
+
+
+    <!-- ============================================================
+         PAGE 2
+         ============================================================ -->
+
+    <!-- 1.5 -->
+
+    <section class="report-block">
+
+        <h3>
+            1.5. Testing Environment
+        </h3>
+
+
+        <table class="field-table">
+
+            <tr>
+
+                <td class="field-label">
+                    NG9-1-1 Base Specification:
+                </td>
+
+                <td class="field-value">
+                    {{ info.test_env.spec_name }}
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td class="field-label">
+                    Specification Version:
+                </td>
+
+                <td class="field-value">
+                    {{ info.test_env.spec_version }}
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td class="field-label">
+                    Test System Version:
+                </td>
+
+                <td class="field-value">
+                    {{ info.ts_version }}
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td class="field-label">
+                    Test Method:
+                </td>
+
+                <td class="field-value">
+                    {{ info.test_env.test_method }}
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td class="field-label">
+                    Period of Testing:
+                </td>
+
+                <td class="field-value">
+
+                    {{ info.test_env.test_period_start }}
+                    –
+                    {{ info.test_env.test_period_end }}
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </section>
+
+
+    <!-- 1.6 -->
+
+    <section class="report-block">
+
+        <h3>
+            1.6. Profile
+        </h3>
+
+        <p>
+            (Reserved for future use)
+        </p>
+
+    </section>
+
+
+    <!-- 1.7 -->
+
+    <section class="report-block">
+
+        <h3>
+            1.7. Nature of {% if io_mode %} Interoperability {% else %} Conformance {% endif %} Testing
+        </h3>
+
+        <p>
+            {% if io_mode %}
+            The purpose of Interoperability Testing is to increase confidence that different
+            NG9-1-1 implementations can successfully inter-work across the interfaces,
+            message exchanges, and operational scenarios exercised during testing.
+            However, the complexity of NG9-1-1 protocols and system interactions makes
+            exhaustive interoperability testing impractical on both technical and economic grounds.
+            Furthermore, successful completion of the applicable test cases does not guarantee
+            interoperability under all possible configurations, network conditions, or implementation
+            combinations. Rather, the passing of the test cases provides confidence that
+            the Implementation Under Test (IUT) can successfully interact with the participating
+            NG9-1-1 Functional Elements in representative instances of communication.
+            {% else %}
+            The purpose of Conformance Testing is to increase the probability
+            that different implementations can inter-work. However, the
+            complexity of NG9-1-1 protocols makes exhaustive testing impractical
+            on both technical and economic grounds. Furthermore, there is no
+            guarantee that an Implementation Under Test (IUT) which has passed
+            all the relevant test cases conforms to a specification. Neither is
+            there any guarantee that such an IUT will interwork with other real
+            open systems. Rather, the passing of the test cases gives confidence
+            that the IUT has the stated capabilities and that its behavior
+            conforms consistently in representative instances of communication.
+            {% endif %}
+        </p>
+
+    </section>
+
+
+    <!-- 1.8 -->
+
+    <section class="report-block">
+
+        <h3>
+            1.8. Limits and Reservations
+        </h3>
+
+        <p>
+            {% if io_mode %}
+            The order of test cases listed in this report corresponds to the
+            ordering of test cases defined in the test system. This does not
+            indicate that the test cases were executed in this order.
+            {% else %}
+            The order of test cases listed in this report corresponds to the
+            ordering of test cases defined in the test system. This does not
+            indicate that the test cases were executed in this order.
+            {% endif %}
+        </p>
+
+        <p>
+            {% if io_mode %}
+            The test results presented in this Interoperability Test Report
+            (ITR) apply only to the particular IUT declared in section 1.4 of
+            this ITR, for the functionality, interfaces, scenarios, and test
+            variations exercised during the test period declared in section
+            1.5 and under the configuration information applicable to this
+            test campaign. These results do not constitute a general statement
+            that the IUT will interoperate with all NG9-1-1 implementations
+            or configurations. This ITR shall not be reproduced except in full
+            together with any applicable supporting test documentation and
+            attachments.
+            {% else %}
+            The test results presented in this Conformance Test Report (CTR)
+            apply only to the particular IUT declared in section 1.4 of this
+            CTR, for functionality described in the relevant Conformance
+            Statement (CS) attached to this report, as presented for test in
+            the period declared in section 1.5 and configured as declared in
+            the relevant Implementation Extra Information for Testing (IXIT)
+            attached to this CTR. This CTR shall not be reproduced except in
+            full together with its attached CS and IXIT.
+            {% endif %}
+        </p>
+
+    </section>
+
+
+    <!-- 1.9 -->
+
+    <section class="report-block">
+
+        <h3>
+            1.9. Acronyms and Abbreviations
+        </h3>
+
+
+        <table class="acronym-table">
+            {% if io_mode %}
+            <tr>
+                <td class="acronym">ITR</td>
+                <td>Interoperability Test Report</td>
+            </tr>
+
+            <tr>
+                <td class="acronym">FE</td>
+                <td>Functional Element</td>
+            </tr>
+
+            <tr>
+                <td class="acronym">IUT</td>
+                <td>Implementation Under Test</td>
+            </tr>
+
+            <tr>
+                <td class="acronym">IXIT</td>
+                <td>Implementation Extra Information for Testing</td>
+            </tr>
+
+            {% else %}
+            <tr>
+                <td class="acronym">CS</td>
+                <td>Conformance Statement</td>
+            </tr>
+
+            <tr>
+                <td class="acronym">CTR</td>
+                <td>Conformance Test Report</td>
+            </tr>
+
+            <tr>
+                <td class="acronym">FE</td>
+                <td>Functional Element</td>
+            </tr>
+
+            <tr>
+                <td class="acronym">IUT</td>
+                <td>Implementation Under Test</td>
+            </tr>
+
+            <tr>
+                <td class="acronym">IXIT</td>
+                <td>Implementation Extra Information for Testing</td>
+            </tr>
+            {% endif %}
+
+        </table>
+
+    </section>
+
+
+    <!-- 1.10 -->
+
+    <section class="report-block">
+
+        <h3>
+            1.10. Comments
+        </h3>
+
+
+        {% for com in info.comments %}
+
+            <p>
+                {{ com.author }} – {{ com.comment }}
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+
+    <!-- ============================================================
+         EXPLICIT DOCX PAGE BOUNDARY
+         ============================================================ -->
+
+    <div class="page-break-marker"></div>
+
+
+    <!-- ============================================================
+         PAGE 3+
+         ============================================================ -->
+
+    <div class="report-block">
+
+        <h2>
+            2. IUT {% if io_mode %} Interoperability {% else %} Conformance {% endif %} Status Summary
+        </h2>
+
+
+        <p>
+            {% if io_mode %}
+            This Implementation Under Test
+            {% if info.iut.cs_static_conform %}
+                {% if status.general_verdict %}
+                    has
+                {% else %}
+                    has not
+                {% endif %}
+            {% else %}
+                has not
+            {% endif %}
+            demonstrated successful interoperability with the participating
+            NG9-1-1 Functional Elements for the interfaces, message exchanges,
+            and scenarios exercised during this interoperability test campaign.
+
+            {% else %}
+            This Implementation Under Test
+
+            {% if info.iut.cs_static_conform %}
+
+                {% if status.general_verdict %}
+
+                    has not
+
+                {% else %}
+
+                    has
+
+                {% endif %}
+
+            {% else %}
+
+                has
+
+            {% endif %}
+
+            been shown by conformance assessment to be non-conforming to the
+            referenced base specification(s).
+            {% endif %}
+
+        </p>
+
+    </div>
+
+
+    <!-- 2.1 -->
+
+    <section class="report-block">
+
+        <h3>
+            2.1. Static {% if io_mode %} Interoperability {% else %} Conformance {% endif %} Summary
+        </h3>
+
+
+        <p>
+
+            {% if io_mode %}
+
+                The System Conformance Statement (SCS) and Implementation
+                Conformance Statement (ICS) provided by the supplier of
+                the Implementation Under Test (IUT) indicates that the IUT
+
+                {% if info.iut.cs_static_conform %}
+                    supports
+                {% else %}
+                    does NOT support
+                {% endif %}
+
+                the declared capabilities and interfaces applicable to
+                the interoperability scenarios included in this test campaign.
+
+            {% else %}
+
+                The System Conformance Statement (SCS) and Implementation
+                Conformance Statement (ICS) provided by the supplier of the
+                Implementation Under Test (IUT) indicates that the IUT
+
+                {% if info.iut.cs_static_conform %}
+
+                    is
+
+                {% else %}
+
+                    is NOT
+
+                {% endif %}
+
+                conformant with all static requirements.
+
+            {% endif %}
+
+        </p>
+
+    </section>
+
+
+    <!-- 2.2 -->
+
+    <section class="report-block">
+
+        <h3>
+            2.2. Dynamic {% if io_mode %} Interoperability {% else %} Conformance {% endif %} Summary
+        </h3>
+
+
+        <p>
+
+            The test campaign
+
+            {% if status.general_verdict %}
+
+                did not
+
+            {% else %}
+
+                did
+
+            {% endif %}
+
+            reveal errors during dynamic testing of the IUT.
+
+        </p>
+
+
+        <table class="summary-table">
+
+            <tr>
+
+                <td class="summary-label">
+                    Requirements Tested:
+                </td>
+
+                <td>
+                    {{ status.req_number }}
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td class="summary-label">
+                    Passed:
+                </td>
+
+                <td>
+                    {{ status.req_passed }}
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td class="summary-label">
+                    Failed:
+                </td>
+
+                <td>
+                    {{ status.req_failed }}
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td class="summary-label">
+                    Inconclusive:
+                </td>
+
+                <td>
+                    {{ status.req_inconclusive }}
+                </td>
+
+            </tr>
+
+        </table>
+
+    </section>
+
+
+    <!-- SECTION 3 -->
+
+    <div class="report-block">
+
+        <h2>
+
+            {% if io_mode %}
+
+                3. IUT Interoperability Testing Results
+
+            {% else %}
+
+                3. IUT Conformance Testing Results
+
+            {% endif %}
+
+        </h2>
+
+    </div>
+
+
+    <!-- 3.1 -->
+
+    <section class="report-block">
+
+        <h3>
+            3.1. Static Conformance Review Issues
+        </h3>
+
+        <p>
+            (Reserved for future use)
+        </p>
+
+    </section>
+
+    <!-- 3.2 HEADING -->
+
+    <div class="report-block">
+
+        <h3>
+            3.2. Dynamic Conformance Test Campaign Results
+        </h3>
+
+    </div>
+
+
+    <!-- ============================================================
+     3.2 DYNAMIC CONFORMANCE TEST CAMPAIGN RESULTS
+
+     One canonical result table.
+
+     detailed_view == false:
+         Requirement rows only.
+
+     detailed_view == true:
+         Requirement rows remain the same, but Checks can be
+         expanded beneath each Requirement and Variations can
+         be expanded beneath each Check.
+     ============================================================ -->
+
+    {% for test in tests %}
+
+        {% set test_index = loop.index0 %}
+
+
+        <table class="results-table paginate-table">
+
+            <thead>
+
+                <tr>
+
+                    <th class="requirement-column">
+                        Requirement
+                    </th>
+
+                    <th class="description-column">
+                        Description
+                    </th>
+
+                    <th class="verdict-column">
+                        Result
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for r in test.reqs %}
+
+                    {% set req_index = loop.index0 %}
+
+                    {% set req_id =
+                        "detail-t"
+                        ~ test_index
+                        ~ "-r"
+                        ~ req_index
+                    %}
+
+
+                    <!-- ==============================================
+                         REQUIREMENT
+                         ============================================== -->
+
+                    <tr
+                        class="requirement-detail-row"
+                        data-row-type="requirement"
+                        data-requirement="{{ req_id }}"
+                    >
+
+                        <td class="requirement-column">
+
+                            <div>
+                                {{ r.name }}
+                            </div>
+
+
+                            {% if detailed_view and r.checks %}
+
+                                <button
+                                    type="button"
+                                    class="collapse-toggle"
+                                    data-action="toggle-requirement"
+                                    data-requirement-id="{{ req_id }}"
+                                    aria-expanded="false"
+                                >
+
+                                    <span class="toggle-icon">
+                                        ▶
+                                    </span>
+
+                                    <span class="toggle-text">
+                                        Checks
+                                    </span>
+
+                                </button>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td class="description-column">
+
+                            <p>
+                                <strong>Description:</strong>
+                                {{ r.description }}
+                            </p>
+
+                            <p>
+                                <em>Text:</em>
+                                {{ r.req_text }}
+                            </p>
+
+                            <p>
+                                <strong>Section:</strong>
+                                {{ r.section }}
+                            </p>
+
+                        </td>
+
+
+                        <td class="verdict-column">
+
+                            <span
+                                class="
+                                    verdict
+                                    verdict-{{ r.verdict | lower | replace('_', '-') }}
+                                "
+                            >
+                                {{ r.verdict }}
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ==============================================
+                         CHECKS + VARIATIONS
+
+                         They exist only when detailed_view is enabled.
+
+                         JS decides whether each row is currently visible.
+                         ============================================== -->
+
+                    {% if detailed_view %}
+
+                        {% for c in r.checks %}
+
+                            {% set check_index = loop.index0 %}
+
+                            {% set check_id =
+                                req_id
+                                ~ "-c"
+                                ~ check_index
+                            %}
+
+
+                            <!-- ======================================
+                                 CHECK
+                                 ====================================== -->
+
+                            <tr
+                                class="check-row"
+                                data-row-type="check"
+                                data-parent-requirement="{{ req_id }}"
+                                data-check="{{ check_id }}"
+                            >
+
+                                <td
+                                    colspan="2"
+                                    class="check-description"
+                                >
+
+                                    <strong>
+                                        Check:
+                                    </strong>
+
+                                    {{ c.name }}
+
+
+                                    {% if c.variations %}
+
+                                        <button
+                                            type="button"
+                                            class="collapse-toggle"
+                                            data-action="toggle-check"
+                                            data-check-id="{{ check_id }}"
+                                            aria-expanded="false"
+                                        >
+
+                                            <span class="toggle-icon">
+                                                ▶
+                                            </span>
+
+                                            <span class="toggle-text">
+                                                Variations
+                                            </span>
+
+                                        </button>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td class="verdict-column">
+
+                                    <span
+                                        class="
+                                            verdict
+                                            verdict-{{ c.verdict | lower | replace('_', '-') }}
+                                        "
+                                    >
+                                        {{ c.verdict }}
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- ======================================
+                                 VARIATIONS
+                                 ====================================== -->
+
+                            {% for v in c.variations %}
+
+                                {% set variation_index = loop.index0 %}
+
+                                {% set variation_id =
+                                    check_id
+                                    ~ "-v"
+                                    ~ variation_index
+                                %}
+
+                                {% set sequence_diagrams =
+                                    v.artifacts
+                                    | default([])
+                                    | selectattr(
+                                        "type",
+                                        "equalto",
+                                        "sequence_diagram"
+                                    )
+                                    | list
+                                %}
+
+
+                                <!-- ======================================
+                                     VARIATION
+                                     ====================================== -->
+
+                                <tr
+                                    class="variation-row"
+                                    data-row-type="variation"
+                                    data-parent-requirement="{{ req_id }}"
+                                    data-parent-check="{{ check_id }}"
+                                    data-variation="{{ variation_id }}"
+                                >
+
+                                    <td
+                                        colspan="2"
+                                        class="variation-description"
+                                    >
+
+                                        <strong>
+                                            Variation:
+                                        </strong>
+
+                                        {{ v.name }}
+
+                                        –
+
+                                        {{ v.description }}
+
+
+                                        {% if sequence_diagrams %}
+
+                                            <button
+                                                type="button"
+                                                class="collapse-toggle"
+                                                data-action="toggle-variation-artifacts"
+                                                data-variation-id="{{ variation_id }}"
+                                                aria-expanded="false"
+                                            >
+
+                                                <span class="toggle-icon">
+                                                    ▶
+                                                </span>
+
+                                                <span class="toggle-text">
+                                                    Sequence Diagrams
+                                                </span>
+
+                                            </button>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td class="verdict-column">
+
+                                        <span
+                                            class="
+                                                verdict
+                                                verdict-{{ v.verdict | lower | replace('_', '-') }}
+                                            "
+                                        >
+                                            {{ v.verdict }}
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+
+                                <!-- ======================================
+                                     SEQUENCE DIAGRAMS
+                                     ====================================== -->
+
+                                {% for artifact in sequence_diagrams %}
+
+                                    <tr
+                                        class="sequence-diagram-row"
+                                        data-row-type="artifact"
+                                        data-parent-requirement="{{ req_id }}"
+                                        data-parent-check="{{ check_id }}"
+                                        data-parent-variation="{{ variation_id }}"
+                                    >
+
+                                        <td colspan="3">
+
+                                            <div class="sequence-diagrams">
+
+                                                <div class="sequence-diagram-item">
+
+                                                    <div class="sequence-diagram-title">
+
+                                                        {{ artifact.title }}
+
+                                                    </div>
+
+
+                                                    {% if artifact.description %}
+
+                                                        <div class="sequence-diagram-description">
+
+                                                            {{ artifact.description }}
+
+                                                        </div>
+
+                                                    {% endif %}
+
+
+                                                    <div class="sequence-diagram-viewport">
+
+                                                        <div class="sequence-diagram-inner">
+
+                                                            <img
+                                                                src="{{ artifact.path }}"
+                                                                alt="{{ artifact.title }}"
+                                                            >
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            {% endfor %}
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    {% endfor %}
+
+    <div class="page-break-marker"></div>
+
+
+    <section class="full-page-center">
+
+        <h1>
+            End of Dynamic Test Results
+        </h1>
+
+    </section>
+
+
+    <!-- ============================================================
+         ATTACHMENT
+         ============================================================ -->
+
+    <div class="page-break-marker"></div>
+
+
+    <section class="report-block">
+
+        <h1 class="attachment-title">
+            Attachment
+        </h1>
+
+
+        <p class="attachment-intro">
+            This report is not valid without the following attachment.
+        </p>
+
+
+        <ol class="attachment-list">
+
+            <li>
+
+                <div class="attachment-item-title">
+
+                    System Conformance Statement /
+                    Implementation Conformance Statement
+
+                </div>
+
+
+                <div class="attachment-body">
+
+                    <p>
+
+                        The System Conformance Statement / Implementation
+                        Conformance Statement (SCS/ICS) is provided by the
+                        supplier of the product being tested. It contains the
+                        supplier’s attestation of conformance to both static and
+                        dynamic requirements.
+
+                    </p>
+
+
+                    <p>
+
+                        Disclaimer: Static requirements are those for which
+                        conformance to the standard is not testable by dynamic
+                        means. Conformance to static requirements is based
+                        solely on the statements provided in the SCS/ICS
+                        attachment. The overall verdict is based on compliance
+                        with both static and dynamic requirements and therefore
+                        depends in part on the accuracy of the supplier’s claims
+                        of conformance to the static requirements.
+
+                    </p>
+
+                </div>
+
+            </li>
+
+        </ol>
+
+    </section>
+
+
+    <!-- ============================================================
+         END OF REPORT
+         ============================================================ -->
+
+    <div class="page-break-marker"></div>
+
+
+    <section class="full-page-center">
+
+        <h1>
+            End of Report
+        </h1>
+
+    </section>
+
+
+</div>
+
+
+<!-- ================================================================
+     VISIBLE GENERATED REPORT
+     ================================================================ -->
+
+<div id="report-pages"></div>
+
+
+<script>
+
+    /* ================================================================
+       STATE
+       ================================================================ */
+
+    const requirementState = new Map();
+    const checkState = new Map();
+    const variationArtifactState = new Map();
+
+    let printState = null;
+
+
+    /* ================================================================
+       DOM REFERENCES
+       ================================================================ */
+
+    const reportSource =
+        document.getElementById("report-source");
+
+    const reportPages =
+        document.getElementById("report-pages");
+
+    const headerTemplate =
+        document.getElementById("page-header-template");
+
+    const footerTemplate =
+        document.getElementById("page-footer-template");
+
+
+    /* ================================================================
+       PAGE CREATION
+       ================================================================ */
+
+    function createPage() {
+
+        const page =
+            document.createElement("section");
+
+        page.className = "report-page";
+
+
+        page.appendChild(
+            headerTemplate.content.cloneNode(true)
+        );
+
+
+        const content =
+            document.createElement("div");
+
+        content.className = "page-content";
+
+        page.appendChild(content);
+
+
+        page.appendChild(
+            footerTemplate.content.cloneNode(true)
+        );
+
+
+        reportPages.appendChild(page);
+
+
+        return {
+            page: page,
+            content: content
+        };
+
+    }
+
+
+    /* ================================================================
+       PAGE CONTENT HELPERS
+       ================================================================ */
+
+    function isPageContentEmpty(content) {
+
+        return content.children.length === 0;
+
+    }
+
+
+    function isOverflowing(content) {
+
+        return (
+            content.scrollHeight >
+            content.clientHeight + 1
+        );
+
+    }
+
+
+    /* ================================================================
+       COLLAPSE STATE
+       ================================================================ */
+
+    function isRequirementExpanded(requirementId) {
+
+        return requirementState.get(requirementId) === true;
+
+    }
+
+
+    function isCheckExpanded(checkId) {
+
+        return checkState.get(checkId) === true;
+
+    }
+
+    function isVariationArtifactsExpanded(variationId) {
+
+        return (
+            variationArtifactState.get(
+                variationId
+            ) === true
+        );
+
+    }
+
+
+    function shouldRenderRow(row) {
+
+        const type =
+            row.dataset.rowType;
+
+
+        if (!type) {
+            return true;
+        }
+
+
+        if (type === "requirement") {
+            return true;
+        }
+
+
+        if (type === "check") {
+
+            const requirementId =
+                row.dataset.parentRequirement;
+
+            return isRequirementExpanded(
+                requirementId
+            );
+
+        }
+
+
+        if (type === "variation") {
+
+            const requirementId =
+                row.dataset.parentRequirement;
+
+            const checkId =
+                row.dataset.parentCheck;
+
+
+            return (
+                isRequirementExpanded(requirementId) &&
+                isCheckExpanded(checkId)
+            );
+
+        }
+
+
+        if (type === "artifact") {
+
+            const requirementId =
+                row.dataset.parentRequirement;
+
+            const checkId =
+                row.dataset.parentCheck;
+
+            const variationId =
+                row.dataset.parentVariation;
+
+
+            return (
+                isRequirementExpanded(requirementId) &&
+                isCheckExpanded(checkId) &&
+                isVariationArtifactsExpanded(
+                    variationId
+                )
+            );
+
+        }
+
+
+        return true;
+
+    }
+
+
+    /* ================================================================
+       INTERACTIVE ROW SYNCHRONIZATION
+       ================================================================ */
+
+    function synchronizeInteractiveRow(row) {
+
+        const requirementButton =
+            row.querySelector(
+                '[data-action="toggle-requirement"]'
+            );
+
+
+        if (requirementButton) {
+
+            const requirementId =
+                requirementButton.dataset.requirementId;
+
+            const expanded =
+                isRequirementExpanded(requirementId);
+
+
+            requirementButton.setAttribute(
+                "aria-expanded",
+                expanded ? "true" : "false"
+            );
+
+
+            const icon =
+                requirementButton.querySelector(
+                    ".toggle-icon"
+                );
+
+
+            if (icon) {
+
+                icon.textContent =
+                    expanded
+                        ? "▼"
+                        : "▶";
+
+            }
+
+        }
+
+
+        const checkButton =
+            row.querySelector(
+                '[data-action="toggle-check"]'
+            );
+
+
+        if (checkButton) {
+
+            const checkId =
+                checkButton.dataset.checkId;
+
+            const expanded =
+                isCheckExpanded(checkId);
+
+
+            checkButton.setAttribute(
+                "aria-expanded",
+                expanded ? "true" : "false"
+            );
+
+
+            const icon =
+                checkButton.querySelector(
+                    ".toggle-icon"
+                );
+
+
+            if (icon) {
+
+                icon.textContent =
+                    expanded
+                        ? "▼"
+                        : "▶";
+
+            }
+
+        }
+
+        const variationArtifactsButton =
+            row.querySelector(
+                '[data-action="toggle-variation-artifacts"]'
+            );
+
+
+        if (variationArtifactsButton) {
+
+            const variationId =
+                variationArtifactsButton.dataset.variationId;
+
+            const expanded =
+                isVariationArtifactsExpanded(
+                    variationId
+                );
+
+
+            variationArtifactsButton.setAttribute(
+                "aria-expanded",
+                expanded ? "true" : "false"
+            );
+
+
+            const icon =
+                variationArtifactsButton.querySelector(
+                    ".toggle-icon"
+                );
+
+
+            if (icon) {
+
+                icon.textContent =
+                    expanded
+                        ? "▼"
+                        : "▶";
+
+            }
+
+        }
+
+    }
+
+
+    /* ================================================================
+       TABLE SHELL
+       ================================================================ */
+
+    function createTableShell(sourceTable) {
+
+        const table =
+            sourceTable.cloneNode(false);
+
+
+        Array.from(sourceTable.children).forEach(
+            function (child) {
+
+                if (
+                    child.tagName === "COLGROUP" ||
+                    child.tagName === "THEAD"
+                ) {
+
+                    table.appendChild(
+                        child.cloneNode(true)
+                    );
+
+                }
+
+            }
+        );
+
+
+        const tbody =
+            document.createElement("tbody");
+
+        table.appendChild(tbody);
+
+
+        return {
+            table: table,
+            tbody: tbody
+        };
+
+    }
+
+
+    /* ================================================================
+       TABLE PAGINATION
+       ================================================================ */
+
+    function paginateTable(
+        sourceTable,
+        pageContext
+    ) {
+
+        let currentPage =
+            pageContext.currentPage;
+
+        let currentContent =
+            pageContext.currentContent;
+
+
+        let shell =
+            createTableShell(sourceTable);
+
+
+        currentContent.appendChild(
+            shell.table
+        );
+
+
+        /*
+         * If even the table heading cannot fit in the remaining
+         * content area, start a fresh page first.
+         */
+
+        if (
+            isOverflowing(currentContent) &&
+            currentContent.children.length > 1
+        ) {
+
+            currentContent.removeChild(
+                shell.table
+            );
+
+
+            const page =
+                createPage();
+
+
+            currentPage =
+                page.page;
+
+            currentContent =
+                page.content;
+
+
+            shell =
+                createTableShell(
+                    sourceTable
+                );
+
+
+            currentContent.appendChild(
+                shell.table
+            );
+
+        }
+
+
+        const sourceBodies =
+            Array.from(
+                sourceTable.tBodies
+            );
+
+
+        sourceBodies.forEach(
+            function (sourceBody) {
+
+                Array.from(
+                    sourceBody.rows
+                ).forEach(
+                    function (sourceRow) {
+
+                        if (
+                            !shouldRenderRow(
+                                sourceRow
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const row =
+                            sourceRow.cloneNode(true);
+
+
+                        synchronizeInteractiveRow(
+                            row
+                        );
+
+
+                        shell.tbody.appendChild(
+                            row
+                        );
+
+
+                        if (
+                            !isOverflowing(
+                                currentContent
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        /*
+                         * Row caused overflow.
+                         *
+                         * Remove it and move it to a fresh
+                         * table on the next page.
+                         */
+
+                        shell.tbody.removeChild(
+                            row
+                        );
+
+
+                        const page =
+                            createPage();
+
+
+                        currentPage =
+                            page.page;
+
+                        currentContent =
+                            page.content;
+
+
+                        shell =
+                            createTableShell(
+                                sourceTable
+                            );
+
+
+                        currentContent.appendChild(
+                            shell.table
+                        );
+
+
+                        shell.tbody.appendChild(
+                            row
+                        );
+
+
+                        /*
+                         * Safety fallback for a pathological single
+                         * table row taller than an entire physical
+                         * page.
+                         */
+
+                        if (
+                            isOverflowing(
+                                currentContent
+                            )
+                        ) {
+
+                            row.classList.add(
+                                "oversized-content"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+         * A table may contain zero currently-visible rows
+         * because all detailed rows beneath a Requirement
+         * are collapsed.
+         *
+         * Remove an empty shell in that case.
+         */
+
+        if (
+            shell.tbody.rows.length === 0
+        ) {
+
+            shell.table.remove();
+
+        }
+
+
+        pageContext.currentPage =
+            currentPage;
+
+        pageContext.currentContent =
+            currentContent;
+
+    }
+
+
+    /* ================================================================
+       NORMAL BLOCK PAGINATION
+       ================================================================ */
+
+    function paginateBlock(
+        sourceNode,
+        pageContext
+    ) {
+
+        let currentPage =
+            pageContext.currentPage;
+
+        let currentContent =
+            pageContext.currentContent;
+
+
+        const clone =
+            sourceNode.cloneNode(true);
+
+
+        currentContent.appendChild(
+            clone
+        );
+
+
+        if (
+            !isOverflowing(
+                currentContent
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+         * Remove the overflowing block from the current page.
+         */
+
+        currentContent.removeChild(
+            clone
+        );
+
+
+        /*
+         * If the current page already contained something,
+         * first try the block on a fresh page.
+         */
+
+        if (
+            !isPageContentEmpty(
+                currentContent
+            )
+        ) {
+
+            const page =
+                createPage();
+
+
+            currentPage =
+                page.page;
+
+            currentContent =
+                page.content;
+
+
+            currentContent.appendChild(
+                clone
+            );
+
+        } else {
+
+            currentContent.appendChild(
+                clone
+            );
+
+        }
+
+
+        /*
+         * Most report blocks are intentionally smaller than
+         * one content area.
+         *
+         * If an exceptional block is still too large,
+         * progressively move its child elements instead.
+         */
+
+        if (
+            isOverflowing(
+                currentContent
+            ) &&
+            sourceNode.children.length > 1
+        ) {
+
+            currentContent.removeChild(
+                clone
+            );
+
+
+            Array.from(
+                sourceNode.children
+            ).forEach(
+                function (child) {
+
+                    if (
+                        child.classList &&
+                        child.classList.contains(
+                            "paginate-table"
+                        )
+                    ) {
+
+                        paginateTable(
+                            child,
+                            pageContext
+                        );
+
+                    } else {
+
+                        paginateBlock(
+                            child,
+                            pageContext
+                        );
+
+                    }
+
+                }
+            );
+
+
+            return;
+
+        }
+
+
+        pageContext.currentPage =
+            currentPage;
+
+        pageContext.currentContent =
+            currentContent;
+
+    }
+
+
+    /* ================================================================
+       FOOTER NUMBERING
+       ================================================================ */
+
+    function updatePageNumbers() {
+
+        const pages =
+            Array.from(
+                reportPages.querySelectorAll(
+                    ".report-page"
+                )
+            );
+
+
+        const totalPages =
+            pages.length;
+
+
+        pages.forEach(
+            function (page, index) {
+
+                const current =
+                    index + 1;
+
+
+                page.querySelectorAll(
+                    ".current-page"
+                ).forEach(
+                    function (element) {
+
+                        element.textContent =
+                            current;
+
+                    }
+                );
+
+
+                page.querySelectorAll(
+                    ".total-pages"
+                ).forEach(
+                    function (element) {
+
+                        element.textContent =
+                            totalPages;
+
+                    }
+                );
+
+            }
+        );
+
+    }
+
+
+    /* ================================================================
+       MAIN PAGINATOR
+       ================================================================ */
+
+    function paginateReport() {
+
+        reportPages.innerHTML = "";
+
+
+        const firstPage =
+            createPage();
+
+
+        const pageContext = {
+            currentPage: firstPage.page,
+            currentContent: firstPage.content
+        };
+
+
+        const sourceNodes =
+            Array.from(
+                reportSource.children
+            );
+
+
+        sourceNodes.forEach(
+            function (sourceNode) {
+
+                /*
+                 * Explicit DOCX page boundary.
+                 */
+
+                if (
+                    sourceNode.classList.contains(
+                        "page-break-marker"
+                    )
+                ) {
+
+                    /*
+                     * Do not create duplicate blank pages.
+                     */
+
+                    if (
+                        !isPageContentEmpty(
+                            pageContext.currentContent
+                        )
+                    ) {
+
+                        const page =
+                            createPage();
+
+
+                        pageContext.currentPage =
+                            page.page;
+
+                        pageContext.currentContent =
+                            page.content;
+
+                    }
+
+
+                    return;
+
+                }
+
+
+                /*
+                 * Row-aware result table pagination.
+                 */
+
+                if (
+                    sourceNode.classList.contains(
+                        "paginate-table"
+                    )
+                ) {
+
+                    paginateTable(
+                        sourceNode,
+                        pageContext
+                    );
+
+
+                    return;
+
+                }
+
+
+                /*
+                 * Ordinary report content.
+                 */
+
+                paginateBlock(
+                    sourceNode,
+                    pageContext
+                );
+
+            }
+        );
+
+
+        /*
+         * Remove a final blank page if an explicit marker
+         * happened to create one.
+         */
+
+        const lastPage =
+            reportPages.lastElementChild;
+
+
+        if (lastPage) {
+
+            const content =
+                lastPage.querySelector(
+                    ".page-content"
+                );
+
+
+            if (
+                content &&
+                isPageContentEmpty(content) &&
+                reportPages.children.length > 1
+            ) {
+
+                lastPage.remove();
+
+            }
+
+        }
+
+
+        updatePageNumbers();
+
+    }
+
+
+    /* ================================================================
+       FIND ROW AFTER REPAGINATION
+       ================================================================ */
+
+    function findGeneratedRequirement(
+        requirementId
+    ) {
+
+        return Array.from(
+            reportPages.querySelectorAll(
+                "[data-requirement]"
+            )
+        ).find(
+            function (row) {
+
+                return (
+                    row.dataset.requirement ===
+                    requirementId
+                );
+
+            }
+        );
+
+    }
+
+
+    function findGeneratedCheck(
+        checkId
+    ) {
+
+        return Array.from(
+            reportPages.querySelectorAll(
+                "[data-check]"
+            )
+        ).find(
+            function (row) {
+
+                return (
+                    row.dataset.check ===
+                    checkId
+                );
+
+            }
+        );
+
+    }
+
+    function findGeneratedVariation(
+        variationId
+    ) {
+
+        return Array.from(
+            reportPages.querySelectorAll(
+                "[data-variation]"
+            )
+        ).find(
+            function (row) {
+
+                return (
+                    row.dataset.variation ===
+                    variationId
+                );
+
+            }
+        );
+
+    }
+
+
+    /* ================================================================
+       INTERACTION
+       ================================================================ */
+
+    reportPages.addEventListener(
+        "click",
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    ".collapse-toggle"
+                );
+
+
+            if (!button) {
+                return;
+            }
+
+
+            const action =
+                button.dataset.action;
+
+
+            if (
+                action ===
+                "toggle-requirement"
+            ) {
+
+                const requirementId =
+                    button.dataset.requirementId;
+
+
+                const expanded =
+                    isRequirementExpanded(
+                        requirementId
+                    );
+
+
+                requirementState.set(
+                    requirementId,
+                    !expanded
+                );
+
+
+                paginateReport();
+
+
+                requestAnimationFrame(
+                    function () {
+
+                        const row =
+                            findGeneratedRequirement(
+                                requirementId
+                            );
+
+
+                        if (row) {
+
+                            row.scrollIntoView({
+                                behavior: "auto",
+                                block: "center"
+                            });
+
+                        }
+
+                    }
+                );
+
+
+                return;
+
+            }
+
+
+            if (
+                action ===
+                "toggle-check"
+            ) {
+
+                const checkId =
+                    button.dataset.checkId;
+
+
+                const expanded =
+                    isCheckExpanded(
+                        checkId
+                    );
+
+
+                checkState.set(
+                    checkId,
+                    !expanded
+                );
+
+
+                paginateReport();
+
+
+                requestAnimationFrame(
+                    function () {
+
+                        const row =
+                            findGeneratedCheck(
+                                checkId
+                            );
+
+
+                        if (row) {
+
+                            row.scrollIntoView({
+                                behavior: "auto",
+                                block: "center"
+                            });
+
+                        }
+
+                    }
+                );
+
+            }
+
+            if (
+                action ===
+                "toggle-variation-artifacts"
+            ) {
+
+                const variationId =
+                    button.dataset.variationId;
+
+
+                const expanded =
+                    isVariationArtifactsExpanded(
+                        variationId
+                    );
+
+
+                variationArtifactState.set(
+                    variationId,
+                    !expanded
+                );
+
+
+                paginateReport();
+
+
+                requestAnimationFrame(
+                    function () {
+
+                        const row =
+                            findGeneratedVariation(
+                                variationId
+                            );
+
+
+                        if (row) {
+
+                            row.scrollIntoView({
+                                behavior: "auto",
+                                block: "center"
+                            });
+
+                        }
+
+                    }
+                );
+
+
+                return;
+
+            }
+        }
+    );
+
+
+    /* ================================================================
+       PRINT SUPPORT
+       ================================================================ */
+
+    function cloneMap(map) {
+
+        return new Map(
+            Array.from(
+                map.entries()
+            )
+        );
+
+    }
+
+
+    function expandAllDetails() {
+
+        reportSource.querySelectorAll(
+            '[data-action="toggle-requirement"]'
+        ).forEach(
+            function (button) {
+
+                requirementState.set(
+                    button.dataset.requirementId,
+                    true
+                );
+
+            }
+        );
+
+
+        reportSource.querySelectorAll(
+            '[data-action="toggle-check"]'
+        ).forEach(
+            function (button) {
+
+                checkState.set(
+                    button.dataset.checkId,
+                    true
+                );
+
+            }
+        );
+
+        reportSource.querySelectorAll(
+            '[data-action="toggle-variation-artifacts"]'
+        ).forEach(
+            function (button) {
+
+                variationArtifactState.set(
+                    button.dataset.variationId,
+                    true
+                );
+
+            }
+        );
+
+    }
+
+
+    window.addEventListener(
+        "beforeprint",
+        function () {
+
+            printState = {
+                requirements:
+                    cloneMap(
+                        requirementState
+                    ),
+
+                checks:
+                    cloneMap(
+                        checkState
+                    ),
+
+                variationArtifacts:
+                    cloneMap(
+                        variationArtifactState
+                    )
+            };
+
+
+            expandAllDetails();
+
+            paginateReport();
+
+        }
+    );
+
+
+    window.addEventListener(
+        "afterprint",
+        function () {
+
+            if (!printState) {
+                return;
+            }
+
+
+            requirementState.clear();
+            checkState.clear();
+            variationArtifactState.clear();
+
+
+            printState.requirements.forEach(
+                function (value, key) {
+
+                    requirementState.set(
+                        key,
+                        value
+                    );
+
+                }
+            );
+
+
+            printState.checks.forEach(
+                function (value, key) {
+
+                    checkState.set(
+                        key,
+                        value
+                    );
+
+                }
+            );
+
+
+            printState.variationArtifacts.forEach(
+                function (value, key) {
+
+                    variationArtifactState.set(
+                        key,
+                        value
+                    );
+
+                }
+            );
+
+            printState = null;
+
+
+            paginateReport();
+
+        }
+    );
+
+
+    /* ================================================================
+       INITIALIZATION
+       ================================================================ */
+
+    async function initializeReport() {
+
+        /*
+         * Font metrics affect pagination.
+         *
+         * Wait for fonts before measuring element heights.
+         */
+
+        if (
+            document.fonts &&
+            document.fonts.ready
+        ) {
+
+            await document.fonts.ready;
+
+        }
+
+
+        paginateReport();
+
+    }
+
+
+    window.addEventListener(
+        "load",
+        initializeReport
+    );
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TD_BCF_012
+  Test System ESRP receives standalone SDES-SRTP
+  using AES_256_CM_HMAC_SHA1_80.
+
+-->
+<scenario name="SIP_RECEIVE_basic_call_and_answer_with_SRTP">
+
+  <recv request="INVITE" crlf="true">
+
+    <action>
+      <ereg
+          regexp="(?im)^[ \t]*a=crypto:\d+[ \t]+AES_256_CM_HMAC_SHA1_80[ \t]+inline:([^|\r\n \t]+)"
+          assign="remote_srtp_key"
+      />
+    </action>
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="Via"
+        ctx_key="last_Via"
+    />
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="From"
+        ctx_key="last_From"
+    />
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="To"
+        ctx_key="last_To"
+    />
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="Call-ID"
+        ctx_key="last_Call_ID"
+    />
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="CSeq"
+        ctx_key="last_CSeq"
+    />
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="Contact"
+        ctx_key="last_Contact"
+    />
+
+  </recv>
+
+  <send>
+    <![CDATA[
+SIP/2.0 180 Ringing
+${last_Via}
+${last_From}
+${last_To};tag=${call_number}
+${last_Call_ID}
+${last_CSeq}
+Contact: <sip:receiver@${local_ip}:${local_port}>
+Content-Length: 0
+
+]]>
+  </send>
+
+  <send retrans="500">
+    <![CDATA[
+SIP/2.0 200 OK
+${last_Via}
+${last_From}
+${last_To};tag=${call_number}
+${last_Call_ID}
+${last_CSeq}
+Contact: <sip:receiver@${local_ip}:${local_port}>
+Content-Type: application/sdp
+Content-Length: 0
+
+v=0
+o=user1 53655765 2353687637 IN IP4 ${local_ip}
+s=-
+t=0 0
+c=IN IP4 ${media_ip}
+m=audio 5005 RTP/SAVP 0
+a=rtpmap:0 PCMU/8000
+a=crypto:1 AES_256_CM_HMAC_SHA1_80 inline:Gpxjjgwtr+gwQxEUk5Lhr8Fxzi6NJI0eH+HMcFy0MyEjknT2nZ4zVaUW0Cgi2g==
+a=sendrecv
+
+]]>
+  </send>
+
+  <recv request="ACK" rtd="true" crlf="true"/>
+
+  <media
+    type="srtp"
+    dst_ip="${media_ip}"
+    dst_port="5005"
+    tx_key="Gpxjjgwtr+gwQxEUk5Lhr8Fxzi6NJI0eH+HMcFy0MyEjknT2nZ4zVaUW0Cgi2g=="
+    rx_key="${remote_srtp_key}"
+    profile="AES_256_CM_HMAC_SHA1_80"
+    echo="True"
+  />
+
+  <recv request="BYE" crlf="true">
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="Via"
+        ctx_key="last_Via"
+    />
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="From"
+        ctx_key="last_From"
+    />
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="To"
+        ctx_key="last_To"
+    />
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="Call-ID"
+        ctx_key="last_Call_ID"
+    />
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="CSeq"
+        ctx_key="last_CSeq"
+    />
+
+    <operate
+        method_name="save_header_field"
+        header_field_name="Contact"
+        ctx_key="last_Contact"
+    />
+
+  </recv>
+
+  <send>
+    <![CDATA[
+SIP/2.0 200 OK
+${last_Via}
+${last_From}
+${last_To}
+${last_Call_ID}
+${last_CSeq}
+Contact: <sip:receiver@${local_ip}:${local_port}>
+Content-Length: 0
+
+]]>
+  </send>
+
+  <stop_media
+      type="srtp"
+      dst_ip="${media_ip}"
+      dst_port="5005"
+  />
+
+  <recv response="999" timeout="30000"/>
+
+</scenario>

@@ -1,0 +1,55 @@
+launch_config:
+  output_folder: "/tmp/pcap_tests/"
+  global_config:
+    lab_info: "templates/ALL_TESTS/lab_info.yaml"
+    type: "conformance"
+    log:
+      level: "DEBUG"
+      output_file: "LOG_DEBUG.log"
+    report_files:
+      prefix: "LOG"
+      suffix: "LOG_ALL_TESTS" # optional
+      output_folder_path: "" # empty if you want to have reports in TS root dir or absolute path to the FOLDER
+      detailed_view: true
+      types:
+        - "docx"
+        - "pdf"
+    id_summary:
+      eng_name: "ENTER NAME"
+      supplier:
+        name: "ENTER SUPPLIER NAME"
+        addr_line_1: "ENTER ADDRESS"
+        addr_line_2: ""
+        city: "ENTER CITY"
+        state: "ENTER STATE"
+        country: "ENTER COUNTRY"
+        zip: "ENTER ZIP CODE"
+        url: "ENTER URL"
+      test_env:
+#        ts_version: "4.0.2"
+        ixit_id: "11111"
+        test_method: "test_method"
+        test_period_start: "ENTER CURRENT DATE" # ?
+        test_period_end: "ENTER CURRENT DATE" # ?
+        log_ref: "00001" # ?
+        log_ret_date: "ENTER CURRENT DATE" # ?
+    comments:
+      - author: "ENTER AUTHOR NAME"
+        comment: "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  tests:
+   - iut:
+       type: "LOG"
+       name: "IF_LOG-read_ESRP"    # TD_LOG_012 exercises only POST /LogEvents on
+                                    # IF_ESRP_LOG-read (Test System side) / IF_LOG-read_ESRP
+                                    # (IUT side) - confirmed against test_config_log_012.yaml,
+                                    # which uses this single interface pair for all 4
+                                    # variations and has no GET /IncidentIds step anywhere
+                                    # (unlike LOG_011). There is no write/read split for this
+                                    # TD, so a single "tests:" entry is correct here.
+       version: "0.0.0.1"
+#       test_period: "ENTER CURRENT DATE"
+       date_of_receipt: "ENTER CURRENT DATE"
+       location: "ENTER LOCATION"
+       cs_id: "CS00001"
+     lab_config: "test_suite/pcaps/LOG_012/lab_config_log.yaml"
+     requirements: ['RQ_LOG_195']

@@ -1,0 +1,145 @@
+test_config:
+  conformance:
+    tests:
+      - name: "BCF_010"
+        variations:
+          - name: "SIP_over_TLS"
+            description: "Verify SHA-256 support for SIP over TLS"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  prep_steps: []
+                  if_name: "IF_ESRP_BCF"
+                  if_port_name: "IF_ESRP_BCF_SIP_5061_TLSv1.2"  # Optional
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml",
+                    kwargs: {},
+                    save_response_as: "BCF_010_var1_ESRP_response.log",
+                    save_log_as: "BCF_010_var1_ESRP.log"
+                  }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: "IF_OSP_BCF_SIP_5061_TLSv1.2"  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "OSP"
+                        extract_field: "certificate_file"
+                      "save_result_as": "var.osp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "OSP"
+                        extract_field: "certificate_key"
+                      "save_result_as": "var.osp_certificate_key"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_INVITE/SIP_INVITE_from_OSP.xml",
+                    kwargs: {
+#                              --protocol: "TLS",
+#                              --tls_cert: "var.osp_certificate_file",
+#                              --tls_key: "var.osp_certificate_key",
+                    },
+                    save_response_as: "BCF_010_var1_OSP_response.log",
+                    save_log_as: "BCF_010_var1_OSP.log"
+                  }
+                  openssl_config_file: "test_suite/services/stub_server/sip_service/config/sip_service_openssl_sha256.conf"
+                  run_in_background: "False"
+                  next_action: "manual_delay"
+                - action: "manual"
+                  id: "manual_delay"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 2  # timeout in seconds
+                  prompt: "Waiting 2 seconds for IUT..."
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: ""
+                body_contains: ""
+          - name: "HTTPS"
+            description: "Verify SHA-256 support for HTTPS"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: ["IF_OSP_BCF_HTTPS_443_TLSv1.2"]
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_OSP_BCF"
+                  id: "send_request"
+                  if_port_name: "IF_OSP_BCF_HTTPS_443_TLSv1.2"  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "OSP"
+                        extract_field: "certificate_file"
+                      "save_result_as": "var.osp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "OSP"
+                        extract_field: "certificate_key"
+                      "save_result_as": "var.osp_certificate_key"
+                  type: "HTTPS"
+                  method: "POST"
+                  body: "test@ng911.example.com"
+                  response_code: "433"
+                  http_url: "/BadActors"  # part after f.e. http://IP:PORT
+                  openssl_config_file: "test_suite/services/stub_server/http/config/http_service_openssl_sha256.conf"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+                  next_action: "manual_delay"
+                - action: "manual"
+                  id: "manual_delay"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 2  # timeout in seconds
+                  prompt: "Waiting 2 seconds for IUT..."
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "433"
+                header_contains: "BadActors"
+                body_contains: ""
+        requirements:
+          - name: "RQ_BCF_147"
+            variations: ["all"]

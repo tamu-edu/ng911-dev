@@ -1,0 +1,51 @@
+name: Run pcap tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      tests:
+        description: "Space-separated list of test_id (empty = all discovered)"
+        required: false
+        default: ""
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y tshark
+
+      - name: Install Python dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install -r test_suite/requirements.txt
+
+      - name: Run tests
+        run: |
+          if [ -n "${{ github.event.inputs.tests }}" ]; then
+            TESTS_ARG="--tests ${{ github.event.inputs.tests }}"
+          else
+            TESTS_ARG=""
+          fi
+          sudo -E .venv/bin/python -m main test_ag_pcap $TESTS_ARG
+
+      - name: Upload logs artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-logs
+          path: testing_tools/logs/*.log
+
+      - name: Post summary
+        if: always()
+        run: python3 .github/scripts/summarize_logs.py

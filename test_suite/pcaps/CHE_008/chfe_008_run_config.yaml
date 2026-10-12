@@ -1,0 +1,127 @@
+"run_config":
+  "output_folder": "/tmp/results/"
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": ""
+      "prefix": "CHFE"
+      "suffix": "CHFE_ALL_TESTS"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "ENTER NAME"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "ENTER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": "ENTER ADDRESS"
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+        "eng_name": "ENTER NAME"
+      "supplier":
+        "name": "ENTER SUPPLIER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": ""
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+      "iut":
+        "type": "CHFE"
+        "name": "IF_CHFE_OSP"
+        "version": "0.0.0.1"
+        "date_of_receipt": "ENTER CURRENT DATE"
+        "location": "ENTER LOCATION"
+        "cs_id": "CS00001"
+        "cs_static_conform": false
+      "test_env":
+        "ixit_id": "11111"
+        "test_method": "234"
+        "spec_name": "STA-010"
+        "spec_version": "3.0"
+        "test_period_start": "ENTER CURRENT DATE"
+        "test_period_end": "ENTER CURRENT DATE"
+        "log_ref": "00001"
+        "log_ret_date": "ENTER CURRENT DATE"
+    "log":
+      "level": "DEBUG"
+      "output_file": "/tmp/lab_tests//CHFE_2026-03-31T200522_CHFE_ALL_TESTS/CHFE_DEBUG.log"
+    "comments":
+    - "author": "ENTER AUTHOR NAME"
+      "comment": "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  "tests":
+  - "name": "CHFE_CS00001"
+    "requirements":
+    - "name": "RQ_CHFE_017"
+      "variations":
+      - "ServiceState"
+    "variations":
+    - "name": "ServiceState"
+      "description": "Validate support of ServiceState"
+      "interfaces":
+      - "name": "IF_ESRP_CHFE"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/CHE_008/TC_CHE_008_pass.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_CHFE"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "CHFE"
+              "extract_field": "api"
+            "save_result_as": "var.chfe_api"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.chfe_api"
+              "extract_field": "tel_number"
+            "save_result_as": "var.tel_number"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_ServiceState.xml"
+              "param_name": "[service]"
+              "value": "var.tel_number"
+              "output_file": "file./tmp/CHFE_008/SIP_SUBSCRIBE_ServiceState.xml"
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file./tmp/CHFE_008/SIP_SUBSCRIBE_ServiceState.xml"
+            "kwargs": {}
+            "save_response_as": "CHFE_008_var1_SEND_response.log"
+            "save_log_as": "CHFE_008_var1_SEND.log"
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_CHFE"
+        "dst_interface": "IF_CHFE_ESRP"
+        "sip_method": "SUBSCRIBE"
+        "http_request_method": ""
+        "response_status_code": "200"
+        "body_contains": ""
+        "header_contains": "ServiceState"
+      - "message_type": "output"
+        "src_interface": "IF_CHFE_ESRP"
+        "dst_interface": "IF_ESRP_CHFE"
+        "sip_method": "NOTIFY"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": ""
+        "header_contains": "ServiceState"
+    "preamble_list": []
+    "postamble_list": []

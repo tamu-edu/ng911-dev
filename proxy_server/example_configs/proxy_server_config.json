@@ -1,0 +1,35 @@
+{
+  "session_id": "uuid",
+
+  "network": {
+    "fsh": {
+      "host": "192.168.50.106",
+      "user": "proxyctl",
+      "ssh_key": "/home/artem/.ssh/fsh_key"
+    }
+  },
+
+  "conduits": [
+    {
+      "name": "OSP_to_BCF",
+
+      "from": {
+        "ip": "192.168.50.133",
+        "port": 5060,
+        "protocol": "tcp"
+      },
+
+      "to": {
+        "ip": "192.168.50.218",
+        "port": 5060,
+        "protocol": "tcp"
+      },
+
+      "proxy": {
+        "ip": "100.64.50.218",
+        "port": 5060,
+        "protocol": "tcp"
+      }
+    },
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "service": {
+    "name": "ESRP",
+    "serviceId": "ng911.example.org",
+    "domain": "ng911.example.org"
+  },
+  "serviceState": {
+    "state": "Normal",
+    "reason": "test"
+  },
+  "securityPosture": {
+    "posture": "Orange"
+  }
+}

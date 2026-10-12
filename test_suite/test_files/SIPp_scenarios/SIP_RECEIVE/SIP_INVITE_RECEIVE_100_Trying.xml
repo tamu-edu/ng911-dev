@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.5.0.0
+  Date:      20260904
+
+-->
+<scenario name="SIP_INVITE_RECEIVE_100_Trying">
+  <recv request="INVITE"> </recv>
+  <send>
+    <![CDATA[
+
+      SIP/2.0 100 Trying
+      [last_Via]
+      [last_From]
+      [last_To];tag=redirect123
+      [last_Call-ID]
+      [last_CSeq]
+      Contact: <sip:RECEIVER@[local_ip]:[local_port]>
+      Content-Length: 0
+
+    ]]>
+  </send>
+</scenario>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+  TEST FILE INFO:
+  Version:   011.3f.5.0.3
+  Date:      20261005
+
+  BCF_014 MSRP scenario.
+  Uses native sip_service MSRP SEND support.
+-->
+<scenario name="SIP_basic_call_from_OSP_Text_MSRP">
+  <send>
+    <![CDATA[
+      INVITE urn:service:sos SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      From: "NG911 Test" <sip:+12025551212@[local_ip]:[local_port]>;tag=osptobcftestcall
+      To: urn:service:sos
+      Call-ID: [call_id]
+      Cseq: 1 INVITE
+      Contact: sip:+12025551212@[local_ip]:[local_port]
+      Max-Forwards: 70
+      Geolocation-Routing: yes
+      Geolocation: <cid:defaultlocation@[local_ip]>
+      Content-Type: multipart/mixed; boundary=next-content
+      Content-Length: [len]
+
+      --next-content
+      Content-Type: application/pidf+xml
+      Content-ID: <defaultlocation@[local_ip]>
+
+      <?xml version="1.0" encoding="utf-8"?>
+      <presence xmlns="urn:ietf:params:xml:ns:pidf"
+      xmlns:gp="urn:ietf:params:xml:ns:pidf:geopriv10"
+      xmlns:bp="urn:ietf:params:xml:ns:pidf:geopriv10:basicPolicy"
+      xmlns:ca="urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr"
+      xmlns:gs="http://www.opengis.net/pidflo/1.0"
+      xmlns:gml="http://www.opengis.net/gml"
+      entity="sip:+12025551212@[local_ip]">
+      <tuple id="0">
+        <status>
+          <gp:geopriv>
+            <gp:location-info>
+              <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
+                <gml:pos>40.71668300756087 -73.99069756654683</gml:pos>
+              </gml:Point>
+            </gp:location-info>
+          </gp:geopriv>
+        </status>
+        <timestamp>2050-05-15T12:30:00Z</timestamp>
+      </tuple>
+      </presence>
+
+      --next-content
+      Content-Type: application/sdp
+
+      v=0
+      o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+      s=-
+      t=0 0
+      c=IN IP[media_ip_type] [media_ip]
+      m=message 49172 TCP/MSRP *
+      a=path:msrp://[media_ip]:49172/bcf014-[call_number];tcp
+      a=accept-types:message/cpim text/plain
+      a=setup:actpass
+      a=connection:new
+      a=sendrecv
+      a=label:msrp1
+
+    ]]>
+  </send>
+  <recv response="100" optional="true"> </recv>
+  <recv response="180" optional="true"> </recv>
+  <recv response="183" optional="true"> </recv>
+  <recv response="200">
+    <operate
+        method_name="save_sdp_attribute_value"
+        attribute_name="a=path"
+        ctx_key="remote_msrp_path"
+    />
+    <operate
+        method_name="save_header_field_param_value"
+        header_field_name="To:"
+        param_name="tag"
+        ctx_key="To_tag"
+    />
+  </recv>
+  <send>
+    <![CDATA[
+      ACK urn:service:sos SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      From: "NG911 Test" <sip:+12025551212@[local_ip]:[local_port]>;tag=osptobcftestcall
+      To: urn:service:sos;tag=[$To_tag]
+      Call-ID: [call_id]
+      Cseq: 1 ACK
+      Contact: sip:+12025551212@[local_ip]:[local_port]
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <media
+      type="msrp_send_text"
+      session="msrp1"
+      src_ip="[local_ip]"
+      dst_ip="[remote_ip]"
+      dst_port="49172"
+      from_path="msrp://[media_ip]:49172/bcf014-[call_number];tcp"
+      to_path="[$remote_msrp_path]"
+      text="Test message from OSP"
+      content_type="text/plain"
+      timeout="5"
+      expected_status="200"
+  />
+  <pause milliseconds="1000"/>
+  <send>
+    <![CDATA[
+      BYE urn:service:sos SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      From: "NG911 Test" <sip:+12025551212@[local_ip]:[local_port]>;tag=[call_number]
+      To: urn:service:sos[peer_tag_param]
+      Call-ID: [call_id]
+      CSeq: 2 BYE
+      Max-Forwards: 70
+      Contact: sip:+12025551212@[local_ip]:[local_port]
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <recv response="200"> </recv>
+</scenario>

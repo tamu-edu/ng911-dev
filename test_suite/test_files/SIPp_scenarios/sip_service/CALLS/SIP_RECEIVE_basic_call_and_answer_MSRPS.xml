@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+  TEST FILE INFO:
+  Version:   011.3f.5.0.2
+  Date:      20261005
+
+  BCF_014 MSRPS scenario.
+  SIP/SDP contract and native sip_service MSRPS receive handling are defined here.
+-->
+<scenario name="SIP_RECEIVE_basic_call_and_answer_with_MSRPS_text">
+
+  <recv request="INVITE" crlf="true">
+    <operate
+        method_name="save_header_field"
+        header_field_name="Via"
+        ctx_key="last_Via"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="From"
+        ctx_key="last_From"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="To"
+        ctx_key="last_To"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="Call-ID"
+        ctx_key="last_Call_ID"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="CSeq"
+        ctx_key="last_CSeq"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="Contact"
+        ctx_key="last_Contact"
+    />
+    <operate
+        method_name="generate_tag_id"
+        ctx_key="To_tag"
+    />
+  </recv>
+
+  <send>
+    <![CDATA[
+      SIP/2.0 180 Ringing
+      [$last_Via]
+      [$last_From]
+      [$last_To];tag=[$To_tag]
+      [$last_Call_ID]
+      [$last_CSeq]
+      Contact: <sip:receiver@[local_ip]:[local_port]>
+      Content-Length: 0
+
+    ]]>
+  </send>
+
+  <media
+      type="msrps_listen"
+      session="msrp1"
+      src_ip="[media_ip]"
+      src_port="49172"
+  />
+
+  <send retrans="500">
+    <![CDATA[
+      SIP/2.0 200 OK
+      [$last_Via]
+      [$last_From]
+      [$last_To];tag=[$To_tag]
+      [$last_Call_ID]
+      [$last_CSeq]
+      Contact: <sip:receiver@[local_ip]:[local_port]>
+      Content-Type: application/sdp
+      Content-Length: [len]
+
+      v=0
+      o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+      s=-
+      t=0 0
+      c=IN IP[media_ip_type] [media_ip]
+      m=message 49172 TCP/TLS/MSRP *
+      a=path:msrps://[media_ip]:49172/bcf014-[call_number];tcp
+      a=accept-types:message/cpim text/plain
+      a=setup:passive
+      a=connection:new
+      a=sendrecv
+      a=label:msrp1
+
+    ]]>
+  </send>
+
+  <recv request="ACK" rtd="true" crlf="true"> </recv>
+
+  <media
+      type="msrps_receive_text"
+      session="msrp1"
+      timeout="5"
+      response_status="200"
+      response_comment="OK"
+  />
+
+  <recv request="BYE" crlf="true">
+    <operate
+        method_name="save_header_field"
+        header_field_name="Via"
+        ctx_key="last_Via"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="From"
+        ctx_key="last_From"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="To"
+        ctx_key="last_To"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="Call-ID"
+        ctx_key="last_Call_ID"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="CSeq"
+        ctx_key="last_CSeq"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="Contact"
+        ctx_key="last_Contact"
+    />
+  </recv>
+
+  <send>
+    <![CDATA[
+      SIP/2.0 200 OK
+      [$last_Via]
+      [$last_From]
+      [$last_To]
+      [$last_Call_ID]
+      [$last_CSeq]
+      Contact: <sip:receiver@[local_ip]:[local_port]>
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <stop_media
+      type="msrps_listen"
+      session="msrp1"
+      src_ip="[media_ip]"
+      src_port="49172"
+  />
+</scenario>

@@ -1,0 +1,242 @@
+"run_config":
+  "output_folder": "/tmp/pcap_tests/"
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": ""
+      "prefix": "LOG"
+      "suffix": "LOG_ALL_TESTS"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "ENTER NAME"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "ENTER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": "ENTER ADDRESS"
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+        "eng_name": "ENTER NAME"
+      "supplier":
+        "name": "ENTER SUPPLIER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": ""
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+      "iut":
+        "type": "LOG"
+        "name": "IF_LOG-write_ESRP"
+        "version": "0.0.0.1"
+        "date_of_receipt": "ENTER CURRENT DATE"
+        "location": "ENTER LOCATION"
+        "cs_id": "CS00001"
+        "cs_static_conform": false
+      "test_env":
+        "ixit_id": "11111"
+        "test_method": "test_method"
+        "spec_name": "STA-010"
+        "spec_version": "3.0"
+        "test_period_start": "ENTER CURRENT DATE"
+        "test_period_end": "ENTER CURRENT DATE"
+        "log_ref": "00001"
+        "log_ret_date": "ENTER CURRENT DATE"
+    "log":
+      "level": "DEBUG"
+      "output_file": "/tmp/pcap_tests/LOG_DEBUG.log"
+    "comments":
+    - "author": "ENTER AUTHOR NAME"
+      "comment": "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  "tests":
+  - "name": "LOG_CS00001"
+    "requirements":
+    - "name": "RQ_LOG_197"
+      "variations":
+      - "Tampered_payload_signature_mismatch"
+      - "Untrusted_certificate_signature"
+      - "Corrupted_signature_value"
+    - "name": "RQ_LOG_198"
+      "variations":
+      - "Tampered_payload_signature_mismatch"
+      - "Untrusted_certificate_signature"
+      - "Corrupted_signature_value"
+    "variations":
+    - "name": "Tampered_payload_signature_mismatch"
+      "description": "Validate 434 warning response (not error/retry) for a LogEvent whose\
+        \ payload was altered after signing, so the signature no longer matches the\
+        \ content. Confirm the event is still recorded via GET /IncidentIds."
+      "interfaces":
+      - "name": "IF_ESRP_LOG-write"
+        "port_names": []
+      - "name": "IF_ESRP_LOG-read"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/LOG_011/TC_LOG_011_var1_pass_Tampered_payload_signature_mismatch_434.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_LOG-read"
+          "if_port_name": ""
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "200"
+          "http_url": "/IncidentIds"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_LOG-write"
+        "dst_interface": "IF_LOG-write_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "434"
+        "body_contains": "Signature Verification Failed"
+        "header_contains": "/LogEvents"
+      - "message_type": "other"
+        "src_interface": "IF_ESRP_LOG-read"
+        "dst_interface": "IF_LOG-read_ESRP"
+        "sip_method": ""
+        "http_request_method": "GET"
+        "response_status_code": "200"
+        "body_contains": "urn:emergency:uid:incidentid:1111111111qwertyuiop:bcf.ng911.test"
+        "header_contains": "/IncidentIds"
+    - "name": "Untrusted_certificate_signature"
+      "description": "Validate 434 warning response (not error/retry) for a LogEvent\
+        \ JWS signed with a certificate/key not trusted by the Logging Service's configured\
+        \ PCA/CA. Confirm the event is still recorded via GET /IncidentIds."
+      "interfaces":
+      - "name": "IF_ESRP_LOG-write"
+        "port_names": []
+      - "name": "IF_ESRP_LOG-read"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/LOG_011/TC_LOG_011_var2_pass_Untrusted_certificate_signature_434.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_LOG-read"
+          "if_port_name": ""
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "200"
+          "http_url": "/IncidentIds"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_LOG-write"
+        "dst_interface": "IF_LOG-write_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "434"
+        "body_contains": "Signature Verification Failed"
+        "header_contains": "/LogEvents"
+      - "message_type": "other"
+        "src_interface": "IF_ESRP_LOG-read"
+        "dst_interface": "IF_LOG-read_ESRP"
+        "sip_method": ""
+        "http_request_method": "GET"
+        "response_status_code": "200"
+        "body_contains": "urn:emergency:uid:incidentid:2222222222qwertyuiop:bcf.ng911.test"
+        "header_contains": "/IncidentIds"
+    - "name": "Corrupted_signature_value"
+      "description": "Validate 434 warning response (not error/retry) for a LogEvent\
+        \ JWS with a corrupted/truncated signature segment. Confirm the event is still\
+        \ recorded via GET /IncidentIds."
+      "interfaces":
+      - "name": "IF_ESRP_LOG-write"
+        "port_names": []
+      - "name": "IF_ESRP_LOG-read"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/LOG_011/TC_LOG_011_var3_pass_Corrupted_signature_value_434.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_LOG-read"
+          "if_port_name": ""
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "GET"
+          "response_code": "200"
+          "http_url": "/IncidentIds"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_LOG-write"
+        "dst_interface": "IF_LOG-write_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "434"
+        "body_contains": "Signature Verification Failed"
+        "header_contains": "/LogEvents"
+      - "message_type": "other"
+        "src_interface": "IF_ESRP_LOG-read"
+        "dst_interface": "IF_LOG-read_ESRP"
+        "sip_method": ""
+        "http_request_method": "GET"
+        "response_status_code": "200"
+        "body_contains": "urn:emergency:uid:incidentid:3333333333qwertyuiop:bcf.ng911.test"
+        "header_contains": "/IncidentIds"
+    "preamble_list":
+    - "method_name": "prepare_jws_procedures"
+      "required_for":
+      - "RQ_LOG_197"
+      - "RQ_LOG_198"
+      "kwargs":
+        "list_of_procedures":
+        - "CallStartLogEvent_object_example_v010.3f.3.0.1.json"
+        "config_vars":
+          "callId": "urn:emergency:uid:callid:1111111111qwerty:bcf.ng911.test"
+          "incidentId": "urn:emergency:uid:incidentid:1111111111qwertyuiop:bcf.ng911.test"
+          "timestamp": "2025-02-27T13:08:02.01-05:00"
+        "if_name": "IF_ESRP_LOG-write"
+        "url": "/LogEvents"
+        "expected_response_code": "434"
+    - "method_name": "prepare_jws_procedures"
+      "required_for":
+      - "RQ_LOG_197"
+      - "RQ_LOG_198"
+      "kwargs":
+        "list_of_procedures":
+        - "CallSignalingMessageLogEvent_example_v010.3f.3.0.1.json"
+        "config_vars":
+          "callId": "urn:emergency:uid:callid:2222222222qwerty:bcf.ng911.test"
+          "incidentId": "urn:emergency:uid:incidentid:2222222222qwertyuiop:bcf.ng911.test"
+          "timestamp": "2025-02-27T13:18:01.01-05:00"
+        "if_name": "IF_ESRP_LOG-write"
+        "url": "/LogEvents"
+        "expected_response_code": "434"
+    - "method_name": "prepare_jws_procedures"
+      "required_for":
+      - "RQ_LOG_197"
+      - "RQ_LOG_198"
+      "kwargs":
+        "list_of_procedures":
+        - "CallEndLogEvent_object_example_v010.3f.3.0.1.json"
+        "config_vars":
+          "callId": "urn:emergency:uid:callid:3333333333qwerty:bcf.ng911.test"
+          "incidentId": "urn:emergency:uid:incidentid:3333333333qwertyuiop:bcf.ng911.test"
+          "timestamp": "2025-02-27T13:28:01.01-05:00"
+        "if_name": "IF_ESRP_LOG-write"
+        "url": "/LogEvents"
+        "expected_response_code": "434"
+    "postamble_list": []

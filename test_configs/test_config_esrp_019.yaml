@@ -1,0 +1,633 @@
+test_config:
+  conformance:
+    tests:
+      - name: "ESRP_019"
+        variations:
+          # Variation 1
+          - name: "HELD_location_dereferencing"
+            description: "Validation of LocationQueryLogEvent and LocationResponseLogEvent messages members after Location dereference via HELD"
+            interfaces:
+              - name: "IF_BCF_ESRP"
+                port_names: []
+              - name: "IF_LIS_ESRP"
+                port_names: []
+              - name: "IF_LOG_ESRP"
+                port_names: []
+              - name: "IF_CHFE_ESRP"
+                port_names: []
+            params:
+              messages:
+                # Test system LIS
+                - action: "receive"
+                  if_name: "IF_LIS_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: [ "GET", "POST" ]
+                  response_code: [ "200", "200" ]
+                  content_type: "application/held+xml"
+                  http_url: [ "/location", "/location" ]  # part after f.e. http://IP:PORT
+                  body: [ "file.test_suite/test_files/HTTP_messages/HTTP_HELD/Location_response", "file.test_suite/test_files/HTTP_messages/HTTP_HELD/Location_response" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+
+                # Test system Logging Service
+                - action: "receive"
+                  if_name: "IF_LOG_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "lab_config['lab_config']['entities']",
+                                where_field: "name",
+                                where_value: "LOG",
+                                extract_field: 'interfaces' }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "var.log_interfaces",
+                                where_field: "name",
+                                where_value: "IF_LOG_ESRP",
+                                extract_field: 'fqdn' }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "logid",
+                                fqdn: "var.log_fqdn" }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/esrp_019/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/esrp_019/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/esrp_019/logeventid.json"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "201", "200" ]
+                  http_url: [ "/LogEvents", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/esrp_019/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+
+                # Test system CHFE
+                - action: "receive"
+                  if_name: "IF_CHFE_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml",
+                                   kwargs: { },
+                                   save_response_as: "ESRP_019_CHFE_response.log",
+                                   save_log_as: "ESRP_019_CHFE.log" }
+                  run_in_background: "True"
+
+                # Test System BCF
+                - action: "send"
+                  if_name: "IF_BCF_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BCF_ESRP"
+                      "save_result_as": "var.IF_BCF_ESRP"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "callid",
+                                fqdn: "var.IF_BCF_ESRP",
+                                set_default: "True" }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "incidentid",
+                                fqdn: "var.IF_BCF_ESRP",
+                                set_default: "True" }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_geolocation_HELD.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "LIS"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.lis_interfaces"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_LIS_ESRP"
+                      "save_result_as": "var.IF_LIS_ESRP"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.lis_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_LIS_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.lis_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.lis_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "HTTP"
+                        "extract_field": "port"
+                      "save_result_as": "var.lis_http_port"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "http://{0}:{1}/location"
+                        variables: "list.[var.IF_LIS_ESRP, var.lis_http_port]"
+                      save_result_as: "var.http_url"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml"
+                        "param_name": "LIS_LOCATION_REFERENCE_URL"
+                        "value": "var.http_url"
+                        "output_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: { scenario_file_path: "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml",
+                                   kwargs: { },
+                                   save_response_as: "ESRP_019_BCF_response_var1.log",
+                                   save_log_as: "ESRP_019_BCF_var1.log" }
+                  run_in_background: "False"
+                  next_action: "manual_timeout"
+                - action: "manual"
+                  id: "manual_timeout"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 3  # timeout in seconds
+                  prompt: "Waiting 3 seconds until all messages will be sent..."
+                  next_action: ""
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_ESRP_LIS"
+                dst_interface: "IF_LIS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+
+#          # Variation 2
+          - name: "SIP_Presence_location_dereferencing"
+            description: "Validation of LocationQueryLogEvent and LocationResponseLogEvent messages members after Location dereference via SIP Presence SUBSCRIBE/NOTIFY"
+            interfaces:
+              - name: "IF_BCF_ESRP"
+                port_names: [ ]
+              - name: "IF_LIS_ESRP"
+                port_names: [ ]
+              - name: "IF_LOG_ESRP"
+                port_names: [ ]
+              - name: "IF_CHFE_ESRP"
+                port_names: [ ]
+            params:
+              messages:
+                # Test system LIS
+                - action: "receive"
+                  if_name: "IF_LIS_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "LIS"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.lis_interfaces"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_LIS_ESRP"
+                      "save_result_as": "var.IF_LIS_ESRP"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.lis_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_LIS_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.lis_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.lis_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "SIP"
+                        "extract_field": "port"
+                      "save_result_as": "var.lis_sip_port"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "sip:location@{0}:{1}"
+                        variables: "list.[var.IF_LIS_ESRP, var.lis_sip_port]"
+                      save_result_as: "var.lis_sip_uri"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_LIS.xml"
+                        "param_name": "LOCATION_SIP_URI"
+                        "value": "var.lis_sip_uri"
+                        "output_file": "file./tmp/ESRP_019/SIP_SUBSCRIBE_LIS.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "200"
+                  http_url: "" # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { scenario_file_path: "file./tmp/ESRP_019/SIP_SUBSCRIBE_LIS.xml",
+                                   kwargs: { },
+                                   save_response_as: "ESRP_019_var2_LIS_response.log",
+                                   save_log_as: "ESRP_019_var2_LIS.log" }
+                  run_in_background: "True"
+
+                # Test system Logging Service
+                - action: "receive"
+                  if_name: "IF_LOG_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "lab_config['lab_config']['entities']",
+                                where_field: "name",
+                                where_value: "LOG",
+                                extract_field: 'interfaces' }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "var.log_interfaces",
+                                where_field: "name",
+                                where_value: "IF_LOG_ESRP",
+                                extract_field: 'fqdn' }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "logid",
+                                fqdn: "var.log_fqdn" }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/esrp_019/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/esrp_019/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/esrp_019/logeventid.json"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "201", "200" ]
+                  http_url: [ "/LogEvents", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/esrp_019/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+
+                # Test system CHFE
+                - action: "receive"
+                  if_name: "IF_CHFE_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml",
+                                   kwargs: { },
+                                   save_response_as: "ESRP_019_CHFE_response.log",
+                                   save_log_as: "ESRP_019_CHFE.log" }
+                  run_in_background: "True"
+
+                # Test System BCF
+                - action: "send"
+                  if_name: "IF_BCF_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BCF_ESRP"
+                      "save_result_as": "var.IF_BCF_ESRP"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "callid",
+                                fqdn: "var.IF_BCF_ESRP",
+                                set_default: "True" }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "incidentid",
+                                fqdn: "var.IF_BCF_ESRP",
+                                set_default: "True" }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_geolocation_SIP.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_SIP.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_SIP.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_SIP.xml"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "LIS"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.lis_interfaces"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_LIS_ESRP"
+                      "save_result_as": "var.IF_LIS_ESRP"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.lis_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_LIS_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.lis_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.lis_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "SIP"
+                        "extract_field": "port"
+                      "save_result_as": "var.lis_sip_port"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "sip:location@{0}:{1}"
+                        variables: "list.[var.IF_LIS_ESRP, var.lis_sip_port]"
+                      save_result_as: "var.lis_sip_uri"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_SIP.xml"
+                        "param_name": "LOCATION_SIP_URI"
+                        "value": "var.lis_sip_uri"
+                        "output_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_SIP.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: { scenario_file_path: "file./tmp/ESRP_019/SIP_INVITE_geolocation_SIP.xml",
+                                   kwargs: { },
+                                   save_response_as: "ESRP_019_BCF_response_var2.log",
+                                   save_log_as: "ESRP_019_BCF_var2.log" }
+                  run_in_background: "False"
+                  next_action: "manual_timeout"
+                - action: "manual"
+                  id: "manual_timeout"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 3  # timeout in seconds
+                  prompt: "Waiting 3 seconds until all SIP NOTIFY messages will be sent..."
+                  next_action: ""
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_ESRP_LIS"
+                dst_interface: "IF_LIS_ESRP"
+                sip_method: "SUBSCRIBE" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+
+          # Variation 3
+          - name: "LIS_response_with_error"
+            description: "Validation of the 'responseStatus' member in LocationResponseLogEvent after an LIS response with a Status Code Registry error"
+            interfaces:
+              - name: "IF_BCF_ESRP"
+                port_names: [ ]
+              - name: "IF_LIS_ESRP"
+                port_names: [ ]
+              - name: "IF_LOG_ESRP"
+                port_names: [ ]
+              - name: "IF_CHFE_ESRP"
+                port_names: [ ]
+            params:
+              messages: # Test system LIS
+                - action: "receive"
+                  if_name: "IF_LIS_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: [ "GET", "POST" ]
+                  response_code: [ "454", "454" ]
+                  content_type: "application/held+xml"
+                  http_url: [ "/location", "/location" ]  # part after f.e. http://IP:PORT
+                  body: [ "file.test_suite/test_files/HTTP_messages/HTTP_HELD/Location_response", "file.test_suite/test_files/HTTP_messages/HTTP_HELD/Location_response" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+
+                  # Test system Logging Service
+                - action: "receive"
+                  if_name: "IF_LOG_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "lab_config['lab_config']['entities']",
+                                where_field: "name",
+                                where_value: "LOG",
+                                extract_field: 'interfaces' }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "var.log_interfaces",
+                                where_field: "name",
+                                where_value: "IF_LOG_ESRP",
+                                extract_field: 'fqdn' }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "logid",
+                                fqdn: "var.log_fqdn" }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/esrp_019/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/esrp_019/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/esrp_019/logeventid.json"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "201", "200" ]
+                  http_url: [ "/LogEvents", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/esrp_019/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+
+                  # Test system CHFE
+                - action: "receive"
+                  if_name: "IF_CHFE_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml",
+                                   kwargs: { },
+                                   save_response_as: "ESRP_019_CHFE_response.log",
+                                   save_log_as: "ESRP_019_CHFE.log" }
+                  run_in_background: "True"
+
+                # Test System BCF
+                - action: "send"
+                  if_name: "IF_BCF_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BCF_ESRP"
+                      "save_result_as": "var.IF_BCF_ESRP"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "callid",
+                                fqdn: "var.IF_BCF_ESRP",
+                                set_default: "True" }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "incidentid",
+                                fqdn: "var.IF_BCF_ESRP",
+                                set_default: "True" }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_INVITE/SIP_INVITE_geolocation_HELD.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "LIS"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.lis_interfaces"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_LIS_ESRP"
+                      "save_result_as": "var.IF_LIS_ESRP"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.lis_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_LIS_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.lis_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.lis_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "HTTP"
+                        "extract_field": "port"
+                      "save_result_as": "var.lis_http_port"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "http://{0}:{1}/location"
+                        variables: "list.[var.IF_LIS_ESRP, var.lis_http_port]"
+                      save_result_as: "var.http_url"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml"
+                        "param_name": "LIS_LOCATION_REFERENCE_URL"
+                        "value": "var.http_url"
+                        "output_file": "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: { scenario_file_path: "file./tmp/ESRP_019/SIP_INVITE_geolocation_HELD.xml",
+                                   kwargs: { },
+                                   save_response_as: "ESRP_019_BCF_response_var3.log",
+                                   save_log_as: "ESRP_019_BCF_var3.log" }
+                  run_in_background: "False"
+                  next_action: "manual_timeout"
+                - action: "manual"
+                  id: "manual_timeout"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 3  # timeout in seconds
+                  prompt: "Waiting 3 seconds until all messages will be sent..."
+                  next_action: ""
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+              - message_type: "other" # stimulus/output/other
+                src_interface: "IF_ESRP_LIS"
+                dst_interface: "IF_LIS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+        requirements:
+          - name: "RQ_ESRP_156"
+            variations: ["all"]
+          - name: "RQ_ESRP_158"
+            variations: ["all"]
+          - name: "RQ_ESRP_159"
+            variations: ["all"]

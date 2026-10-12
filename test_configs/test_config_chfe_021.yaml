@@ -1,0 +1,370 @@
+test_config:
+  conformance:
+    tests:
+      - name: "CHFE_021"
+        variations:
+          - name: "LogEvents_JWS_format"
+            description: "Verify that the JWS Protected Header contains exactly one 'alg' field set to either 'none' for unsigned logs, or 'EdDSA' for signed logs, which must include the certificate chain either by value ('x5c') or by reference ('x5u' and 'x5t#256')"
+            interfaces:
+              - name: "IF_ESRP_CHFE"
+                port_names: []
+              - name: "IF_LOG_CHFE"
+                port_names: []
+            params:
+              messages:
+                # Test System Logging Service
+                - action: "receive"
+                  if_name: "IF_LOG_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "LOG",
+                        extract_field: 'interfaces'
+                      }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "var.log_interfaces",
+                        where_field: "name",
+                        where_value: "IF_LOG_CHFE",
+                        extract_field: 'fqdn'
+                      }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "logid",
+                        fqdn: "var.log_fqdn",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/chfe_021/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/chfe_021/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/chfe_021/logeventid.json"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "201", "200" ]
+                  http_url: [ "/LogEvents", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/chfe_021/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+                # Test System ESRP
+                - action: "send"
+                  if_name: "IF_ESRP_CHFE"
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_CHFE"
+                      "save_result_as": "var.IF_ESRP_CHFE"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_CHFE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_CHFE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_INVITE_with_CANCEL.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/CHFE_021/SIP_INVITE_with_CANCEL.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/CHFE_021/SIP_INVITE_with_CANCEL.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/CHFE_021/SIP_INVITE_with_CANCEL.xml"
+                  if_port_name: ""  # Optional
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHFE_021/SIP_INVITE_with_CANCEL.xml",
+                    dependencies: [],
+                    kwargs: { },
+                    save_response_as: "CHFE_021_response.log",
+                    save_log_as: "CHFE_021.log"
+                  }
+                  run_in_background: "False"
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_ESRP_CHFE"
+                dst_interface: "IF_CHFE_ESRP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output"
+                src_interface: "IF_CHFE_LOG"
+                dst_interface: "IF_LOG_CHFE"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "201"
+                header_contains: "/LogEvents"
+                body_contains: ""
+
+          - name: "Incorrect_XACML_policy_JWS"
+            description: "Ignoring policy JWS signed by a certificate using unsupported algorithm"
+            interfaces:
+              - name: "IF_ESRP_CHFE"
+                port_names: []
+              - name: "IF_PS_CHFE"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_PS_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_CHFE"
+                      save_result_as: "var.IF_ESRP_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_ESRP"
+                      save_result_as: "var.IF_CHFE_ESRP"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/XML/XACML_ServiceState.xml"
+                        "param_name": "ALLOWED_FQDN"
+                        "value": "var.IF_ESRP_CHFE"
+                        "output_file": "file./tmp/CHFE_021/XACML_ServiceState.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/CHFE_021/XACML_ServiceState.xml"
+                        "param_name": "IUT_FQDN"
+                        "value": "var.IF_CHFE_ESRP"
+                        "output_file": "file./tmp/CHFE_021/XACML_ServiceState.xml"
+                    - method_name: "generate_random_certificate"
+                      kwargs:
+                        output_certificate_file: "file./tmp/CHFE_021/temp.crt"
+                        output_key_file: "file./tmp/CHFE_021/temp.key"
+                        common_name: "var.IF_ESRP_CHFE"
+                        algorithm: "rsa"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        payload_source: "file./tmp/CHFE_021/XACML_ServiceState.xml"
+                        cert_path: "/tmp/CHFE_021/temp.crt"
+                        key_path: "/tmp/CHFE_021/temp.key"
+                        policy_array: True
+                        disable_eddsa_checks: True
+                        output_file: "file./tmp/CHFE_021/jws_body_var2"
+                  type: "HTTP"
+                  method: [ "GET", "GET" ]
+                  response_code: [ "200", "200" ]
+                  http_url: [ "/Policies?policyType=ServiceState", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/CHFE_021/jws_body_var2", "file.test_suite/test_files/JSON/versions/Policy_Store_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+                  next_action: "manual_restart"
+                - action: "manual"
+                  id: "manual_restart"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "MANUAL ACTION REQUIRED - please restart CHFE IUT to trigger policies fetching. Press any key when done..."
+                  next_action: "send_stimulus"
+                - action: "send"
+                  id: "send_stimulus"
+                  if_name: "IF_ESRP_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHFE"
+                        extract_field: "api"
+                      "save_result_as": "var.chfe_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.chfe_api"
+                        extract_field: "tel_number"
+                      "save_result_as": "var.tel_number"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_ServiceState.xml"
+                        "param_name": "[service]"
+                        "value": "var.tel_number"
+                        "output_file": "file./tmp/CHFE_021/SIP_SUBSCRIBE_ServiceState.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "4xx"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHFE_021/SIP_SUBSCRIBE_ServiceState.xml",
+                    kwargs: {},
+                    save_response_as: "CHFE_021_var2_SEND_response.log",
+                    save_log_as: "CHFE_021_var2_SEND.log"
+                  }
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_CHFE_PS"
+                  dst_interface: "IF_PS_CHFE"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "GET" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "Policies?policyType=ServiceState"
+                  body_contains: ""
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_CHFE"
+                  dst_interface: "IF_CHFE_ESRP"
+                  sip_method: "SUBSCRIBE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "4xx" #  leave empty if not needed
+                  header_contains: "emergency-ServiceState"
+                  body_contains: ""
+
+          - name: "Correct_XACML_policy_JWS"
+            description: "Applying properly signed XACML policy JWS"
+            interfaces:
+              - name: "IF_ESRP_CHFE"
+                port_names: []
+              - name: "IF_PS_CHFE"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_PS_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_CHFE"
+                      save_result_as: "var.IF_ESRP_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_ESRP"
+                      save_result_as: "var.IF_CHFE_ESRP"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/XML/XACML_ServiceState.xml"
+                        "param_name": "ALLOWED_FQDN"
+                        "value": "var.IF_ESRP_CHFE"
+                        "output_file": "file./tmp/CHFE_021/XACML_ServiceState.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/CHFE_021/XACML_ServiceState.xml"
+                        "param_name": "IUT_FQDN"
+                        "value": "var.IF_CHFE_ESRP"
+                        "output_file": "file./tmp/CHFE_021/XACML_ServiceState.xml"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "ESRP"
+                        "extract_field": "certificate_file"
+                      "save_result_as": "var.esrp_certificate_file"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "ESRP"
+                        "extract_field": "certificate_key"
+                      "save_result_as": "var.esrp_certificate_key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        payload_source: "file./tmp/CHFE_021/XACML_ServiceState.xml"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        policy_array: True
+                        output_file: "file./tmp/CHFE_021/jws_body_var3"
+                  type: "HTTP"
+                  method: [ "GET", "GET" ]
+                  response_code: [ "200", "200" ]
+                  http_url: [ "/Policies?policyType=ServiceState", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/CHFE_021/jws_body_var3", "file.test_suite/test_files/JSON/versions/Policy_Store_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+                  next_action: "manual_restart"
+                - action: "manual"
+                  id: "manual_restart"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "MANUAL ACTION REQUIRED - please restart CHFE IUT to trigger policies fetching. Press any key when done..."
+                  next_action: "send_stimulus"
+                - action: "send"
+                  id: "send_stimulus"
+                  if_name: "IF_ESRP_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHFE"
+                        extract_field: "api"
+                      "save_result_as": "var.chfe_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.chfe_api"
+                        extract_field: "tel_number"
+                      "save_result_as": "var.tel_number"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_ServiceState.xml"
+                        "param_name": "[service]"
+                        "value": "var.tel_number"
+                        "output_file": "file./tmp/CHFE_021/SIP_SUBSCRIBE_ServiceState.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHFE_021/SIP_SUBSCRIBE_ServiceState.xml",
+                    kwargs: {
+                              -timeout: "7s"
+                    },
+                    save_response_as: "CHFE_021_var3_SEND_response.log",
+                    save_log_as: "CHFE_021_var3_SEND.log"
+                  }
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_CHFE_PS"
+                  dst_interface: "IF_PS_CHFE"
+                  sip_method: "" #  leave empty if not needed
+                  http_request_method: "GET" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "Policies?policyType=ServiceState"
+                  body_contains: ""
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_CHFE"
+                  dst_interface: "IF_CHFE_ESRP"
+                  sip_method: "SUBSCRIBE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "emergency-ServiceState"
+                  body_contains: ""
+
+        requirements:
+          - name: "RQ_CHFE_390"
+            variations: ["all"]
+          - name: "RQ_CHFE_392"
+            variations: [ "all" ]

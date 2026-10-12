@@ -1,0 +1,66 @@
+test_config:
+  conformance:
+    tests:
+      - name: "CHFE_008"
+        variations:
+          - name: "ServiceState"
+            description: "Validate support of ServiceState"
+            interfaces:
+              - name: "IF_ESRP_CHFE"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHFE"
+                        extract_field: "api"
+                      "save_result_as": "var.chfe_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.chfe_api"
+                        extract_field: "tel_number"
+                      "save_result_as": "var.tel_number"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_ServiceState.xml"
+                        "param_name": "[service]"
+                        "value": "var.tel_number"
+                        "output_file": "file./tmp/CHFE_008/SIP_SUBSCRIBE_ServiceState.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/CHFE_008/SIP_SUBSCRIBE_ServiceState.xml",
+                    kwargs: {},
+                    save_response_as: "CHFE_008_var1_SEND_response.log",
+                    save_log_as: "CHFE_008_var1_SEND.log"
+                  }
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_CHFE"
+                  dst_interface: "IF_CHFE_ESRP"
+                  sip_method: "SUBSCRIBE" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: "ServiceState"
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_CHFE_ESRP"
+                  dst_interface: "IF_ESRP_CHFE"
+                  sip_method: "NOTIFY" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: "ServiceState"
+                  body_contains: ""
+        requirements:
+          - name: "RQ_CHFE_017"
+            variations: ["all"]

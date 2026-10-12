@@ -1,0 +1,92 @@
+test_config:
+  conformance:
+    tests:
+      - name: "CHFE_019"
+        variations:
+          - name: "Refer_To_serviceurn_parameter"
+            description: "Verify that a CHFE-generated SIP REFER contains a suitable service URN in the serviceurn parameter of the Refer-To header field"
+            interfaces:
+              - name: "IF_ESRP_CHFE"
+                port_names: []
+            params:
+              messages:
+                # Test System ESRP
+                - action: "send"
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "api"
+                      save_result_as: "var.esrp_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.esrp_api"
+                        extract_field: "conference_id"
+                      save_result_as: "var.conference_id"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHFE"
+                        extract_field: "api"
+                      save_result_as: "var.chfe_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.chfe_api"
+                        extract_field: "tel_number"
+                      save_result_as: "var.CHFE_tel"
+                  if_name: "IF_ESRP_CHFE"
+                  if_port_name: ""
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/CHFE_019/ESRP_CHFE_019.xml",
+                    kwargs: {
+                      set: {
+                        conference_id: "var.conference_id",
+                        CHFE_tel: "var.CHFE_tel"
+                      }
+                    },
+                    save_response_as: "ESRP_CHFE_019_response.log",
+                    save_log_as: "ESRP_CHFE_019.log"
+                  }
+                  run_in_background: "True"
+                  next_action: "manual_chfe_transfer"
+
+                # CHFE
+                - action: "manual"
+                  id: "manual_chfe_transfer"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "MANUAL ACTION REQUIRED - please answer the incoming call on CHFE and then manually initiate a call transfer to another device. Press any key after the transfer has been initiated..."
+                  next_action: ""
+
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_ESRP_CHFE"
+                dst_interface: "IF_CHFE_ESRP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: ""
+
+              - message_type: "output"
+                src_interface: "IF_CHFE_ESRP"
+                dst_interface: "IF_ESRP_CHFE"
+                sip_method: "REFER"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: ""
+                body_contains: ""
+
+        requirements:
+          - name: "RQ_CHFE_281"
+            variations: ["all"]

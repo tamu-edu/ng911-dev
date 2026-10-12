@@ -1,0 +1,187 @@
+"run_config":
+  "output_folder": "/tmp/pcap_tests/"
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": ""
+      "prefix": "LOG"
+      "suffix": "LOG_ALL_TESTS"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "ENTER NAME"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "ENTER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": "ENTER ADDRESS"
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+        "eng_name": "ENTER NAME"
+      "supplier":
+        "name": "ENTER SUPPLIER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": ""
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+      "iut":
+        "type": "LOG"
+        "name": "IF_LOG-read_ESRP"
+        "version": "0.0.0.1"
+        "date_of_receipt": "ENTER CURRENT DATE"
+        "location": "ENTER LOCATION"
+        "cs_id": "CS00001"
+        "cs_static_conform": false
+      "test_env":
+        "ixit_id": "11111"
+        "test_method": "test_method"
+        "spec_name": "STA-010"
+        "spec_version": "3.0"
+        "test_period_start": "ENTER CURRENT DATE"
+        "test_period_end": "ENTER CURRENT DATE"
+        "log_ref": "00001"
+        "log_ret_date": "ENTER CURRENT DATE"
+    "log":
+      "level": "DEBUG"
+      "output_file": "/tmp/pcap_tests/LOG_DEBUG.log"
+    "comments":
+    - "author": "ENTER AUTHOR NAME"
+      "comment": "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  "tests":
+  - "name": "LOG_012"
+    "requirements":
+    - "name": "RQ_LOG_195"
+      "variations":
+      - "all"
+    "variations":
+    - "name": "Unsigned_LogEvent"
+      "description": "Validate 'LogEvent Successfully Logged' response (201) for an unsigned LogEvent request"
+      "interfaces":
+      - "name": "IF_ESRP_LOG-read"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/LOG_012/TC_LOG_012_v1_unsigned_logevent_201.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_LOG-read"
+          "if_port_name": ""
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "201"
+          "http_url": "/LogEvents"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_LOG-read"
+        "dst_interface": "IF_LOG-read_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "LogEvent_with_EdDSA"
+      "description": "Validate 'LogEvent Successfully Logged' response (201) for a LogEvent request signed with an EdDSA (Ed448) certificate"
+      "interfaces":
+      - "name": "IF_ESRP_LOG-read"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/LOG_012/TC_LOG_012_v2_logevent_with_eddsa_201.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_LOG-read"
+          "if_port_name": ""
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "201"
+          "http_url": "/LogEvents"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_LOG-read"
+        "dst_interface": "IF_LOG-read_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "LogEvent_with_Ed25519"
+      "description": "Validate HTTP 4xx (Unacceptable Algorithm) response for a LogEvent request signed with an Ed25519 certificate"
+      "interfaces":
+      - "name": "IF_ESRP_LOG-read"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/LOG_012/TC_LOG_012_v3_logevent_with_ed25519_438.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_LOG-read"
+          "if_port_name": ""
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/LogEvents"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_LOG-read"
+        "dst_interface": "IF_LOG-read_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    - "name": "LogEvent_with_RSA"
+      "description": "Validate HTTP 4xx (Unacceptable Algorithm) response for a LogEvent request signed with an RSA certificate"
+      "interfaces":
+      - "name": "IF_ESRP_LOG-read"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/LOG_012/TC_LOG_012_v4_logevent_with_rsa_438.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_LOG-read"
+          "if_port_name": ""
+          "prep_steps": []
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/LogEvents"
+          "body": ""
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_LOG-read"
+        "dst_interface": "IF_LOG-read_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "header_contains": ""
+        "body_contains": ""
+    "preamble_list": []
+    "postamble_list": []

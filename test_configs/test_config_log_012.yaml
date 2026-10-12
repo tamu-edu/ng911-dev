@@ -1,0 +1,395 @@
+test_config:
+  conformance:
+    tests:
+      - name: "LOG_012"
+        variations:
+          - name: "Unsigned_LogEvent"
+            description: "Validate support of unsigned LogEvent JWS"
+            interfaces:
+              - name: "IF_ESRP_LOG-read"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_LOG-read"
+                      "save_result_as": "var.IF_ESRP_LOG-read"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_LOG-read",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_LOG-read",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json"
+                        "param_name": "urn:emergency:uid:callid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var1.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_012/LogEvent_var1.json"
+                        "param_name": "urn:emergency:uid:incidentid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var1.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_012/LogEvent_var1.json"
+                        "param_name": "7dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "value": "var17dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var1.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/LOG_012/LogEvent_var1.json"
+                        output_file: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "201"
+                header_contains: ""
+                body_contains: ""
+          #Variation 2
+          - name: "LogEvent_with_EdDSA"
+            description: "Validate support of LogEvent JWS signed with EdDSA certificate"
+            interfaces:
+              - name: "IF_ESRP_LOG-read"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    # Prepare JSON file
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_LOG-read"
+                      "save_result_as": "var.IF_ESRP_LOG-read"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_LOG-read",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_LOG-read",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json"
+                        "param_name": "urn:emergency:uid:callid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var2.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_012/LogEvent_var2.json"
+                        "param_name": "urn:emergency:uid:incidentid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var2.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_012/LogEvent_var2.json"
+                        "param_name": "7dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "value": "var27dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var2.json"
+                    # Generating certificate
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']"
+                        extract_field: "pca_certificate_file"
+                      "save_result_as": "var.pca_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']"
+                        extract_field: "pca_certificate_key"
+                      "save_result_as": "var.pca_certificate_key"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "lab_config['lab_config']['entities']",
+                             where_field: "name",
+                             where_value: "ESRP",
+                             extract_field: 'interfaces'
+                      }
+                      save_result_as: "var.esrp_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "var.esrp_interfaces",
+                             where_field: "name",
+                             where_value: "IF_ESRP_LOG-read",
+                             extract_field: 'fqdn'
+                      }
+                      save_result_as: "var.esrp_fqdn"
+                    - method_name: "generate_pca_signed_certificate"
+                      kwargs:
+                        pca_cert_file: "var.pca_certificate_file"
+                        pca_cert_key: "var.pca_certificate_key"
+                        output_cert_cn: "var.esrp_fqdn"
+                        algorithm: "Ed448"
+                        output_cert_file: "file./tmp/LOG_012/eddsa.crt"
+                        output_key_file: "file./tmp/LOG_012/eddsa.key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/LOG_012/LogEvent_var2.json"
+                        cert_path: "file./tmp/LOG_012/eddsa.crt"
+                        key_path: "file./tmp/LOG_012/eddsa.key"
+                        output_file: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "201"
+                header_contains: ""
+                body_contains: ""
+          # Variation 3
+          - name: "LogEvent_with_Ed25519"
+            description: "Validate rejecting of LogEvent JWS signed with Ed25519 certificate"
+            interfaces:
+              - name: "IF_ESRP_LOG-read"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    # Prepare JSON file
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_LOG-read"
+                      "save_result_as": "var.IF_ESRP_LOG-read"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_LOG-read",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_LOG-read",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json"
+                        "param_name": "urn:emergency:uid:callid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var3.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_012/LogEvent_var3.json"
+                        "param_name": "urn:emergency:uid:incidentid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var3.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_012/LogEvent_var3.json"
+                        "param_name": "7dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "value": "var37dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var3.json"
+                    # Generating certificate
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']"
+                        extract_field: "pca_certificate_file"
+                      "save_result_as": "var.pca_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']"
+                        extract_field: "pca_certificate_key"
+                      "save_result_as": "var.pca_certificate_key"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "lab_config['lab_config']['entities']",
+                             where_field: "name",
+                             where_value: "ESRP",
+                             extract_field: 'interfaces'
+                      }
+                      save_result_as: "var.esrp_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "var.esrp_interfaces",
+                             where_field: "name",
+                             where_value: "IF_ESRP_LOG-read",
+                             extract_field: 'fqdn'
+                      }
+                      save_result_as: "var.esrp_fqdn"
+                    - method_name: "generate_pca_signed_certificate"
+                      kwargs:
+                        pca_cert_file: "var.pca_certificate_file"
+                        pca_cert_key: "var.pca_certificate_key"
+                        output_cert_cn: "var.esrp_fqdn"
+                        algorithm: "Ed25519"
+                        output_cert_file: "file./tmp/LOG_012/ed25519.crt"
+                        output_key_file: "file./tmp/LOG_012/ed25519.key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/LOG_012/LogEvent_var3.json"
+                        cert_path: "file./tmp/LOG_012/ed25519.crt"
+                        key_path: "file./tmp/LOG_012/ed25519.key"
+                        disable_eddsa_checks: True
+                        output_file: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "4xx"
+                header_contains: ""
+                body_contains: ""
+          # Variation 4
+          - name: "LogEvent_with_RSA"
+            description: "Validate rejecting of LogEvent JWS signed with RSA certificate"
+            interfaces:
+              - name: "IF_ESRP_LOG-read"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_LOG-read"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    # Prepare JSON file
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_LOG-read"
+                      "save_result_as": "var.IF_ESRP_LOG-read"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_LOG-read",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_LOG-read",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/log_event/CallStartLogEvent_object_example_v010.3f.3.0.1.json"
+                        "param_name": "urn:emergency:uid:callid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var4.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_012/LogEvent_var4.json"
+                        "param_name": "urn:emergency:uid:incidentid:123456789qwertyuiop:bcf.ng911.test"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var4.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/LOG_012/LogEvent_var4.json"
+                        "param_name": "7dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "value": "var47dec-11d0-a765-00a0c91e6bf6f81d4fae-7dec-11d0-a765-00a0c91e6bf691e6b124789f@bcf.ng911.test"
+                        "output_file": "file./tmp/LOG_012/LogEvent_var4.json"
+                    # Generating certificate
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']"
+                        extract_field: "pca_certificate_file"
+                      "save_result_as": "var.pca_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']"
+                        extract_field: "pca_certificate_key"
+                      "save_result_as": "var.pca_certificate_key"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "lab_config['lab_config']['entities']",
+                             where_field: "name",
+                             where_value: "ESRP",
+                             extract_field: 'interfaces'
+                      }
+                      save_result_as: "var.esrp_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                             config_part: "var.esrp_interfaces",
+                             where_field: "name",
+                             where_value: "IF_ESRP_LOG-read",
+                             extract_field: 'fqdn'
+                      }
+                      save_result_as: "var.esrp_fqdn"
+                    - method_name: "generate_pca_signed_certificate"
+                      kwargs:
+                        pca_cert_file: "var.pca_certificate_file"
+                        pca_cert_key: "var.pca_certificate_key"
+                        output_cert_cn: "var.esrp_fqdn"
+                        algorithm: "RSA2048"
+                        output_cert_file: "file./tmp/LOG_012/rsa.crt"
+                        output_key_file: "file./tmp/LOG_012/rsa.key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        json_source: "file./tmp/LOG_012/LogEvent_var4.json"
+                        cert_path: "file./tmp/LOG_012/rsa.crt"
+                        key_path: "file./tmp/LOG_012/rsa.key"
+                        disable_eddsa_checks: True
+                        output_file: "file./tmp/jws_body"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "4xx"
+                  http_url: "/LogEvents"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/jws_body"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_ESRP_LOG-read"
+                dst_interface: "IF_LOG-read_ESRP"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "4xx"
+                header_contains: ""
+                body_contains: ""
+        requirements:
+          - name: "RQ_LOG_195"
+            variations: ["all"]

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy
+    xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os"
+    PolicyId="urn:nena:i3:policy:ecrf.ng911.dev.lab:deny-default-all-timed"
+    RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
+
+  <Description>
+    Deny all services/actions on ecrf.ng911.dev.lab for a 15-second window.
+  </Description>
+
+  <Target/>
+
+  <Rule RuleId="urn:nena:i3:rule:deny-all-window" Effect="Deny">
+    <Target/>
+    <Condition>
+      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:dateTime-greater-than-or-equal">
+          <EnvironmentAttributeDesignator
+              AttributeId="urn:oasis:names:tc:xacml:1.0:environment:current-dateTime"
+              DataType="http://www.w3.org/2001/XMLSchema#dateTime"/>
+          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#dateTime">2026-07-08T14:00:00Z</AttributeValue>
+        </Apply>
+        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:dateTime-less-than">
+          <EnvironmentAttributeDesignator
+              AttributeId="urn:oasis:names:tc:xacml:1.0:environment:current-dateTime"
+              DataType="http://www.w3.org/2001/XMLSchema#dateTime"/>
+          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#dateTime">2026-07-08T14:00:15Z</AttributeValue>
+        </Apply>
+      </Apply>
+    </Condition>
+  </Rule>
+
+  <Rule RuleId="urn:nena:i3:rule:default-after-window" Effect="Permit"/>
+
+</Policy>

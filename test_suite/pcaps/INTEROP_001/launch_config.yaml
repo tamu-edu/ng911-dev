@@ -1,0 +1,65 @@
+launch_config:
+  output_folder: "results"
+  global_config:
+    lab_info: "templates/ALL_TESTS/lab_info.yaml"
+    type: "conformance"
+    log:
+      level: "DEBUG"
+      output_file: "INTEROP_DEBUG.log"
+    report_files:
+      prefix: "INTEROP"
+      suffix: "INTEROP_ALL_TESTS" # optional
+      output_folder_path: "" # empty if you want to have reports in TS root dir or absolute path to the FOLDER
+      detailed_view: true
+      types:
+        - "docx"
+        - "pdf"
+    id_summary:
+      eng_name: "ENTER NAME"
+      supplier:
+        name: "ENTER SUPPLIER NAME"
+        addr_line_1: "ENTER ADDRESS"
+        addr_line_2: ""
+        city: "ENTER CITY"
+        state: "ENTER STATE"
+        country: "ENTER COUNTRY"
+        zip: "ENTER ZIP CODE"
+        url: "ENTER URL"
+      test_env:
+#        ts_version: "4.0.2"
+        ixit_id: "11111"
+        test_method: "test_method"
+        test_period_start: "ENTER CURRENT DATE" # ?
+        test_period_end: "ENTER CURRENT DATE" # ?
+        log_ref: "00001" # ?
+        log_ret_date: "ENTER CURRENT DATE" # ?
+    comments:
+      - author: "ENTER AUTHOR NAME"
+        comment: "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  tests:
+   - iut:
+       type: "INTEROP"
+       name: "INTEROP_001"
+       version: "0.0.0.1"
+#       test_period: "ENTER CURRENT DATE"
+       date_of_receipt: "ENTER CURRENT DATE"
+       location: "ENTER LOCATION"
+       cs_id: "CS00001"
+     lab_config: "test_suite/pcaps/INTEROP_001/lab_config_interop.yaml"
+     requirements: ['RQ_INTEROP_001', 'RQ_INTEROP_002', 'RQ_INTEROP_003', 'RQ_INTEROP_005', 'RQ_INTEROP_006',
+                    'RQ_INTEROP_011', 'RQ_INTEROP_012', 'RQ_INTEROP_013', 'RQ_INTEROP_014', 'RQ_INTEROP_015',
+                    'RQ_INTEROP_017', 'RQ_INTEROP_019', 'RQ_INTEROP_020', 'RQ_INTEROP_021', 'RQ_INTEROP_023',
+                    'RQ_INTEROP_025', 'RQ_INTEROP_027', 'RQ_INTEROP_029', 'RQ_INTEROP_031', 'RQ_INTEROP_033',
+                    'RQ_INTEROP_034', 'RQ_INTEROP_036', 'RQ_INTEROP_038', 'RQ_INTEROP_039', 'RQ_INTEROP_040',
+                    'RQ_INTEROP_041', 'RQ_INTEROP_043', 'RQ_INTEROP_044', 'RQ_INTEROP_045', 'RQ_INTEROP_047',
+                    'RQ_INTEROP_049', 'RQ_INTEROP_050', 'RQ_INTEROP_051', 'RQ_INTEROP_053', 'RQ_INTEROP_054',
+                    'RQ_INTEROP_056', 'RQ_INTEROP_058', 'RQ_INTEROP_061', 'RQ_INTEROP_063', 'RQ_INTEROP_065',
+                    'RQ_INTEROP_067', 'RQ_INTEROP_069', 'RQ_INTEROP_070', 'RQ_INTEROP_071', 'RQ_INTEROP_073',
+                    'RQ_INTEROP_075', 'RQ_INTEROP_076', 'RQ_INTEROP_078', 'RQ_INTEROP_080', 'RQ_INTEROP_081',
+                    'RQ_INTEROP_082', 'RQ_INTEROP_083', 'RQ_INTEROP_086', 'RQ_INTEROP_088', 'RQ_INTEROP_090',
+                    'RQ_INTEROP_092', 'RQ_INTEROP_094', 'RQ_INTEROP_095', 'RQ_INTEROP_105', 'RQ_INTEROP_112',
+                    'RQ_INTEROP_114', 'RQ_INTEROP_118', 'RQ_INTEROP_120', 'RQ_INTEROP_122', 'RQ_INTEROP_123',
+                    'RQ_INTEROP_124', 'RQ_INTEROP_125', 'RQ_INTEROP_126', 'RQ_INTEROP_128', 'RQ_INTEROP_129',
+                    'RQ_INTEROP_131', 'RQ_INTEROP_132', 'RQ_INTEROP_133', 'RQ_INTEROP_137', 'RQ_INTEROP_138',
+                    'RQ_INTEROP_141', 'RQ_INTEROP_142', 'RQ_INTEROP_145', 'RQ_INTEROP_151', 'RQ_INTEROP_152',
+                    'RQ_INTEROP_153', 'RQ_INTEROP_157', 'RQ_INTEROP_161']

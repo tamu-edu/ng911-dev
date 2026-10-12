@@ -1,0 +1,208 @@
+"run_config":
+  "output_folder": "/tmp/BCF_010/results"
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": ""
+      "prefix": "CACN"
+      "suffix": "BCF_ALL_TESTS"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "ENTER NAME"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "ENTER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": "ENTER ADDRESS"
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+        "eng_name": "ENTER NAME"
+      "supplier":
+        "name": "ENTER SUPPLIER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": ""
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+      "iut":
+        "type": "BCF"
+        "name": "IF_BCF_OSP"
+        "version": "0.0.0.1"
+        "date_of_receipt": "ENTER CURRENT DATE"
+        "location": "ENTER LOCATION"
+        "cs_id": "CS00001"
+        "cs_static_conform": false
+      "test_env":
+        "ixit_id": "11111"
+        "test_method": "test_method"
+        "spec_name": "STA-010"
+        "spec_version": "3.0"
+        "test_period_start": "ENTER CURRENT DATE"
+        "test_period_end": "ENTER CURRENT DATE"
+        "log_ref": "00001"
+        "log_ret_date": "ENTER CURRENT DATE"
+    "log":
+      "level": "DEBUG"
+      "output_file": "results/CACN_2026-05-07T164755_BCF_ALL_TESTS/BCF_DEBUG.log"
+      "dev_mode": false
+    "comments":
+    - "author": "ENTER AUTHOR NAME"
+      "comment": "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  "tests":
+  - "name": "BCF_CS00001"
+    "requirements":
+    - "name": "RQ_BCF_147"
+      "variations":
+      - "SIP_over_TLS"
+#      - "HTTPS"
+    "variations":
+    - "name": "SIP_over_TLS"
+      "description": "Verify SHA-256 support for SIP over TLS"
+      "interfaces":
+      - "name": "IF_OSP_BCF"
+        "port_names": []
+      - "name": "IF_ESRP_BCF"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/BCF_010/BCF_010_tls_sip.pcap"
+      "ssl_keys_file_path": "test_suite/pcaps/BCF_010/sip_sslkeys.log"
+      "params":
+        "messages":
+        - "action": "receive"
+          "prep_steps": []
+          "if_name": "IF_ESRP_BCF"
+          "if_port_name": "IF_ESRP_BCF_SIP_5061_TLSv1.2"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "body": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/SIP_RECEIVE/SIP_INVITE_RECEIVE.xml"
+            "kwargs": {}
+            "save_response_as": "BCF_010_var1_ESRP_response.log"
+            "save_log_as": "BCF_010_var1_ESRP.log"
+          "run_in_background": "True"
+        - "action": "send"
+          "if_name": "IF_OSP_BCF"
+          "if_port_name": "IF_OSP_BCF_SIP_5061_TLSv1.2"
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.osp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.osp_certificate_key"
+          "type": "SIP"
+          "method": "INVITE"
+          "response_code": ""
+          "http_url": ""
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_INVITE/SIP_INVITE_from_OSP.xml"
+            "kwargs":
+              "--protocol": "TLS"
+              "--tls_cert": "var.osp_certificate_file"
+              "--tls_key": "var.osp_certificate_key"
+            "save_response_as": "BCF_010_var1_OSP_response.log"
+            "save_log_as": "BCF_010_var1_OSP.log"
+          "ssl_config_file": "test_suite/services/stub_server/sip_service/config/sip_service_ssl_sha256.yaml"
+          "run_in_background": "False"
+          "next_action": "manual_delay"
+        - "action": "manual"
+          "id": "manual_delay"
+          "if_name": ""
+          "instead": ""
+          "type": "SIP"
+          "method": ""
+          "timeout": 2
+          "prompt": "Waiting 2 seconds for IUT..."
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_OSP_BCF"
+        "dst_interface": "IF_BCF_OSP"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": ""
+        "header_contains": ""
+      - "message_type": "output"
+        "src_interface": "IF_BCF_ESRP"
+        "dst_interface": "IF_ESRP_BCF"
+        "sip_method": "INVITE"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": ""
+        "header_contains": ""
+    - "name": "HTTPS"
+      "description": "Verify SHA-256 support for HTTPS"
+      "interfaces":
+      - "name": "IF_OSP_BCF"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/BCF_010/BCF_010_tls_http.pcap"
+      "ssl_keys_file_path": "test_suite/pcaps/BCF_010/http_sslkeys.log"
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_OSP_BCF"
+          "if_port_name": "IF_OSP_BCF_HTTPS_443_TLSv1.2"
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.osp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "OSP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.osp_certificate_key"
+          "type": "HTTPS"
+          "method": "POST"
+          "body": "test@ng911.example.com"
+          "response_code": "433"
+          "http_url": "/BadActors"
+          "ssl_config_file": "test_suite/services/stub_server/http/config/http_service_ssl_sha256.yaml"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+          "next_action": "manual_delay"
+        - "action": "manual"
+          "id": "manual_delay"
+          "if_name": ""
+          "instead": ""
+          "type": "SIP"
+          "method": ""
+          "timeout": 2
+          "prompt": "Waiting 2 seconds for IUT..."
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_OSP_BCF"
+        "dst_interface": "IF_BCF_OSP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "433"
+        "body_contains": ""
+        "header_contains": "BadActors"
+    "preamble_list": []
+    "postamble_list": []

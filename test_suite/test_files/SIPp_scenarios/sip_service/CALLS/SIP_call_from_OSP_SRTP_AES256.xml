@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TD_BCF_012 - Variation 3
+  Test System OSP sends SRTP protected with AES_256_CM_HMAC_SHA1_80.
+
+-->
+<scenario name="SIP_call_from_OSP_SRTP_AES256">
+
+  <send>
+    <![CDATA[
+INVITE urn:service:sos SIP/2.0
+Via: SIP/2.0/${transport} ${local_ip}:${local_port};branch=${branch}
+From: "NG911 Test" <sip:+12025551212@${local_ip}:${local_port}>;tag=${from_tag}
+To: urn:service:sos
+Call-ID: ${call_id}
+CSeq: 1 INVITE
+Contact: sip:+12025551212@${local_ip}:${local_port}
+Max-Forwards: 70
+Content-Type: application/sdp
+Content-Length: 0
+
+v=0
+o=user1 53655765 2353687637 IN IP4 ${local_ip}
+s=-
+t=0 0
+c=IN IP4 ${rtp_local_ip}
+m=audio ${rtp_local_port} RTP/SAVP 0
+a=rtpmap:0 PCMU/8000
+a=crypto:1 AES_256_CM_HMAC_SHA1_80 inline:Gpxjjgwtr+gwQxEUk5Lhr8Fxzi6NJI0eH+HMcFy0MyEjknT2nZ4zVaUW0Cgi2g==
+a=sendrecv
+]]>
+  </send>
+
+  <recv response="100" optional="true"/>
+  <recv response="180" optional="true"/>
+  <recv response="183" optional="true"/>
+
+  <recv response="200">
+    <action>
+      <ereg regexp="m=audio (\d+) RTP/SAVP" assign="remote_srtp_port"/>
+      <ereg regexp="(?m)^c=IN IP4 (\S+)" assign="remote_srtp_ip"/>
+      <ereg
+        regexp="(?im)^[ \t]*a=crypto:\d+[ \t]+AES_256_CM_HMAC_SHA1_80[ \t]+inline:([^|\r\n \t]+)"
+        assign="remote_srtp_key"
+      />
+      <ereg regexp="(?im)^To:.*;tag=([^;\r\n]+)" assign="to_tag"/>
+    </action>
+  </recv>
+
+  <send>
+    <![CDATA[
+ACK urn:service:sos SIP/2.0
+Via: SIP/2.0/${transport} ${local_ip}:${local_port};branch=${branch}
+From: "NG911 Test" <sip:+12025551212@${local_ip}:${local_port}>;tag=${from_tag}
+To: urn:service:sos${peer_tag_param}
+Call-ID: ${call_id}
+CSeq: 1 ACK
+Contact: sip:+12025551212@${local_ip}:${local_port}
+Content-Length: 0
+
+]]>
+  </send>
+
+  <media
+    type="srtp"
+    dst_ip="${rtp_local_ip}"
+    dst_port="${rtp_local_port}"
+    tx_key="Gpxjjgwtr+gwQxEUk5Lhr8Fxzi6NJI0eH+HMcFy0MyEjknT2nZ4zVaUW0Cgi2g=="
+    rx_key="${remote_srtp_key}"
+    profile="AES_256_CM_HMAC_SHA1_80"
+  />
+
+  <media
+    type="srtp_play_pcap"
+    dst_ip="${remote_srtp_ip}"
+    dst_port="${remote_srtp_port}"
+    pcap_file="test_suite/test_files/SIPp_scenarios/CALLS/audio_media_srtp_aes256.pcap"
+  />
+
+  <pause milliseconds="1000"/>
+
+  <stop_media
+      type="srtp"
+      dst_ip="${rtp_local_ip}"
+      dst_port="${rtp_local_port}"
+  />
+
+  <send>
+    <![CDATA[
+BYE urn:service:sos SIP/2.0
+Via: SIP/2.0/${transport} ${local_ip}:${local_port};branch=${branch}
+From: "NG911 Test" <sip:+12025551212@${local_ip}:${local_port}>;tag=${from_tag}
+To: urn:service:sos${peer_tag_param}
+Call-ID: ${call_id}
+CSeq: 2 BYE
+Max-Forwards: 70
+Contact: sip:+12025551212@${local_ip}:${local_port}
+Content-Length: 0
+
+]]>
+  </send>
+
+  <recv response="200" optional="true"/>
+
+</scenario>

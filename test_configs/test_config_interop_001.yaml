@@ -1,0 +1,1002 @@
+test_config:
+  conformance:
+    tests:
+      - name: "INTEROP_001"
+        variations:
+          - name: "INTEROP_2.4_VAR_11_The_Request-URI_is_a_SIP_URI_with_a_911_telephone_number."
+            description: "Interoperability test for Cellular emergency call with SIP URI 911 telephone number in the Request-URI"
+            interfaces:
+              - name: "IF_OSP_BCF"
+                port_names: []
+              - name: "IF_BCF_OSP"
+                port_names: []
+              - name: "IF_BCF_ESRP"
+                port_names: []
+              - name: "IF_BCF_CHFE"
+                port_names: []
+              - name: "IF_ESRP_BCF"
+                port_names: []
+              - name: "IF_ESRP_CHFE"
+                port_names: []
+              - name: "IF_PS_ESRP"
+                port_names: []
+              - name: "IF_LIS_ESRP"
+                port_names: []
+              - name: "IF_ECRF-LVF_ESRP"
+                port_names: []
+              - name: "IF_CHFE_LIS"
+                port_names: []
+              - name: "IF_CHFE_ESRP"
+                port_names: []
+              - name: "IF_CHFE_BCF"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  id: "receive_ps"
+                  if_name: "IF_PS_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_file"
+                      "save_result_as": "var.esrp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_key"
+                      "save_result_as": "var.esrp_certificate_key"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_BCF"
+                      "save_result_as": "var.IF_ESRP_BCF"
+
+                    # Prepare OriginationRoutePolicy for queue1
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "queue1@{0}"
+                        variables: "list.[var.IF_ESRP_BCF,]"
+                      save_result_as: "var.policy_queue_name"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_LoSTServiceURN.json"
+                        "param_name": "POLICY_QUEUE_NAME"
+                        "value": "var.policy_queue_name"
+                        "output_file": "file./tmp/INTEROP_001/Policy_object_OriginationRoutePolicy_LoSTServiceURN.json"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHFE"
+                        extract_field: "api"
+                      "save_result_as": "var.api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.api"
+                        extract_field: "tel_number"
+                      "save_result_as": "var.CHFE_tel"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_ESRP"
+                      "save_result_as": "var.IF_CHFE_ESRP"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "{0}@{1}"
+                        variables: "list.[var.CHFE_tel, var.IF_CHFE_ESRP]"
+                      save_result_as: "var.downstream_sip_uri"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/INTEROP_001/Policy_object_OriginationRoutePolicy_LoSTServiceURN.json"
+                        "param_name": "DOWNSTREAM_SIP_URI"
+                        "value": "var.downstream_sip_uri"
+                        "output_file": "file./tmp/INTEROP_001/Policy_object_OriginationRoutePolicy_LoSTServiceURN.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        payload_source: "file./tmp/INTEROP_001/Policy_object_OriginationRoutePolicy_LoSTServiceURN.json"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        policy_array: True
+                        output_file: "file./tmp/origination_jws"
+
+                      # Prepare ESRPNotify
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/XML/XACML_ESRPNotify.xml"
+                        "param_name": "ALLOWED_FQDN"
+                        "value": "var.IF_CHFE_ESRP"
+                        "output_file": "file./tmp/INTEROP_001/XACML_ESRPNotify.xml"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_CHFE"
+                      "save_result_as": "var.IF_ESRP_CHFE"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/INTEROP_001/XACML_ESRPNotify.xml"
+                        "param_name": "IUT_FQDN"
+                        "value": "var.IF_ESRP_CHFE"
+                        "output_file": "file./tmp/INTEROP_001/XACML_ESRPNotify.xml"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        payload_source: "file./tmp/INTEROP_001/XACML_ESRPNotify.xml"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        policy_array: True
+                        output_file: "file./tmp/esrpnotify_jws"
+
+                      # Prepare QueueState
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/XML/XACML_QueueState.xml"
+                        "param_name": "ALLOWED_FQDN"
+                        "value": "var.IF_CHFE_ESRP"
+                        "output_file": "file./tmp/INTEROP_001/XACML_QueueState.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/INTEROP_001/XACML_QueueState.xml"
+                        "param_name": "IUT_FQDN"
+                        "value": "var.IF_ESRP_CHFE"
+                        "output_file": "file./tmp/INTEROP_001/XACML_QueueState.xml"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        payload_source: "file./tmp/INTEROP_001/XACML_QueueState.xml"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        policy_array: True
+                        output_file: "file./tmp/queuestate_jws"
+
+                      # Prepare ElementState
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/XML/XACML_ElementState.xml"
+                        "param_name": "ALLOWED_FQDN"
+                        "value": "var.IF_CHFE_ESRP"
+                        "output_file": "file./tmp/INTEROP_001/XACML_ElementState.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/INTEROP_001/XACML_ElementState.xml"
+                        "param_name": "IUT_FQDN"
+                        "value": "var.IF_ESRP_CHFE"
+                        "output_file": "file./tmp/INTEROP_001/XACML_ElementState.xml"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        payload_source: "file./tmp/INTEROP_001/XACML_ElementState.xml"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        policy_array: True
+                        output_file: "file./tmp/elementstate_jws"
+
+                      # Prepare ServiceState
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/XML/XACML_ServiceState.xml"
+                        "param_name": "ALLOWED_FQDN"
+                        "value": "var.IF_CHFE_ESRP"
+                        "output_file": "file./tmp/INTEROP_001/XACML_ServiceState.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/INTEROP_001/XACML_ServiceState.xml"
+                        "param_name": "IUT_FQDN"
+                        "value": "var.IF_ESRP_CHFE"
+                        "output_file": "file./tmp/INTEROP_001/XACML_ServiceState.xml"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        payload_source: "file./tmp/INTEROP_001/XACML_ServiceState.xml"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        policy_array: True
+                        output_file: "file./tmp/servicestate_jws"
+
+                      # Prepare DequeueRegistration
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/XML/XACML_DequeueRegistration.xml"
+                        "param_name": "ALLOWED_FQDN"
+                        "value": "var.IF_CHFE_ESRP"
+                        "output_file": "file./tmp/INTEROP_001/XACML_DequeueRegistration.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/INTEROP_001/XACML_DequeueRegistration.xml"
+                        "param_name": "IUT_FQDN"
+                        "value": "var.IF_ESRP_CHFE"
+                        "output_file": "file./tmp/INTEROP_001/XACML_DequeueRegistration.xml"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "ESRP"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.esrp_interfaces"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_ESRP_CHFE"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.esrp_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.esrp_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "HTTP"
+                        "extract_field": "port"
+                      "save_result_as": "var.esrp_http_port"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/INTEROP_001/XACML_DequeueRegistration.xml"
+                        "param_name": "IUT_PORT"
+                        "value": "var.esrp_http_port"
+                        "output_file": "file./tmp/INTEROP_001/XACML_DequeueRegistration.xml"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        payload_source: "file./tmp/INTEROP_001/XACML_DequeueRegistration.xml"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        policy_array: True
+                        output_file: "file./tmp/dequeueregistration_jws"
+
+                      # Prepare NormalNextHopRoutePolicy
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "chfe@{0}"
+                        variables: "list.[var.IF_CHFE_ESRP,]"
+                      save_result_as: "var.chfe_sip_uri"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "{0}@{1}"
+                        variables: "list.[var.CHFE_tel, var.IF_CHFE_ESRP]"
+                      save_result_as: "var.chfe_tel_sip_uri"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_RoutePolicy_NormalNextHop_v010.3f.5.0.0.json"
+                        "param_name": "POLICY_QUEUE_NAME"
+                        "value": "var.chfe_sip_uri"
+                        "output_file": "file./tmp/INTEROP_001/Policy_object_RoutePolicy_NormalNextHop_v010.3f.5.0.0.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/INTEROP_001/Policy_object_RoutePolicy_NormalNextHop_v010.3f.5.0.0.json"
+                        "param_name": "DOWNSTREAM_SIP_URI"
+                        "value": "var.chfe_tel_sip_uri"
+                        "output_file": "file./tmp/INTEROP_001/Policy_object_RoutePolicy_NormalNextHop_v010.3f.5.0.0.json"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        payload_source: "file./tmp/INTEROP_001/Policy_object_RoutePolicy_NormalNextHop_v010.3f.5.0.0.json"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        policy_array: True
+                        output_file: "file./tmp/normalnexthop_jws"
+
+                    # Prepare URL's
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/Policies?policyType=OriginationRoutePolicy?policyQueueName=queue1@{0}"
+                        variables: "list.[var.IF_ESRP_BCF,]"
+                      save_result_as: "var.origination_url"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/Policies?policyType=NormalNextHopRoutePolicy?policyQueueName=queue1@{0}"
+                        variables: "list.[var.IF_ESRP_BCF,]"
+                      save_result_as: "var.normalnexthop_url"
+                  type: "HTTP"
+                  method: ["GET", "GET", "GET", "GET", "GET", "GET", "GET",]
+                  response_code: ["200", "200", "200", "200", "200", "200", "200",]
+                  http_url: [
+                              "/Versions",
+                              "var.origination_url",
+                              "/Policies?policyType=ESRPNotify",
+                              "/Policies?policyType=QueueState",
+                              "/Policies?policyType=ElementState",
+                              "/Policies?policyType=ServiceState",
+                              "/Policies?policyType=DequeueRegistration",
+                              "var.normalnexthop_url",
+                              ]
+                  body: [
+                          "file.test_suite/test_files/JSON/versions/Policy_Store_Versions_object_example_v010.3f.5.0.0.json",
+                          "file./tmp/origination_jws",
+                          "file./tmp/esrpnotify_jws",
+                          "file./tmp/queuestate_jws",
+                          "file./tmp/elementstate_jws",
+                          "file./tmp/servicestate_jws",
+                          "file./tmp/dequeueregistration_jws",
+                          "file./tmp/normalnexthop_jws",
+                  ]
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                  # next_action: "receive_bcf"
+                  # next_action: "receive_esrp"
+                  # next_action: "receive_lis"
+#                - action: "receive"
+#                  id: "receive_bcf"
+#                  if_name: "IF_BCF_OSP"
+#                  if_port_name: ""  # Optional
+#                  prep_steps:
+#                    - method_name: "get_interface_address"
+#                      kwargs:
+#                        interface_name: "IF_OSP_BCF"
+#                      "save_result_as": "var.IF_OSP_BCF"
+#                    - method_name: "get_interface_address"
+#                      kwargs:
+#                        interface_name: "IF_BCF_OSP"
+#                      "save_result_as": "var.IF_BCF_OSP"
+#                    - method_name: "get_interface_address"
+#                      kwargs:
+#                        interface_name: "IF_BCF_ESRP"
+#                      "save_result_as": "var.IF_BCF_ESRP"
+#                    - method_name: "get_interface_address"
+#                      kwargs:
+#                        interface_name: "IF_ESRP_BCF"
+#                      "save_result_as": "var.IF_ESRP_BCF"
+#                  type: "SIP"
+#                  method: "INVITE"
+#                  response_code: ""
+#                  http_url: ""  # part after f.e. http://IP:PORT
+#                  body: ""
+#                  sipp_scenario: {
+#                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/INTEROP_001/BCF_INTEROP_001.xml",
+#                    kwargs: {
+#                      set: {
+#                        IF_OSP_BCF: "var.IF_OSP_BCF",
+#                        IF_BCF_OSP: "var.IF_BCF_OSP",
+#                        IF_BCF_ESRP: "var.IF_BCF_ESRP",
+#                        IF_ESRP_BCF: "var.IF_ESRP_BCF",
+#                      }
+#                    },
+#                    save_response_as: "INTEROP_001_var11_BCF_response.log",
+#                    save_log_as: "INTEROP_001_var11_BCF.log"
+#                  }
+#                  run_in_background: "True"
+#                  next_action: "receive_esrp"
+#                - action: "receive"
+#                  id: "receive_esrp"
+#                  if_name: "IF_ESRP_BCF"
+#                  if_port_name: ""  # Optional
+#                  prep_steps:
+#                    - method_name: "get_interface_address"
+#                      kwargs:
+#                        interface_name: "IF_ESRP_BCF"
+#                      "save_result_as": "var.IF_ESRP_BCF"
+#                    - "method_name": "extract_from_config"
+#                      "kwargs":
+#                        "config_part": "lab_config['lab_config']['entities']"
+#                        "where_field": "name"
+#                        "where_value": "PS"
+#                        "extract_field": "interfaces"
+#                      "save_result_as": "var.ps_interfaces"
+#                    - "method_name": "extract_from_config"
+#                      "kwargs":
+#                        "config_part": "var.ecrf_interfaces"
+#                        "where_field": "name"
+#                        "where_value": "IF_PS_ESRP"
+#                        "extract_field": "port_mapping"
+#                      "save_result_as": "var.ps_port_mapping"
+#                    - "method_name": "extract_from_config"
+#                      "kwargs":
+#                        "config_part": "var.ps_port_mapping"
+#                        "where_field": "protocol"
+#                        "where_value": "HTTP"
+#                        "extract_field": "port"
+#                      "save_result_as": "var.ps_http_port"
+#                    - method_name: "generate_str"
+#                      kwargs:
+#                        string_to_modify: "/Policies?policyType=OriginationRoutePolicy?policyQueueName=queue1@{0}"
+#                        variables: "list.[var.IF_ESRP_BCF,]"
+#                      save_result_as: "var.origination_url"
+#                    - "method_name": "generate_url"
+#                      "kwargs":
+#                        "protocol": "http"
+#                        "address": "list.[var.IF_ESRP_BCF,]"
+#                        "port": "var.ps_http_port"
+#                        "path": "var.origination_url"
+#                      "save_result_as": "var.origination_url"
+#                    - method_name: "generate_str"
+#                      kwargs:
+#                        string_to_modify: "/Policies?policyType=NormalNextHopRoutePolicy?policyQueueName=queue1@{0}"
+#                        variables: "list.[var.IF_ESRP_BCF,]"
+#                      save_result_as: "var.normalnexthop_url"
+#                    - "method_name": "generate_url"
+#                      "kwargs":
+#                        "protocol": "http"
+#                        "address": "list.[var.IF_ESRP_BCF,]"
+#                        "port": "var.ps_http_port"
+#                        "path": "var.normalnexthop_url"
+#                      "save_result_as": "var.normalnexthop_url"
+#                    - "method_name": "generate_url"
+#                      "kwargs":
+#                        "protocol": "http"
+#                        "address": "list.[var.IF_ESRP_BCF,]"
+#                        "port": "var.ps_http_port"
+#                        "path": "/Policies?policyType=ESRPNotify"
+#                      "save_result_as": "var.esrpnotify_url"
+#                    - "method_name": "generate_url"
+#                      "kwargs":
+#                        "protocol": "http"
+#                        "address": "list.[var.IF_ESRP_BCF,]"
+#                        "port": "var.ps_http_port"
+#                        "path": "/Policies?policyType=QueueState"
+#                      "save_result_as": "var.queuestate_url"
+#                    - "method_name": "generate_url"
+#                      "kwargs":
+#                        "protocol": "http"
+#                        "address": "list.[var.IF_ESRP_BCF,]"
+#                        "port": "var.ps_http_port"
+#                        "path": "/Policies?policyType=ElementState"
+#                      "save_result_as": "var.elementstate_url"
+#                    - "method_name": "generate_url"
+#                      "kwargs":
+#                        "protocol": "http"
+#                        "address": "list.[var.IF_ESRP_BCF,]"
+#                        "port": "var.ps_http_port"
+#                        "path": "/Policies?policyType=ElementState"
+#                      "save_result_as": "var.elementstate_url"
+#                    - "method_name": "generate_url"
+#                      "kwargs":
+#                        "protocol": "http"
+#                        "address": "list.[var.IF_ESRP_BCF,]"
+#                        "port": "var.ps_http_port"
+#                        "path": "/Policies?policyType=ServiceState"
+#                      "save_result_as": "var.servicestate_url"
+#                    - "method_name": "generate_url"
+#                      "kwargs":
+#                        "protocol": "http"
+#                        "address": "list.[var.IF_ESRP_BCF,]"
+#                        "port": "var.ps_http_port"
+#                        "path": "/Policies?policyType=DequeueRegistration"
+#                      "save_result_as": "var.dequeueregistration_url"
+#                    - method_name: "send_http_request"
+#                      kwargs:
+#                        url: "var.origination_url"
+#                        method: "GET"
+#                        content_type: "text/plain"
+#                        body: ""
+#                      save_result_as: "/tmp/INTEROP_001/ESRP_policy_request_1"
+#                    - method_name: "send_http_request"
+#                      kwargs:
+#                        url: "var.esrpnotify_url"
+#                        method: "GET"
+#                        content_type: "text/plain"
+#                        body: ""
+#                      save_result_as: "/tmp/INTEROP_001/ESRP_policy_request_2"
+#                    - method_name: "send_http_request"
+#                      kwargs:
+#                        url: "var.queuestate_url"
+#                        method: "GET"
+#                        content_type: "text/plain"
+#                        body: ""
+#                      save_result_as: "/tmp/INTEROP_001/ESRP_policy_request_3"
+#                    - method_name: "send_http_request"
+#                      kwargs:
+#                        url: "var.elementstate_url"
+#                        method: "GET"
+#                        content_type: "text/plain"
+#                        body: ""
+#                      save_result_as: "/tmp/INTEROP_001/ESRP_policy_request_4"
+#                    - method_name: "send_http_request"
+#                      kwargs:
+#                        url: "var.servicestate_url"
+#                        method: "GET"
+#                        content_type: "text/plain"
+#                        body: ""
+#                      save_result_as: "/tmp/INTEROP_001/ESRP_policy_request_5"
+#                    - method_name: "send_http_request"
+#                      kwargs:
+#                        url: "var.dequeueregistration_url"
+#                        method: "GET"
+#                        content_type: "text/plain"
+#                        body: ""
+#                      save_result_as: "/tmp/INTEROP_001/ESRP_policy_request_6"
+#                    - method_name: "extract_from_config"
+#                      kwargs:
+#                        config_part: "lab_config['lab_config']['entities']"
+#                        where_field: "name"
+#                        where_value: "CHFE"
+#                        extract_field: "api"
+#                      "save_result_as": "var.api"
+#                    - method_name: "extract_from_config"
+#                      kwargs:
+#                        config_part: "var.api"
+#                        extract_field: "tel_number"
+#                      "save_result_as": "var.CHFE_tel"
+#                    - method_name: "get_interface_address"
+#                      kwargs:
+#                        interface_name: "IF_BCF_ESRP"
+#                      "save_result_as": "var.IF_BCF_ESRP"
+#                    - method_name: "get_interface_address"
+#                      kwargs:
+#                        interface_name: "IF_CHFE_ESRP"
+#                      "save_result_as": "var.IF_CHFE_ESRP"
+#                  type: "SIP"
+#                  method: "INVITE"
+#                  response_code: ""
+#                  http_url: ""  # part after f.e. http://IP:PORT
+#                  body: ""
+#                  sipp_scenario: {
+#                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/INTEROP_001/ESRP_INTEROP_001.xml",
+#                    kwargs: {
+#                      set: {
+#                        CHFE_tel: "var.CHFE_tel",
+#                        IF_CHFE_ESRP: "var.IF_CHFE_ESRP",
+#                        IF_BCF_ESRP: "var.IF_BCF_ESRP",
+#                      }
+#                    },
+#                    save_response_as: "INTEROP_001_var11_ESRP_response.log",
+#                    save_log_as: "INTEROP_001_var11_ESRP.log"
+#                  }
+#                  run_in_background: "True"
+#                  next_action: "receive_lis"
+
+                - action: "receive"
+                  id: "receive_lis"
+                  if_name: "IF_LIS_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_LIS_ESRP"
+                      "save_result_as": "var.IF_LIS_ESRP"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/HTTP_messages/HTTP_HELD/Location_response"
+                        "param_name": "LIS_IP"
+                        "value": "var.IF_LIS_ESRP"
+                        "output_file": "file./tmp/INTEROP_001/Location_response"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: "/location/osp"  # part after f.e. http://IP:PORT
+                  body: "file./tmp/INTEROP_001/Location_response"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                  next_action: "receive_ecrf"
+
+                - action: "receive"
+                  id: "receive_ecrf"
+                  if_name: "IF_ECRF-LVF_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_ESRP"
+                      "save_result_as": "var.IF_CHFE_ESRP"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "sip:chfe@{0}"
+                        variables: "list.[var.IF_CHFE_ESRP,]"
+                      save_result_as: "var.chfe_sip_uri"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/HTTP_messages/HTTP_LoST/findServiceResponse.xml"
+                        "param_name": "sip:nypd@example.com"
+                        "value": "var.chfe_sip_uri"
+                        "output_file": "file./tmp/INTEROP_001/findServiceResponse.xml"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: "file./tmp/INTEROP_001/findServiceResponse.xml"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+                  next_action: "receive_chfe"
+
+                - action: "receive"
+                  id: "receive_chfe"
+                  if_name: "IF_CHFE_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_ESRP"
+                      "save_result_as": "var.IF_CHFE_ESRP"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_BCF"
+                      "save_result_as": "var.IF_CHFE_BCF"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BCF_CHFE"
+                      "save_result_as": "var.IF_BCF_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_CHFE_PRS"
+                      "save_result_as": "var.IF_ESRP_CHFE_PRS"
+                    - method_name: "get_interface_port_number"
+                      kwargs:
+                        interface_name: "IF_ESRP_CHFE_PRS"
+                        protocol: "SIP"
+                      "save_result_as": "var.IF_ESRP_CHFE_PRS_SIP_PORT"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "CHFE"
+                        extract_field: "api"
+                      "save_result_as": "var.api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.api"
+                        extract_field: "tel_number"
+                      "save_result_as": "var.CHFE_tel"
+                    - method_name: "get_interface_port_number"
+                      kwargs:
+                        interface_name: "IF_CHFE_BCF"
+                        protocol: "RTP"
+                      "save_result_as": "var.IF_CHFE_BCF_RTP_PORT"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/INTEROP_001/CHFE_INTEROP_001.xml",
+                    kwargs: {
+                      set: {
+                        CHFE_tel: "var.CHFE_tel",
+                        IF_CHFE_ESRP: "var.IF_CHFE_ESRP",
+                        IF_BCF_CHFE: "var.IF_BCF_CHFE",
+                        IF_CHFE_BCF: "var.IF_CHFE_BCF",
+                        IF_ESRP_CHFE_PRS: "var.IF_ESRP_CHFE_PRS",
+                        IF_ESRP_CHFE_PRS_SIP_PORT: "var.IF_ESRP_CHFE_PRS_SIP_PORT",
+                        RTP_LOCAL_PORT: "var.IF_CHFE_BCF_RTP_PORT"
+                      }
+                    },
+                    save_response_as: "INTEROP_001_var11_CHFE_response.log",
+                    save_log_as: "INTEROP_001_var11_CHFE.log"
+                  }
+                  run_in_background: "True"
+                  next_action: "manual_restart"
+
+                - action: "manual"
+                  id: "manual_restart"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "Please restart all IUT devices to trigger policies fetching and press any key to continue when done..."
+                  next_action: "send_osp"
+
+                - action: "send"
+                  id: "send_osp"
+                  if_name: "IF_OSP_BCF"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_LIS_ESRP"
+                      "save_result_as": "var.IF_LIS_ESRP"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_911_call_from_OSP_with_RTP_and_location_reference.xml"
+                        "param_name": "LIS_IP"
+                        "value": "var.IF_LIS_ESRP"
+                        "output_file": "file./tmp/INTEROP_001/SIP_basic_911_call_from_OSP_with_RTP_and_location_reference.xml"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "LIS"
+                        "extract_field": "interfaces"
+                      "save_result_as": "var.lis_interfaces"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.ecrf_interfaces"
+                        "where_field": "name"
+                        "where_value": "IF_LIS_ESRP"
+                        "extract_field": "port_mapping"
+                      "save_result_as": "var.lis_port_mapping"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.lis_port_mapping"
+                        "where_field": "protocol"
+                        "where_value": "HTTP"
+                        "extract_field": "port"
+                      "save_result_as": "var.lis_http_port"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/INTEROP_001/SIP_basic_911_call_from_OSP_with_RTP_and_location_reference.xml"
+                        "param_name": "LIS_PORT"
+                        "value": "var.lis_http_port"
+                        "output_file": "file./tmp/INTEROP_001/SIP_basic_911_call_from_OSP_with_RTP_and_location_reference.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/INTEROP_001/SIP_basic_911_call_from_OSP_with_RTP_and_location_reference.xml",
+                    dependencies: [ "file.test_suite/test_files/SIPp_scenarios/CALLS/g711ulaw_rtp_stream.pcap" ],
+                    kwargs: {},
+                    save_response_as: "INTEROP_001_var11_OSP_response.log",
+                    save_log_as: "INTEROP_001_var11_OSP.log"
+                  }
+                  run_in_background: "False"
+            filtering_options:
+              # Policy Store messages
+              - message_type: "other"
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: ""
+                http_request_method: "GET"
+                response_status_code: "200"
+                header_contains: "/Policies?policyType=OriginationRoutePolicy?policyQueueName="
+                body_contains: ""
+              - message_type: "other"
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: ""
+                http_request_method: "GET"
+                response_status_code: "200"
+                header_contains: "/Policies?policyType=ESRPNotify"
+                body_contains: ""
+              - message_type: "other"
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: ""
+                http_request_method: "GET"
+                response_status_code: "200"
+                header_contains: "/Policies?policyType=QueueState"
+                body_contains: ""
+              - message_type: "other"
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: ""
+                http_request_method: "GET"
+                response_status_code: "200"
+                header_contains: "/Policies?policyType=ElementState"
+                body_contains: ""
+              - message_type: "other"
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: ""
+                http_request_method: "GET"
+                response_status_code: "200"
+                header_contains: "/Policies?policyType=ServiceState"
+                body_contains: ""
+              - message_type: "other"
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: ""
+                http_request_method: "GET"
+                response_status_code: "200"
+                header_contains: "/Policies?policyType=DequeueRegistration"
+                body_contains: ""
+              - message_type: "other"
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: ""
+                http_request_method: "GET"
+                response_status_code: "200"
+                header_contains: "/Policies?policyType=NormalNextHopRoutePolicy?policyQueueName="
+                body_contains: ""
+
+              # ESRP QueueState subscription
+              - message_type: "other"
+                src_interface: "IF_ESRP_CHFE"
+                dst_interface: "IF_CHFE_ESRP"
+                sip_method: "SUBSCRIBE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: "/Policies?policyType=NormalNextHopRoutePolicy?policyQueueName="
+                body_contains: ""
+
+              # LIS messages
+              - message_type: "other"
+                src_interface: "IF_ESRP_LIS"
+                dst_interface: "IF_LIS_ESRP"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: "<locationRequest"
+              - message_type: "other"
+                src_interface: "IF_CHFE_LIS"
+                dst_interface: "IF_LIS_CHFE"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: "<locationRequest"
+
+              # ECRF-LVF messages
+              - message_type: "other"
+                src_interface: "IF_ESRP_ECRF-LVF"
+                dst_interface: "IF_ECRF-LVF_ESRP"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: "<findService"
+
+              # Main messages
+              - message_type: "stimulus"
+                src_interface: "IF_OSP_BCF"
+                dst_interface: "IF_BCF_OSP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: ""
+              - message_type: "other"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: ""
+              - message_type: "output"
+                src_interface: "IF_ESRP_CHFE"
+                dst_interface: "IF_CHFE_ESRP"
+                sip_method: "INVITE"
+                http_request_method: ""
+                response_status_code: "200"
+                header_contains: ""
+                body_contains: ""
+        requirements:
+          - name: "RQ_INTEROP_001"
+            variations: ["all"]
+          - name: "RQ_INTEROP_002"
+            variations: ["all"]
+          - name: "RQ_INTEROP_003"
+            variations: ["all"]
+          - name: "RQ_INTEROP_005"
+            variations: ["all"]
+          - name: "RQ_INTEROP_006"
+            variations: ["all"]
+          - name: "RQ_INTEROP_011"
+            variations: ["all"]
+          - name: "RQ_INTEROP_012"
+            variations: ["all"]
+          - name: "RQ_INTEROP_013"
+            variations: ["all"]
+          - name: "RQ_INTEROP_014"
+            variations: ["all"]
+          - name: "RQ_INTEROP_015"
+            variations: ["all"]
+          - name: "RQ_INTEROP_017"
+            variations: ["all"]
+          - name: "RQ_INTEROP_019"
+            variations: ["all"]
+          - name: "RQ_INTEROP_020"
+            variations: ["all"]
+          - name: "RQ_INTEROP_021"
+            variations: ["all"]
+          - name: "RQ_INTEROP_023"
+            variations: ["all"]
+          - name: "RQ_INTEROP_025"
+            variations: ["all"]
+          - name: "RQ_INTEROP_027"
+            variations: ["all"]
+          - name: "RQ_INTEROP_029"
+            variations: ["all"]
+          - name: "RQ_INTEROP_031"
+            variations: ["all"]
+          - name: "RQ_INTEROP_033"
+            variations: ["all"]
+          - name: "RQ_INTEROP_034"
+            variations: ["all"]
+          - name: "RQ_INTEROP_036"
+            variations: ["all"]
+          - name: "RQ_INTEROP_038"
+            variations: ["all"]
+          - name: "RQ_INTEROP_039"
+            variations: ["all"]
+          - name: "RQ_INTEROP_040"
+            variations: ["all"]
+          - name: "RQ_INTEROP_041"
+            variations: ["all"]
+          - name: "RQ_INTEROP_043"
+            variations: ["all"]
+          - name: "RQ_INTEROP_044"
+            variations: ["all"]
+          - name: "RQ_INTEROP_045"
+            variations: ["all"]
+          - name: "RQ_INTEROP_047"
+            variations: ["all"]
+          - name: "RQ_INTEROP_049"
+            variations: ["all"]
+          - name: "RQ_INTEROP_050"
+            variations: ["all"]
+          - name: "RQ_INTEROP_051"
+            variations: ["all"]
+          - name: "RQ_INTEROP_053"
+            variations: ["all"]
+          - name: "RQ_INTEROP_054"
+            variations: ["all"]
+          - name: "RQ_INTEROP_056"
+            variations: ["all"]
+          - name: "RQ_INTEROP_058"
+            variations: ["all"]
+          - name: "RQ_INTEROP_061"
+            variations: ["all"]
+          - name: "RQ_INTEROP_063"
+            variations: ["all"]
+          - name: "RQ_INTEROP_065"
+            variations: ["all"]
+          - name: "RQ_INTEROP_067"
+            variations: ["all"]
+          - name: "RQ_INTEROP_069"
+            variations: ["all"]
+          - name: "RQ_INTEROP_070"
+            variations: ["all"]
+          - name: "RQ_INTEROP_071"
+            variations: ["all"]
+          - name: "RQ_INTEROP_073"
+            variations: ["all"]
+          - name: "RQ_INTEROP_075"
+            variations: ["all"]
+          - name: "RQ_INTEROP_076"
+            variations: ["all"]
+          - name: "RQ_INTEROP_078"
+            variations: ["all"]
+          - name: "RQ_INTEROP_080"
+            variations: ["all"]
+          - name: "RQ_INTEROP_081"
+            variations: ["all"]
+          - name: "RQ_INTEROP_082"
+            variations: ["all"]
+          - name: "RQ_INTEROP_083"
+            variations: ["all"]
+          - name: "RQ_INTEROP_086"
+            variations: ["all"]
+          - name: "RQ_INTEROP_088"
+            variations: ["all"]
+          - name: "RQ_INTEROP_090"
+            variations: ["all"]
+          - name: "RQ_INTEROP_092"
+            variations: ["all"]
+          - name: "RQ_INTEROP_094"
+            variations: ["all"]
+          - name: "RQ_INTEROP_095"
+            variations: ["all"]
+          - name: "RQ_INTEROP_105"
+            variations: ["all"]
+          - name: "RQ_INTEROP_112"
+            variations: ["all"]
+          - name: "RQ_INTEROP_114"
+            variations: ["all"]
+          - name: "RQ_INTEROP_118"
+            variations: ["all"]
+          - name: "RQ_INTEROP_120"
+            variations: ["all"]
+          - name: "RQ_INTEROP_122"
+            variations: ["all"]
+          - name: "RQ_INTEROP_123"
+            variations: ["all"]
+          - name: "RQ_INTEROP_124"
+            variations: ["all"]
+          - name: "RQ_INTEROP_125"
+            variations: ["all"]
+          - name: "RQ_INTEROP_126"
+            variations: ["all"]
+          - name: "RQ_INTEROP_128"
+            variations: ["all"]
+          - name: "RQ_INTEROP_129"
+            variations: ["all"]
+          - name: "RQ_INTEROP_131"
+            variations: ["all"]
+          - name: "RQ_INTEROP_132"
+            variations: ["all"]
+          - name: "RQ_INTEROP_133"
+            variations: ["all"]
+          - name: "RQ_INTEROP_137"
+            variations: ["all"]
+          - name: "RQ_INTEROP_138"
+            variations: ["all"]
+          - name: "RQ_INTEROP_141"
+            variations: ["all"]
+          - name: "RQ_INTEROP_142"
+            variations: ["all"]
+          - name: "RQ_INTEROP_145"
+            variations: ["all"]
+          - name: "RQ_INTEROP_151"
+            variations: ["all"]
+          - name: "RQ_INTEROP_152"
+            variations: ["all"]
+          - name: "RQ_INTEROP_153"
+            variations: ["all"]
+          - name: "RQ_INTEROP_157"
+            variations: ["all"]
+          - name: "RQ_INTEROP_161"
+            variations: ["all"]
