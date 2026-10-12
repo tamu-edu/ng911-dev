@@ -1,2 +1,0 @@
-TRANSPORT_PROFILES = ["UDP/TLS/RTP/SAVP", "UDP/TLS/RTP/SAVPF"]
-NOT_RUN = "NOT RUN -> No stimulus message found."
