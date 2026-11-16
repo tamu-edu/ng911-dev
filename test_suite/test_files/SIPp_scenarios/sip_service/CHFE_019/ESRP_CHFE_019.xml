@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+
+  Version:   010.3f.5.0.0
+  Date:      20260926
+
+-->
+<scenario name="ESRP_CHFE_019">
+
+  <Global variables="conference_id, CHFE_tel"/>
+
+  <!--
+    Test System ESRP acts as the Conference-aware UA.
+    Establish the incoming emergency call toward CHFE.
+  -->
+  <send>
+    <![CDATA[
+      INVITE urn:service:sos SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: "NG911 Test" <sip:+12025551212@[local_ip]:[local_port]>;tag=esrp_conference_call
+      To: urn:service:sos
+      Call-ID: [call_id]
+      CSeq: 1 INVITE
+      Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+      Max-Forwards: 70
+      Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+      Supported: replaces, join
+      Geolocation-Routing: yes
+      Geolocation: <cid:defaultlocation@[local_ip]>
+      Content-Type: multipart/mixed; boundary=next-content
+      Content-Length: [len]
+
+      --next-content
+      Content-Type: application/pidf+xml
+      Content-ID: <defaultlocation@[local_ip]>
+
+      <?xml version="1.0" encoding="utf-8"?>
+      <presence xmlns="urn:ietf:params:xml:ns:pidf"
+                xmlns:gp="urn:ietf:params:xml:ns:pidf:geopriv10"
+                xmlns:gml="http://www.opengis.net/gml"
+                entity="sip:+12025551212@[local_ip]">
+        <tuple id="0">
+          <status>
+            <gp:geopriv>
+              <gp:location-info>
+                <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
+                  <gml:pos>40.71668300756087 -73.99069756654683</gml:pos>
+                </gml:Point>
+              </gp:location-info>
+            </gp:geopriv>
+          </status>
+          <timestamp>2050-05-15T12:30:00Z</timestamp>
+        </tuple>
+      </presence>
+
+      --next-content
+      Content-Type: application/sdp
+
+      v=0
+      o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+      s=-
+      t=0 0
+      c=IN IP[media_ip_type] [local_ip]
+      m=audio 5005 RTP/AVP 0
+      a=rtpmap:0 PCMU/8000
+
+      --next-content--
+
+    ]]>
+  </send>
+
+  <recv response="100" optional="true"> </recv>
+  <recv response="180" optional="true"> </recv>
+  <recv response="183" optional="true"> </recv>
+
+  <!-- CHFE answers the incoming call manually. -->
+  <recv response="200">
+        <operate
+            method_name="save_header_field_param_value"
+            header_field_name="to"
+            param_name="tag"
+            ctx_key="ESRP_to_CHFE_To_tag"
+        />
+  </recv>
+
+  <send>
+    <![CDATA[
+      ACK urn:service:sos SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: "NG911 Test" <sip:+12025551212@[local_ip]:[local_port]>;tag=esrp_conference_call
+      To: urn:service:sos;tag=[$ESRP_to_CHFE_To_tag]
+      Call-ID: [call_id]
+      CSeq: 1 ACK
+      Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+      Max-Forwards: 70
+      Content-Length: 0
+
+    ]]>
+  </send>
+
+  <!--
+    CHFE subscribes to the conference package exposed by
+    the Conference-aware UA.
+  -->
+  <recv request="SUBSCRIBE">
+    <operate
+        method_name="save_header_field_value"
+        header_field_name="Call-ID:"
+        ctx_key="SUBSCRIBE_CHFE_conference_Call_ID"
+    />
+    <operate
+        method_name="save_header_field_param_value"
+        header_field_name="From:"
+        param_name="tag"
+        ctx_key="SUBSCRIBE_CHFE_From_tag"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="Via"
+        ctx_key="last_Via"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="From"
+        ctx_key="last_From"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="To"
+        ctx_key="last_To"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="Call-ID"
+        ctx_key="last_Call_ID"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="CSeq"
+        ctx_key="last_CSeq"
+    />
+    <operate
+        method_name="generate_tag_id"
+        ctx_key="SUBSCRIBE_CHFE_To_tag"
+    />
+  </recv>
+
+  <send>
+    <![CDATA[
+      SIP/2.0 200 OK
+      [$last_Via]
+      [$last_From]
+      [$last_To];tag=[$SUBSCRIBE_CHFE_To_tag]
+      [$last_Call_ID]
+      [$last_CSeq]
+      Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+      Content-Length: 0
+
+    ]]>
+  </send>
+
+  <!-- Initial conference-state notification. -->
+  <send>
+    <![CDATA[
+      NOTIFY sip:[$CHFE_tel]@[remote_ip]:[local_port] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      Max-Forwards: 70
+      To: <sip:[$CHFE_tel]@[remote_ip]:[local_port]>;tag=[$SUBSCRIBE_CHFE_From_tag]
+      From: <sip:[$conference_id]@[local_ip]:[local_port]>;tag=[$SUBSCRIBE_CHFE_To_tag]
+      Call-ID: [$SUBSCRIBE_CHFE_conference_Call_ID]
+      CSeq: 1 NOTIFY
+      Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+      Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+      Event: conference
+      Subscription-State: active;expires=3600
+      Content-Type: application/conference-info+xml
+      Content-Length: [len]
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <conference-info
+          xmlns="urn:ietf:params:xml:ns:conference-info"
+          version="0"
+          state="full"
+          entity="sip:[$conference_id]@[local_ip]:[local_port]">
+        <conference-description>
+          <display-text>NG911 Test Conference</display-text>
+          <conf-uris>
+            <entry>
+              <uri>sip:[$conference_id]@[local_ip]:[local_port]</uri>
+            </entry>
+          </conf-uris>
+        </conference-description>
+        <users>
+          <user
+              entity="sip:[$CHFE_tel]@[remote_ip]:[local_port]"
+              state="full">
+            <display-text>CHFE</display-text>
+            <endpoint
+                entity="sip:[$CHFE_tel]@[remote_ip]:[local_port]">
+              <status>connected</status>
+              <joining-method>dialed-in</joining-method>
+              <media id="1">
+                <display-text>Main Audio</display-text>
+                <type>audio</type>
+                <status>sendrecv</status>
+              </media>
+            </endpoint>
+          </user>
+        </users>
+      </conference-info>
+
+    ]]>
+  </send>
+
+  <recv response="200"> </recv>
+
+  <!--
+    After the operator initiates the transfer on CHFE,
+    CHFE sends the REFER that is the observable under test.
+    Do not validate the parameter under test here; that belongs to the
+    test assessment, so malformed or missing values remain observable.
+  -->
+  <recv request="REFER">
+    <operate
+        method_name="save_header_field"
+        header_field_name="Via"
+        ctx_key="last_Via"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="From"
+        ctx_key="last_From"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="To"
+        ctx_key="last_To"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="Call-ID"
+        ctx_key="last_Call_ID"
+    />
+    <operate
+        method_name="save_header_field"
+        header_field_name="CSeq"
+        ctx_key="last_CSeq"
+    />
+  </recv>
+
+  <send>
+    <![CDATA[
+      SIP/2.0 200 OK
+      [$last_Via]
+      [$last_From]
+      [$last_To]
+      [$last_Call_ID]
+      [$last_CSeq]
+      Contact: <sip:[$conference_id]@[local_ip]:[local_port]>;isfocus
+      Content-Length: 0
+
+    ]]>
+  </send>
+
+</scenario>

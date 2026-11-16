@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.5.0.0
+  Date:      20261102
+
+-->
+<scenario name="SIP_SUBSCRIBE_QueueState_watcher_info">
+  <send>
+    <![CDATA[
+
+      SUBSCRIBE [QUEUE_SIP_URI] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      To: <[QUEUE_SIP_URI]>
+      From: SENDER <sip:SENDER@[local_ip]:[local_port]>;tag=[pid]QueueStateWinfoTag[call_number]
+      Call-ID: [call_id]
+      CSeq: 1 SUBSCRIBE
+      Max-Forwards: 70
+      Event: emergency-QueueState.winfo
+      Accept: application/watcherinfo+xml
+      Contact: sip:SENDER@[local_ip]:[local_port]
+      Expires: 600
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <recv response="200"></recv>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: <sip:SENDER@[local_ip]:[local_port];transport=[transport]>
+        Content-Length:0 
+    
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: <sip:SENDER@[local_ip]:[local_port];transport=[transport]>
+        Content-Length:0 
+    
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: <sip:SENDER@[local_ip]:[local_port];transport=[transport]>
+        Content-Length:0 
+    
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: <sip:SENDER@[local_ip]:[local_port];transport=[transport]>
+        Content-Length:0 
+    
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: <sip:SENDER@[local_ip]:[local_port];transport=[transport]>
+        Content-Length:0 
+    
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: <sip:SENDER@[local_ip]:[local_port];transport=[transport]>
+        Content-Length:0 
+    
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: <sip:SENDER@[local_ip]:[local_port];transport=[transport]>
+        Content-Length:0 
+    
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: <sip:SENDER@[local_ip]:[local_port];transport=[transport]>
+        Content-Length:0 
+    
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: <sip:SENDER@[local_ip]:[local_port];transport=[transport]>
+        Content-Length:0 
+    
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: <sip:SENDER@[local_ip]:[local_port];transport=[transport]>
+        Content-Length:0 
+    
+      ]]>
+    </send>
+</scenario>

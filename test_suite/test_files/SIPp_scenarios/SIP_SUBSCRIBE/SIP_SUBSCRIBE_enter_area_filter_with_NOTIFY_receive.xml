@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.3.0.1
+  Date:      20250612
+
+-->
+<scenario name="SIP_SUBSCRIBE_enter_area_filter_with_NOTIFY_receive">
+  <send>
+    <![CDATA[
+
+      SUBSCRIBE sip:[service]@[remote_ip]:[remote_port] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      To: <sip:[service]@[remote_ip]:[remote_port]>
+      From: SENDER <sip:SENDER@[local_ip]:[local_port]>;tag=[call_number]
+      Call-ID: [call_id]
+      CSeq: 1 SUBSCRIBE
+      Max-Forwards: 70
+      Event: presence
+      Accept: application/pidf+xml
+      Contact: sip:SENDER@[local_ip]:[local_port]
+      Expires: 600
+      Content-Type: application/simple-filter+xml
+      Content-Length: [len]
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <filter-set
+          xmlns="urn:ietf:params:xml:ns:simple-filter"
+          xmlns:lf="urn:ietf:params:xml:ns:location-filter"
+          xmlns:gml="http://www.opengis.net/gml"
+          xmlns:gs="http://www.opengis.net/pidflo/1.0">
+
+          <filter id="123456" uri="sip:[service]@[remote_ip]:[remote_port]">
+              <trigger>
+                  <lf:enterOrExit>
+                      <gs:Circle
+                          srsName="urn:ogc:def:crs:EPSG::4326">
+                          <gml:pos>39.08170952274149 -76.85188316111969</gml:pos>
+                          <gs:radius
+                              uom="urn:ogc:def:uom:EPSG::9001">
+                              100
+                          </gs:radius>
+                      </gs:Circle>
+                  </lf:enterOrExit>
+              </trigger>
+          </filter>
+      </filter-set>
+
+    ]]>
+  </send>
+  <recv response="200"> </recv>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+  
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:];tag=[call_number]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: sip:SENDER@[local_ip]:[local_port]
+        Content-Length:0 
+    
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:];tag=[call_number]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: sip:SENDER@[local_ip]:[local_port]
+        Content-Length:0
+
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:];tag=[call_number]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: sip:SENDER@[local_ip]:[local_port]
+        Content-Length:0
+
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:];tag=[call_number]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: sip:SENDER@[local_ip]:[local_port]
+        Content-Length:0
+
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:];tag=[call_number]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: sip:SENDER@[local_ip]:[local_port]
+        Content-Length:0
+
+      ]]>
+    </send>
+  <recv request="NOTIFY"> </recv>
+  <send>
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [last_Via:]
+        [last_From:]
+        [last_To:];tag=[call_number]
+        [last_Call-ID:]
+        [last_CSeq:]
+        Contact: sip:SENDER@[local_ip]:[local_port]
+        Content-Length:0
+
+      ]]>
+    </send>
+</scenario>

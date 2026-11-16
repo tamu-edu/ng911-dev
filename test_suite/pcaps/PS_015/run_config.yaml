@@ -1,0 +1,965 @@
+"run_config":
+  "output_folder": "/tmp/lab_tests/PS_2026-11-07T113332_PS_ALL_TESTS"
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": ""
+      "prefix": "PS"
+      "suffix": "PS_ALL_TESTS"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "ENTER NAME"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "ENTER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": "ENTER ADDRESS"
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+        "eng_name": "ENTER NAME"
+      "supplier":
+        "name": "ENTER SUPPLIER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": ""
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+      "iut":
+        "type": "PS"
+        "name": "IF_PS_ESRP"
+        "version": "0.0.0.1"
+        "date_of_receipt": "ENTER CURRENT DATE"
+        "location": "ENTER LOCATION"
+        "cs_id": "CS00001"
+        "cs_static_conform": false
+      "test_env":
+        "ixit_id": "11111"
+        "test_method": "test_method"
+        "spec_name": "STA-010"
+        "spec_version": "3.0"
+        "test_period_start": "ENTER CURRENT DATE"
+        "test_period_end": "ENTER CURRENT DATE"
+        "log_ref": "00001"
+        "log_ret_date": "ENTER CURRENT DATE"
+    "log":
+      "level": "DEBUG"
+      "output_file": "/tmp/lab_tests//PS_2026-11-07T113332_PS_ALL_TESTS/PS_DEBUG.log"
+      "dev_mode": false
+      "show_timestamps": false
+    "comments":
+    - "author": "ENTER AUTHOR NAME"
+      "comment": "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  "tests":
+  - "name": "PS_CS00001"
+    "requirements":
+    - "name": "RQ_PS_093"
+      "variations":
+      - "HTTP_POST_with_correct_policy"
+      - "HTTP_POST_with_multiple_timeStart_values"
+      - "HTTP_POST_with_multiple_timeEnd_values"
+      - "HTTP_PUT_with_multiple_timeStart_values"
+      - "HTTP_PUT_with_multiple_timeEnd_values"
+    - "name": "RQ_PS_095"
+      "variations":
+      - "HTTP_POST_with_correct_policy"
+      - "HTTP_POST_with_equal_timeStart_and_timeEnd_values"
+      - "HTTP_POST_with_timeStart_greater_than_timeEnd"
+      - "HTTP_POST_with_timeStart_empty_and_timeEnd_is_midnight"
+      - "HTTP_PUT_with_equal_timeStart_and_timeEnd_values"
+      - "HTTP_PUT_with_timeStart_greater_than_timeEnd"
+      - "HTTP_PUT_with_timeStart_empty_and_timeEnd_is_midnight"
+    "variations":
+    - "name": "HTTP_POST_with_correct_policy"
+      "description": "Validate HTTP 201 response for policy with correct TimePeriodCondition"
+      "interfaces":
+      - "name": "IF_ESRP_PS"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/PS_015/TC_PS_015_var_1_pass_HTTP_POST_with_correct_policy.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_PS"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_PS"
+            "save_result_as": "var.IF_ESRP_PS"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "POLICY_QUEUE_NAME"
+              "value": "queue1@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "sip:DOWNSTREAM_SIP_URI"
+              "value": "sip:chfe@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.esrp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.esrp_certificate_key"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws1.json"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "201"
+          "http_url": "/Policies"
+          "body": "file./tmp/ps_015/jws1.json"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_PS"
+        "dst_interface": "IF_PS_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "201"
+        "body_contains": ""
+        "header_contains": "/Policies"
+    - "name": "HTTP_POST_with_multiple_timeStart_values"
+      "description": "Validate HTTP 4xx response for policy with multiple timeStart\
+        \ values in TimePeriodCondition"
+      "interfaces":
+      - "name": "IF_ESRP_PS"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/PS_015/TC_PS_015_var_2_pass_HTTP_POST_with_multiple_timeStart_values.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_PS"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_PS"
+            "save_result_as": "var.IF_ESRP_PS"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "POLICY_QUEUE_NAME"
+              "value": "queue1@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "sip:DOWNSTREAM_SIP_URI"
+              "value": "sip:chfe@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeStart\": \"01:00:00\"\
+                ,"
+              "value": "\"policyRules_0_conditions_0_timeStart\": [\"01:00:00\", \"\
+                12:00:10\"],"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.esrp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.esrp_certificate_key"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws2.json"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/ps_015/jws2.json"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_PS"
+        "dst_interface": "IF_PS_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "body_contains": ""
+        "header_contains": "/Policies"
+    - "name": "HTTP_POST_with_multiple_timeEnd_values"
+      "description": "Validate HTTP 4xx response for policy with multiple timeEnd\
+        \ values in TimePeriodCondition"
+      "interfaces":
+      - "name": "IF_ESRP_PS"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/PS_015/TC_PS_015_var_3_pass_HTTP_POST_with_multiple_timeEnd_values.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_PS"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_PS"
+            "save_result_as": "var.IF_ESRP_PS"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "POLICY_QUEUE_NAME"
+              "value": "queue1@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "sip:DOWNSTREAM_SIP_URI"
+              "value": "sip:chfe@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeEnd\": \"23:30:20\","
+              "value": "\"policyRules_0_conditions_0_timeEnd\": [\"23:20:20\", \"\
+                23:25:20\"],"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.esrp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.esrp_certificate_key"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws2.json"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/ps_015/jws2.json"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_PS"
+        "dst_interface": "IF_PS_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "body_contains": ""
+        "header_contains": "/Policies"
+    - "name": "HTTP_POST_with_equal_timeStart_and_timeEnd_values"
+      "description": "Validate HTTP 4xx response for policy with equal timeStart and\
+        \ timeEnd values in TimePeriodCondition"
+      "interfaces":
+      - "name": "IF_ESRP_PS"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/PS_015/TC_PS_015_var_4_pass_HTTP_POST_with_equal_timeStart_and_timeEnd_values.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_PS"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_PS"
+            "save_result_as": "var.IF_ESRP_PS"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "POLICY_QUEUE_NAME"
+              "value": "queue1@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "sip:DOWNSTREAM_SIP_URI"
+              "value": "sip:chfe@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeEnd\": \"23:30:20\","
+              "value": "\"policyRules_0_conditions_0_timeEnd\": \"01:00:00\","
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.esrp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.esrp_certificate_key"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws2.json"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/ps_015/jws2.json"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_PS"
+        "dst_interface": "IF_PS_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "body_contains": ""
+        "header_contains": "/Policies"
+    - "name": "HTTP_POST_with_timeStart_greater_than_timeEnd"
+      "description": "Validate HTTP 4xx response for policy with timeStart value greater\
+        \ than timeEnd in TimePeriodCondition"
+      "interfaces":
+      - "name": "IF_ESRP_PS"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/PS_015/TC_PS_015_var_5_pass_HTTP_POST_with_timeStart_greater_than_timeEnd.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_PS"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_PS"
+            "save_result_as": "var.IF_ESRP_PS"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "POLICY_QUEUE_NAME"
+              "value": "queue1@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "sip:DOWNSTREAM_SIP_URI"
+              "value": "sip:chfe@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeStart\": \"01:00:00\"\
+                ,"
+              "value": "\"policyRules_0_conditions_0_timeStart\": \"23:40:20\","
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.esrp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.esrp_certificate_key"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws2.json"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/ps_015/jws2.json"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_PS"
+        "dst_interface": "IF_PS_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "body_contains": ""
+        "header_contains": "/Policies"
+    - "name": "HTTP_POST_with_timeStart_empty_and_timeEnd_is_midnight"
+      "description": "Validate HTTP 4xx response for policy with timeStart value empty\
+        \ and timeEnd is 00:00:00 in TimePeriodCondition"
+      "interfaces":
+      - "name": "IF_ESRP_PS"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/PS_015/TC_PS_015_var_6_pass_HTTP_POST_with_timeStart_empty_and_timeEnd_is_midnight.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_PS"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_PS"
+            "save_result_as": "var.IF_ESRP_PS"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "POLICY_QUEUE_NAME"
+              "value": "queue1@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "sip:DOWNSTREAM_SIP_URI"
+              "value": "sip:chfe@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeStart\": \"01:00:00\"\
+                ,"
+              "value": "\"policyRules_0_conditions_0_timeStart\": \"\","
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeEnd\": \"23:30:20\","
+              "value": "\"policyRules_0_conditions_0_timeEnd\": \"00:00:00\","
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.esrp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.esrp_certificate_key"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws2.json"
+          "type": "HTTP"
+          "method": "POST"
+          "response_code": "4xx"
+          "http_url": "/Policies"
+          "body": "file./tmp/ps_015/jws2.json"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_PS"
+        "dst_interface": "IF_PS_ESRP"
+        "sip_method": ""
+        "http_request_method": "POST"
+        "response_status_code": "4xx"
+        "body_contains": ""
+        "header_contains": "/Policies"
+    - "name": "HTTP_PUT_with_multiple_timeStart_values"
+      "description": "Validate HTTP 4xx response for policy with multiple timeStart\
+        \ values in TimePeriodCondition"
+      "interfaces":
+      - "name": "IF_ESRP_PS"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/PS_015/TC_PS_015_var_7_pass_HTTP_PUT_with_multiple_timeStart_values.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_PS"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_PS"
+            "save_result_as": "var.IF_ESRP_PS"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "POLICY_QUEUE_NAME"
+              "value": "queue1@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "sip:DOWNSTREAM_SIP_URI"
+              "value": "sip:chfe@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.esrp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.esrp_certificate_key"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws1.json"
+          - "method_name": "send_http_request"
+            "kwargs":
+              "url": "/Policies"
+              "method": "POST"
+              "content_type": "application/json"
+              "body": "file./tmp/ps_015/jws1.json"
+            "save_result_as": "var.post_response"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeStart\": \"01:00:00\"\
+                ,"
+              "value": "\"policyRules_0_conditions_0_timeStart\": [\"01:00:00\", \"\
+                12:00:10\"],"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws2.json"
+          "type": "HTTP"
+          "method": "PUT"
+          "response_code": "4xx"
+          "http_url": "/Policies?policyOwner=user@test.example&policyType=OriginationRoutePolicy&policyQueueName=queue1@ng911.test"
+          "body": "file./tmp/ps_015/jws2.json"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_PS"
+        "dst_interface": "IF_PS_ESRP"
+        "sip_method": ""
+        "http_request_method": "PUT"
+        "response_status_code": "4xx"
+        "body_contains": ""
+        "header_contains": "/Policies"
+    - "name": "HTTP_PUT_with_multiple_timeEnd_values"
+      "description": "Validate HTTP 4xx response for policy with multiple timeEnd\
+        \ values in TimePeriodCondition"
+      "interfaces":
+      - "name": "IF_ESRP_PS"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/PS_015/TC_PS_015_var_8_pass_HTTP_PUT_with_multiple_timeEnd_values.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_PS"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_PS"
+            "save_result_as": "var.IF_ESRP_PS"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "POLICY_QUEUE_NAME"
+              "value": "queue1@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "sip:DOWNSTREAM_SIP_URI"
+              "value": "sip:chfe@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.esrp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.esrp_certificate_key"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws1.json"
+          - "method_name": "send_http_request"
+            "kwargs":
+              "url": "/Policies"
+              "method": "POST"
+              "content_type": "application/json"
+              "body": "file./tmp/ps_015/jws1.json"
+            "save_result_as": "var.post_response"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeEnd\": \"23:30:20\","
+              "value": "\"policyRules_0_conditions_0_timeEnd\": [\"23:20:20\", \"\
+                23:25:20\"],"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws2.json"
+          "type": "HTTP"
+          "method": "PUT"
+          "response_code": "4xx"
+          "http_url": "/Policies?policyOwner=user@test.example&policyType=OriginationRoutePolicy&policyQueueName=queue1@ng911.test"
+          "body": "file./tmp/ps_015/jws2.json"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_PS"
+        "dst_interface": "IF_PS_ESRP"
+        "sip_method": ""
+        "http_request_method": "PUT"
+        "response_status_code": "4xx"
+        "body_contains": ""
+        "header_contains": "/Policies"
+    - "name": "HTTP_PUT_with_equal_timeStart_and_timeEnd_values"
+      "description": "Validate HTTP 4xx response for policy with equal timeStart and\
+        \ timeEnd values in TimePeriodCondition"
+      "interfaces":
+      - "name": "IF_ESRP_PS"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/PS_015/TC_PS_015_var_9_pass_HTTP_PUT_with_equal_timeStart_and_timeEnd_values.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_PS"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_PS"
+            "save_result_as": "var.IF_ESRP_PS"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "POLICY_QUEUE_NAME"
+              "value": "queue1@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "sip:DOWNSTREAM_SIP_URI"
+              "value": "sip:chfe@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.esrp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.esrp_certificate_key"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws1.json"
+          - "method_name": "send_http_request"
+            "kwargs":
+              "url": "/Policies"
+              "method": "POST"
+              "content_type": "application/json"
+              "body": "file./tmp/ps_015/jws1.json"
+            "save_result_as": "var.post_response"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeEnd\": \"23:30:20\","
+              "value": "\"policyRules_0_conditions_0_timeEnd\": \"01:00:00\","
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws2.json"
+          "type": "HTTP"
+          "method": "PUT"
+          "response_code": "4xx"
+          "http_url": "/Policies?policyOwner=user@test.example&policyType=OriginationRoutePolicy&policyQueueName=queue1@ng911.test"
+          "body": "file./tmp/ps_015/jws2.json"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_PS"
+        "dst_interface": "IF_PS_ESRP"
+        "sip_method": ""
+        "http_request_method": "PUT"
+        "response_status_code": "4xx"
+        "body_contains": ""
+        "header_contains": "/Policies"
+    - "name": "HTTP_PUT_with_timeStart_greater_than_timeEnd"
+      "description": "Validate HTTP 4xx response for policy with timeStart value greater\
+        \ than timeEnd in TimePeriodCondition"
+      "interfaces":
+      - "name": "IF_ESRP_PS"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/PS_015/TC_PS_015_var_10_pass_HTTP_PUT_with_timeStart_greater_than_timeEnd.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_PS"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_PS"
+            "save_result_as": "var.IF_ESRP_PS"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "POLICY_QUEUE_NAME"
+              "value": "queue1@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "sip:DOWNSTREAM_SIP_URI"
+              "value": "sip:chfe@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.esrp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.esrp_certificate_key"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws1.json"
+          - "method_name": "send_http_request"
+            "kwargs":
+              "url": "/Policies"
+              "method": "POST"
+              "content_type": "application/json"
+              "body": "file./tmp/ps_015/jws1.json"
+            "save_result_as": "var.post_response"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeStart\": \"01:00:00\"\
+                ,"
+              "value": "\"policyRules_0_conditions_0_timeStart\": \"23:40:20\","
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws2.json"
+          "type": "HTTP"
+          "method": "PUT"
+          "response_code": "4xx"
+          "http_url": "/Policies?policyOwner=user@test.example&policyType=OriginationRoutePolicy&policyQueueName=queue1@ng911.test"
+          "body": "file./tmp/ps_015/jws2.json"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_PS"
+        "dst_interface": "IF_PS_ESRP"
+        "sip_method": ""
+        "http_request_method": "PUT"
+        "response_status_code": "4xx"
+        "body_contains": ""
+        "header_contains": "/Policies"
+    - "name": "HTTP_PUT_with_timeStart_empty_and_timeEnd_is_midnight"
+      "description": "Validate HTTP 4xx response for policy with timeStart value empty\
+        \ and timeEnd is 00:00:00 in TimePeriodCondition"
+      "interfaces":
+      - "name": "IF_ESRP_PS"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/PS_015/TC_PS_015_var_11_pass_HTTP_PUT_with_timeStart_empty_and_timeEnd_is_midnight.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "send"
+          "if_name": "IF_ESRP_PS"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "get_interface_address"
+            "kwargs":
+              "interface_name": "IF_ESRP_PS"
+            "save_result_as": "var.IF_ESRP_PS"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "POLICY_QUEUE_NAME"
+              "value": "queue1@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "sip:DOWNSTREAM_SIP_URI"
+              "value": "sip:chfe@ng911.test"
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_file"
+            "save_result_as": "var.esrp_certificate_file"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "certificate_key"
+            "save_result_as": "var.esrp_certificate_key"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws1.json"
+          - "method_name": "send_http_request"
+            "kwargs":
+              "url": "/Policies"
+              "method": "POST"
+              "content_type": "application/json"
+              "body": "file./tmp/ps_015/jws1.json"
+            "save_result_as": "var.post_response"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeStart\": \"01:00:00\"\
+                ,"
+              "value": "\"policyRules_0_conditions_0_timeStart\": \"\","
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "param_name": "\"policyRules_0_conditions_0_timeEnd\": \"23:30:20\","
+              "value": "\"policyRules_0_conditions_0_timeEnd\": \"00:00:00\","
+              "output_file": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+          - "method_name": "generate_jws"
+            "kwargs":
+              "payload_source": "file./tmp/ps_015/Policy_object_OriginationRoutePolicy_TimePeriodCondition.json"
+              "cert_path": "var.esrp_certificate_file"
+              "key_path": "var.esrp_certificate_key"
+              "output_file": "file./tmp/ps_015/jws2.json"
+          "type": "HTTP"
+          "method": "PUT"
+          "response_code": "4xx"
+          "http_url": "/Policies?policyOwner=user@test.example&policyType=OriginationRoutePolicy&policyQueueName=queue1@ng911.test"
+          "body": "file./tmp/ps_015/jws2.json"
+          "sipp_scenario": {}
+          "run_in_background": "False"
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_ESRP_PS"
+        "dst_interface": "IF_PS_ESRP"
+        "sip_method": ""
+        "http_request_method": "PUT"
+        "response_status_code": "4xx"
+        "body_contains": ""
+        "header_contains": "/Policies"
+    "preamble_list": []
+    "postamble_list": []

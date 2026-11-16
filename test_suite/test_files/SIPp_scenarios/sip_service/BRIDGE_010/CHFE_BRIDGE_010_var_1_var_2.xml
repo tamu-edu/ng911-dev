@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+
+  Version:   010.3d.5.0.0
+  Date:      20261022
+
+-->
+
+<scenario name="CHFE_BRIDGE_010_Var1_and_Var2">
+    <Global variables="CHFE_tel, IF_BRIDGE_CHFE, IF_CHFE2_BRIDGE"/>
+
+    <!-- Precondition: Initial INVITE to Conference Factory -->
+    <send>
+        <![CDATA[
+
+          INVITE urn:service:sos SIP/2.0
+          Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+          From: <sip:[$CHFE_tel]@[local_ip]:[local_port]>;tag=chfebridge
+          To: urn:service:sos
+          Call-ID: chfeconference@[local_ip]:[local_port]
+          Cseq: 1 INVITE
+          Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+          Call-Info: <urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com>;purpose=emergency-CallId
+          Call-Info: <urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com>;purpose=emergency-IncidentId
+          Max-Forwards: 70
+          Content-Type: application/sdp
+          Content-Length: [len]
+
+          v=0
+          o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+          s=-
+          t=0 0
+          c=IN IP[media_ip_type] [media_ip]
+          m=audio 6000 RTP/AVP 0
+          a=rtpmap:0 PCMU/8000
+
+        ]]>
+    </send>
+
+    <!-- 302 Moved Temporarily -->
+    <recv response="302">
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="Contact"
+            without_params="True"
+            ctx_key="conference_sip_uri"
+        />
+        <operate
+            method_name="save_header_field_param_value"
+            header_field_name="To"
+            param_name="tag"
+            ctx_key="CHFE_BRIDGE_302_To_tag"
+        />
+        <operate
+            method_name="save_header_field_param_value"
+            header_field_name="Via"
+            param_name="branch"
+            ctx_key="invite_branch"
+        />
+    </recv>
+
+    <!-- ACK for 302 -->
+    <send>
+        <![CDATA[
+
+          ACK urn:service:sos SIP/2.0
+          Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[$invite_branch]
+          From: <sip:[$CHFE_tel]@[local_ip]:[local_port]>;tag=chfebridge
+          To: urn:service:sos;tag=[$CHFE_BRIDGE_302_To_tag]
+          Call-ID: chfeconference@[local_ip]:[local_port]
+          Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+          Cseq: 1 ACK
+          Max-Forwards: 70
+          Content-Length: 0
+
+        ]]>
+    </send>
+
+    <!-- Join the created Conference -->
+    <send>
+        <![CDATA[
+
+          INVITE [$conference_sip_uri] SIP/2.0
+          Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+          From: <sip:[$CHFE_tel]@[local_ip]:[local_port]>;tag=chfebridge
+          To: <[$conference_sip_uri]>
+          Call-ID: chfeconference2@[local_ip]:[local_port]
+          Cseq: 1 INVITE
+          Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+          Call-Info: <urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com>;purpose=emergency-CallId
+          Call-Info: <urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com>;purpose=emergency-IncidentId
+          Max-Forwards: 70
+          Content-Type: application/sdp
+          Content-Length: [len]
+
+          v=0
+          o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+          s=-
+          t=0 0
+          c=IN IP[media_ip_type] [media_ip]
+          m=audio 5004 RTP/AVP 0
+          a=rtpmap:0 PCMU/8000
+
+        ]]>
+    </send>
+
+    <recv response="100" optional="true"> </recv>
+    <recv response="180" optional="true"> </recv>
+
+    <!-- 200 OK for Conference Join -->
+    <recv response="200">
+        <operate
+            method_name="save_header_field_param_value"
+            header_field_name="To"
+            param_name="tag"
+            ctx_key="CHFE_BRIDGE_To_tag"
+        />
+    </recv>
+
+    <!-- ACK for 200 OK -->
+    <send>
+        <![CDATA[
+
+          ACK [$conference_sip_uri] SIP/2.0
+          Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+          From: <sip:[$CHFE_tel]@[local_ip]:[local_port]>;tag=chfebridge
+          To: <[$conference_sip_uri]>;tag=[$CHFE_BRIDGE_To_tag]
+          Call-ID: chfeconference2@[local_ip]:[local_port]
+          Cseq: 1 ACK
+          Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+          Max-Forwards: 70
+          Content-Length: 0
+
+        ]]>
+    </send>
+
+    <media
+            type="rtp"
+            src_ip="[$IF_BRIDGE_CHFE]"
+            dst_ip="[local_ip]"
+            dst_port="5004"
+    />
+    <pause milliseconds="1000"/>
+
+
+    <!-- VARIATION 1: Successful Call Establishment (2XX) -->
+
+    <send>
+        <![CDATA[
+
+          REFER [$conference_sip_uri] SIP/2.0
+          Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+          From: <sip:[$CHFE_tel]@[local_ip]:[local_port]>;tag=chfebridge
+          To: <[$conference_sip_uri]>;tag=[$CHFE_BRIDGE_To_tag]
+          Call-ID: chfeconference2@[local_ip]:[local_port]
+          Cseq: 2 REFER
+          Refer-To: <sip:CHFE-2@[$IF_CHFE2_BRIDGE]:[local_port]>;serviceurn="urn:service:sos"
+          Referred-By: <sip:[$CHFE_tel]@[local_ip]:[local_port]>
+          Call-Info: <urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com>;purpose=emergency-CallId
+          Call-Info: <urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com>;purpose=emergency-IncidentId
+          Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+          Max-Forwards: 70
+          Content-Length: 0
+
+        ]]>
+    </send>
+
+    <!-- 202 Accepted -->
+    <recv response="202"> </recv>
+
+    <!-- FIRST NOTIFY for Var 1 (100 Trying, Subscription-State: active) -->
+    <recv request="NOTIFY">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+
+    <!-- 200 OK for FIRST NOTIFY (Var 1) -->
+    <send>
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [$last_Via]
+        [$last_From]
+        [$last_To]
+        [$last_Call_ID]
+        [$last_CSeq]
+        Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+        Content-Length: 0
+
+      ]]>
+    </send>
+
+    <!-- SECOND NOTIFY for Var 1 (200 OK, Subscription-State: terminated) -->
+    <recv request="NOTIFY">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via2"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From2"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To2"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call_ID2"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq2"
+        />
+    </recv>
+
+    <!-- 200 OK for SECOND NOTIFY (Var 1) -->
+    <send>
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [$last_Via2]
+        [$last_From2]
+        [$last_To2]
+        [$last_Call_ID2]
+        [$last_CSeq2]
+        Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+        Content-Length: 0
+
+      ]]>
+    </send>
+
+    <!-- 6000ms pause to ensure CHFE-2 has fully terminated its leg before Variation 2 -->
+    <pause milliseconds="6000"/>
+
+    <!-- VARIATION 2: Non-2XX Response (486 Busy Here) -->
+    <!-- CHFE requests BRIDGE to add CHFE-2 again (Cseq is incremented to 3) -->
+
+    <send>
+        <![CDATA[
+
+          REFER [$conference_sip_uri] SIP/2.0
+          Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+          From: <sip:[$CHFE_tel]@[local_ip]:[local_port]>;tag=chfebridge
+          To: <[$conference_sip_uri]>;tag=[$CHFE_BRIDGE_To_tag]
+          Call-ID: chfeconference2@[local_ip]:[local_port]
+          Cseq: 3 REFER
+          Refer-To: <sip:CHFE-2@[$IF_CHFE2_BRIDGE]:[local_port]>;serviceurn="urn:service:sos"
+          Referred-By: <sip:[$CHFE_tel]@[local_ip]:[local_port]>
+          Call-Info: <urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com>;purpose=emergency-CallId
+          Call-Info: <urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com>;purpose=emergency-IncidentId
+          Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+          Max-Forwards: 70
+          Content-Length: 0
+
+        ]]>
+    </send>
+
+    <recv response="202"> </recv>
+
+    <!-- FIRST NOTIFY for Var 2 (100 Trying, Subscription-State: active) -->
+    <recv request="NOTIFY">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via3"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From3"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To3"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call_ID3"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq3"
+        />
+    </recv>
+
+    <!-- 200 OK for FIRST NOTIFY (Var 2) -->
+    <send>
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [$last_Via3]
+        [$last_From3]
+        [$last_To3]
+        [$last_Call_ID3]
+        [$last_CSeq3]
+        Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+        Content-Length: 0
+
+      ]]>
+    </send>
+
+    <!-- SECOND NOTIFY for Var 2 (486 Busy Here, Subscription-State: terminated) -->
+    <recv request="NOTIFY">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via4"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From4"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To4"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call_ID4"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq4"
+        />
+    </recv>
+
+    <!-- 200 OK for SECOND NOTIFY (Var 2) -->
+    <send>
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [$last_Via4]
+        [$last_From4]
+        [$last_To4]
+        [$last_Call_ID4]
+        [$last_CSeq4]
+        Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+        Content-Length: 0
+
+      ]]>
+    </send>
+
+    <pause milliseconds="2000"/>
+
+
+    <!-- Cleanup / Teardown of the main session  -->
+    <!-- CSeq incremented to 4 for the final BYE  -->
+    <send>
+        <![CDATA[
+
+          BYE [$conference_sip_uri] SIP/2.0
+          Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+          From: <sip:[$CHFE_tel]@[local_ip]:[local_port]>;tag=chfebridge
+          To: <[$conference_sip_uri]>;tag=[$CHFE_BRIDGE_To_tag]
+          Call-ID: chfeconference2@[local_ip]:[local_port]
+          CSeq: 4 BYE
+          Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+          Max-Forwards: 70
+          Content-Length: 0
+
+        ]]>
+    </send>
+
+    <recv response="200"> </recv>
+
+    <stop_media
+            type="rtp"
+            src_ip="[$IF_BRIDGE_CHFE]"
+            dst_ip="[local_ip]"
+            dst_port="5004"
+    />
+</scenario>

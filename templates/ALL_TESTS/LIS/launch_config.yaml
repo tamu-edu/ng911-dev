@@ -1,0 +1,48 @@
+launch_config:
+  output_folder: "/tmp/lab_tests/"        # Base folder where run artifacts will be saved
+  global_config:
+    lab_info: "templates/ALL_TESTS/lab_info.yaml"
+    type: "conformance"
+    log:
+      level: "DEBUG"
+      output_file: "LIS_DEBUG.log"
+    report_files:
+      prefix: "LIS"
+      suffix: "LIS_ALL_TESTS" # optional
+      output_folder_path: "" # empty if you want to have reports in TS root dir or absolute path to the FOLDER
+      detailed_view: true
+      types:
+        - "docx"
+        - "pdf"
+    id_summary:
+      eng_name: "ENTER NAME"
+      supplier:
+        name: "ENTER SUPPLIER NAME"
+        addr_line_1: "ENTER ADDRESS"
+        addr_line_2: ""
+        city: "ENTER CITY"
+        state: "ENTER STATE"
+        country: "ENTER COUNTRY"
+        zip: "ENTER ZIP CODE"
+        url: "ENTER URL"
+      test_env:
+        ixit_id: "11111"
+        test_method: "test_method"
+        test_period_start: "ENTER CURRENT DATE" # ?
+        test_period_end: "ENTER CURRENT DATE" # ?
+        log_ref: "00001" # ?
+        log_ret_date: "ENTER CURRENT DATE" # ?
+    comments:
+      - author: "ENTER AUTHOR NAME"
+        comment: "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  tests:
+   - iut:
+       type: "LIS"
+       name: "IF_LIS_OSP"
+       version: "0.0.0.1"
+       date_of_receipt: "ENTER CURRENT DATE"
+       location: "ENTER LOCATION"
+       cs_id: "CS00001"
+     lab_config: "templates/ALL_TESTS/LIS/lab_config_lis.yaml"  # Path to lab_config for this test
+     requirements: ["RQ_LIS_001", "RQ_LIS_002", "RQ_LIS_007", "RQ_LIS_010", "RQ_LIS_006", "RQ_LIS_003", "RQ_LIS_009",
+                     "RQ_LIS_005", "RQ_LIS_008"]

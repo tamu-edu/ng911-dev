@@ -1,0 +1,28 @@
+GET /LoST HTTP/1.1
+Host: IF_ECRF_TS_IP_ADDRESS
+Content-Type: application/xml
+Content-Length: 792
+
+<?xml version="1.0" encoding="UTF-8"?>
+<findService
+ xmlns="urn:ietf:params:xml:ns:lost1"
+ xmlns:p2="http://www.opengis.net/gml"
+ serviceBoundary="value"
+ recursive="true">
+
+ <location id="123456789" profile="geodetic-2d">
+   <p2:Polygon id="polygon1" srsName="urn:ogc:def:crs:EPSG::4326">
+      <p2:exterior>
+        <p2:LinearRing>
+          <p2:pos>39.09699851577045, -76.85594886146728</p2:pos>
+          <p2:pos>39.0967843019301, -76.85555454704749</p2:pos>
+          <p2:pos>39.09597784398248, -76.85645683121739</p2:pos>
+          <p2:pos>39.09647108051559, -76.8566168764819</p2:pos>
+          <p2:pos>39.096998515772434, -76.8561065872357</p2:pos>
+        </p2:LinearRing>
+      </p2:exterior>
+   </p2:Polygone>
+ </location>
+ <service>urn:service:sos.police</service>
+
+</findService>

@@ -1,0 +1,114 @@
+lab_config:
+  pca_certificate_file: ''
+  pca_certificate_key: ''
+  test_suite_host_ip: 192.168.50.10
+  entities:
+  - name: ESRP
+    mode: STUB_SERVER
+    function: ESRP
+    role:
+    - OTHER
+    fqdn: ''
+    certificate_file: ''
+    certificate_key: ''
+    api:
+      conference_id: test_conference_id
+    interfaces:
+    - name: IF_ESRP_BRIDGE
+      fqdn: ''
+      ip: 192.168.50.10
+      mask: 255.255.255.0
+      gateway: ''
+      dns: []
+      port_mapping:
+      - name: IF_ESRP_BRIDGE_SIP_5060_TCP
+        protocol: SIP
+        port: 5060
+        transport_protocol: TCP
+  - name: BRIDGE
+    mode: REAL_DEVICE
+    function: BRIDGE
+    role:
+    - IUT
+    fqdn: ''
+    certificate_file: ''
+    certificate_key: ''
+    api:
+      conference_sip_uri_username: ''
+      queue_sip_uri: ''
+    interfaces:
+    - name: IF_BRIDGE_ESRP
+      fqdn: ''
+      ip: 192.168.50.20
+      mask: 255.255.255.0
+      gateway: ''
+      dns: []
+      port_mapping:
+      - name: IF_BRIDGE_ESRP_SIP_5060_TCP
+        protocol: SIP
+        port: 5060
+        transport_protocol: TCP
+    - name: IF_BRIDGE_CHFE
+      fqdn: ''
+      ip: 192.168.50.20
+      mask: 255.255.255.0
+      gateway: ''
+      dns: []
+      port_mapping:
+      - name: IF_BRIDGE_CHFE_SIP_5060_TCP
+        protocol: SIP
+        port: 5060
+        transport_protocol: TCP
+    - name: IF_BRIDGE_PS
+      fqdn: ''
+      ip: 192.168.49.111
+      mask: 255.255.255.0
+      gateway: ''
+      dns: []
+      port_mapping:
+      - name: IF_BRIDGE_PS_HTTP_8080_TCP
+        protocol: HTTP
+        port: 8080
+        transport_protocol: TCP
+  - name: CHFE
+    mode: STUB_SERVER
+    function: CHFE
+    role:
+    - RECEIVER
+    fqdn: ''
+    certificate_file: ''
+    certificate_key: ''
+    api:
+      tel_number: ''
+    interfaces:
+    - name: IF_CHFE_BRIDGE
+      fqdn: ''
+      ip: 192.168.50.30
+      mask: 255.255.255.0
+      gateway: ''
+      dns: []
+      port_mapping:
+      - name: IF_CHFE_BRIDGE_SIP_5060_TCP
+        protocol: SIP
+        port: 5060
+        transport_protocol: TCP
+  - name: PS
+    mode: STUB_SERVER
+    function: PS
+    role:
+    - RECEIVER
+    fqdn: ''
+    certificate_file: ''
+    certificate_key: ''
+    interfaces:
+    - name: IF_PS_BRIDGE
+      fqdn: ''
+      ip: 10.140.140.147
+      mask: 255.255.255.128
+      gateway: ''
+      dns: []
+      port_mapping:
+      - name: IF_PS_BRIDGE_HTTP_8080_TCP
+        protocol: HTTP
+        port: 8080
+        transport_protocol: TCP

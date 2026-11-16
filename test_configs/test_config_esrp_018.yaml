@@ -1,0 +1,204 @@
+test_config:
+  conformance:
+    tests:
+      - name: "ESRP_018"
+        variations:
+          # Variation 1
+          - name: "Logging of ServiceStateChangeLogEvent on ESRP Security Posture changes"
+            description: "Verify that ESRP logs a valid ServiceStateChangeLogEvent when Security Posture state changes."
+            interfaces:
+              - name: "IF_LOG_ESRP"
+                port_names: []
+              - name: "IF_BCF_ESRP"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_LOG_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "lab_config['lab_config']['entities']",
+                                where_field: "name",
+                                where_value: "LOG",
+                                extract_field: 'interfaces' }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "var.log_interfaces",
+                                where_field: "name",
+                                where_value: "IF_LOG_ESRP",
+                                extract_field: 'fqdn' }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "logid",
+                                fqdn: "var.log_fqdn",
+                                set_default: "True" }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/ESRP_018/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/ESRP_018/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/ESRP_018/logeventid.json"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "201", "200" ]
+                  http_url: [ "/LogEvents", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/ESRP_018/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_BCF_ESRP"
+                  if_port_name: ""  # Optional
+                  id: "send_subscribe_servicestate"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_ServiceState.xml",
+                                   kwargs: { },
+                                   save_response_as: "ESRP_018_var1_ServiceState_response.log",
+                                   save_log_as: "ESRP_018_var1_ServiceState.log" }
+                  run_in_background: "True"
+                  next_action: "timeout"
+                - action: "manual"
+                  id: "timeout"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 20  # timeout in seconds
+                  prompt: "Waiting 20 seconds for IUT..."
+                  next_action: ""
+                - action: "manual"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "MANUAL ACTION REQUIRED - please simulate change of Security Posture to 'Orange' and press any key to continue..."
+                  next_action: "send_subscribe_servicestate"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "SUBSCRIBE" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: "Event: emergency-ServiceState"
+                body_contains: ""
+              - message_type: "output" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "201" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+          # Variation 2
+          - name: "Logging of ServiceStateChangeLogEvent on ESRP Service State changes"
+            description: "Verify that ESRP logs a valid ServiceStateChangeLogEvent when Service State changes."
+            interfaces:
+              - name: "IF_LOG_ESRP"
+                port_names: []
+              - name: "IF_BCF_ESRP"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_LOG_ESRP"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "lab_config['lab_config']['entities']",
+                                where_field: "name",
+                                where_value: "LOG",
+                                extract_field: 'interfaces' }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: { config_part: "var.log_interfaces",
+                                where_field: "name",
+                                where_value: "IF_LOG_ESRP",
+                                extract_field: 'fqdn' }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: { identifier_type: "logid",
+                                fqdn: "var.log_fqdn",
+                                set_default: "True" }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/ESRP_018/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/ESRP_018/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/ESRP_018/logeventid.json"
+                  type: "HTTP"
+                  method: [ "POST", "GET" ]
+                  response_code: [ "201", "200" ]
+                  http_url: [ "/LogEvents", "/Versions" ] # part after f.e. http://IP:PORT
+                  body: [ "file./tmp/ESRP_018/logeventid.json", "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json" ]
+                  sipp_scenario: { }
+                  run_in_background: "True"
+                - action: "send"
+                  if_name: "IF_BCF_ESRP"
+                  if_port_name: ""  # Optional
+                  id: "send_subscribe_servicestate"
+                  prep_steps: []
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: { scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_ServiceState.xml",
+                                   kwargs: { },
+                                   save_response_as: "ESRP_018_var2_ServiceState_response.log",
+                                   save_log_as: "ESRP_018_var2_ServiceState.log" }
+                  run_in_background: "True"
+                  next_action: "timeout"
+                - action: "manual"
+                  id: "timeout"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 20  # timeout in seconds
+                  prompt: "Waiting 20 seconds for IUT..."
+                  next_action: ""
+                - action: "manual"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "MANUAL ACTION REQUIRED - please simulate change of Service State to 'Down' and press any key to continue..."
+                  next_action: "send_subscribe_servicestate"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "SUBSCRIBE" #  leave empty if not needed
+                http_request_method: "" #  leave empty if not needed
+                response_status_code: "" #  leave empty if not needed
+                header_contains: "Event: emergency-ServiceState"
+                body_contains: ""
+              - message_type: "output" # stimulus/output/other
+                src_interface: "IF_ESRP_LOG"
+                dst_interface: "IF_LOG_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "POST" #  leave empty if not needed
+                response_status_code: "201" #  leave empty if not needed
+                header_contains: ""
+                body_contains: ""
+        requirements:
+          - name: "RQ_ESRP_121"
+            variations: ["all"]
+          - name: "RQ_ESRP_122"
+            variations: ["all"]

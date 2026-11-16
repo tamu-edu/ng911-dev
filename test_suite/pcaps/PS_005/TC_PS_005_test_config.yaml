@@ -1,0 +1,239 @@
+test_config:
+  test_case_name: "TC_PS_005"
+  global:
+    response_timeout: 30
+  report_files:
+    - type: "xml"
+      path: "TC_PS_005_CTR.xml"
+  log:
+    level: "DEBUG"
+    output_file: "test_files/logs/logger.log"
+  scenarios:
+    - name: "TC_PS_005_pass"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/PS_005/TC_PS_005_pass.pcap"
+      tests:
+        - name: "PS_005 variation 1"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyType=OriginationRoutePolicy&policyQueueName=test@example.com"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 2"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=ng911.example&policyQueueName=test@example.com"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 3"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=ng911.example&policyType=OtherRoutePolicy"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 4"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=ng911.example&policyType=OriginationRoutePolicy"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 5"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=test"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 6"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyType=test"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 7"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyType=OriginationRoutePolicy&policyQueueName=test"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 8"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyType=OtherRoutePolicy&policyId=123"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 9"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=user@bcf.ng911.test"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation9_JWS_payload"
+        - name: "PS_005 variation 10"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=user@bcf.ng911.test"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation10_JWS_payload"
+    - name: "TC_PS_005_fail"
+      mode: "pcap"  # pcap/capture
+      pcap_file: "pcaps/PS_005/TC_PS_005_fail.pcap"
+      tests:
+        - name: "PS_005 variation 1"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyType=OriginationRoutePolicy&policyQueueName=test@example.com"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 2"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=ng911.example&policyQueueName=test@example.com"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 3"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=ng911.example&policyType=OtherRoutePolicy"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 4"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=ng911.example&policyType=OriginationRoutePolicy"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 5"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=test"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 6"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyType=test"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 7"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyType=OriginationRoutePolicy&policyQueueName=test"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 8"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyType=OtherRoutePolicy&policyId=123"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation1-8_JWS_payload"
+        - name: "PS_005 variation 9"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=user@bcf.ng911.test"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation9_JWS_payload"
+        - name: "PS_005 variation 10"
+          test_id: "PS_005"
+          ixit_file_path: ""
+          stimulus_message:
+            src_interface: "IF_TS_PS"
+            dst_interface: "IF_PS_TS"
+            sip_method: "" #  leave empty if not needed
+            http_request_method: "PUT" #  leave empty if not needed
+            response_status_code: "4xx" #  leave empty if not needed
+            header_contains: "?policyOwner=user@bcf.ng911.test"
+            body_contains: "pcaps/PS_005/TC_PS_005_JWS/TC_PS_005_variation10_JWS_payload"

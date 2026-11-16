@@ -1,0 +1,82 @@
+NOT_RUN = "NOT RUN -> No stimulus message found."
+NO_PS_RESPONSE = "FAILED -> No Policy Store response found."
+POLICY_ENUMS = "PolicyEnums"
+
+VARIATIONS = {
+    "Valid_request_with_all_filtering_parameters": 1,
+    "No_query_parameters_at_all": 2,
+    "Incorrect_limit_parameter_send_string": 3,
+    "Incorrect_limit_parameter_send_empty": 4,
+    "Incorrect_limit_parameter_send_space": 5,
+    "Incorrect_limit_parameter_send_value_exceeding_64bit_unsigned_int": 6,
+    "Incorrect_limit_parameter_send_negative_value_exceeding_64bit_int": 7,
+    "Incorrect_start_parameter_send_string": 8,
+    "Incorrect_start_parameter_send_empty": 9,
+    "Incorrect_start_parameter_send_space": 10,
+    "Incorrect_start_parameter_send_value_exceeding_64bit_unsigned_int": 11,
+    "Incorrect_start_parameter_send_value_less_than_1": 12,
+    "Incorrect_policyOwner_parameter_special_characters_not_allowed_in_FQDN": 13,
+    "Incorrect_policyOwner_parameter_leading_period": 14,
+    "Incorrect_policyOwner_parameter_FQDN_length_exceeded": 15,
+    "Incorrect_policyType_parameter": 16,
+    "Incorrect_policyQueueName_parameter_send_without_username": 17,
+    "Incorrect_policyQueueName_parameter_send_without_domain": 18,
+    "Incorrect_policyQueueName_parameter_send_with_not_allowed_characters": 19,
+    "Incorrect_policyQueueName_parameter_send_invalid_port": 20,
+    "Incorrect_policyQueueName_parameter_send_invalid_scheme": 21,
+    "Incorrect_policyId_parameter_send_empty": 22,
+    "Incorrect_policyId_parameter_send_space": 23,
+    "Incorrect_policiesUpdatedSince_parameter_incorrect_year": 24,
+    "Incorrect_policiesUpdatedSince_parameter_incorrect_month": 25,
+    "Incorrect_policiesUpdatedSince_parameter_incorrect_day": 26,
+    "Incorrect_policiesUpdatedSince_parameter_incorrect_hour": 27,
+    "Incorrect_policiesUpdatedSince_parameter_incorrect_minute": 28,
+    "Incorrect_policiesUpdatedSince_parameter_incorrect_second": 29,
+    "Incorrect_policiesUpdatedSince_parameter_incorrect_time_offset": 30,
+    "Incorrect_policiesUpdatedSince_parameter_incorrect_day_in_February": 31,
+}
+
+# Mandatory members of a PolicyEnum object
+POLICY_ENUM_REQUIRED_MEMBERS = (
+    "policyType",
+    "policyOwner",
+    "policyExpirationTime",
+    "policyLastModificationTime",
+)
+
+POLICY_TYPES = frozenset(
+    {
+        "OriginationRoutePolicy",
+        "NormalNextHopRoutePolicy",
+        "OtherRoutePolicy",
+        "DequeueExpirationTime",
+        "GISReplicas",
+        "ECRF-LVFreplica",
+        "TestCalls",
+        "SIPcall",
+        "LoST",
+        "ElementState",
+        "ServiceState",
+        "HELDdereference",
+        "AgentPresencePublish",
+        "AgentPresencePut",
+        "AgentPresenceSubscribe",
+        "PolicyStore",
+        "DiscrepancyReport",
+        "QueueState",
+        "DequeueRegistration",
+        "ESRPNotify",
+        "AbandonedCall",
+        "SpatialInterface",
+        "GapOverlap",
+        "MCS",
+        "GCS",
+        "ConferenceEvent",
+        "LoggingService",
+        "LoggingSIPREC",
+        "ServiceAgencyLocatorDereference",
+        "ServiceAgencyLocatorNameSearch",
+        "ServiceAgencyLocatorIndex",
+        "MappingDataService",
+    }
+)

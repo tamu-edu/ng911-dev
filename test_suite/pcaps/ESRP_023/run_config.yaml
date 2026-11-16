@@ -1,0 +1,190 @@
+"run_config":
+  "output_folder": "results"
+  "global":
+    "type": "conformance"
+    "report_files":
+      "output_folder_path": ""
+      "prefix": "ESRP"
+      "suffix": "ESRP_ALL_TESTS"
+      "detailed_view": true
+      "types":
+      - "docx"
+      - "pdf"
+    "id_summary":
+      "lab":
+        "name": "ENTER NAME"
+        "accred_status": "Valid"
+        "accred_ref": "12345"
+        "accred_auth": "ENTER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": "ENTER ADDRESS"
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+        "eng_name": "ENTER NAME"
+      "supplier":
+        "name": "ENTER SUPPLIER NAME"
+        "addr_line_1": "ENTER ADDRESS"
+        "addr_line_2": ""
+        "city": "ENTER CITY"
+        "state": "ENTER STATE"
+        "country": "ENTER COUNTRY"
+        "zip": "ENTER ZIP CODE"
+        "url": "ENTER URL"
+      "iut":
+        "type": "ESRP"
+        "name": "IF_ESRP_BCF"
+        "version": "0.0.0.1"
+        "date_of_receipt": "ENTER CURRENT DATE"
+        "location": "ENTER LOCATION"
+        "cs_id": "CS00001"
+        "cs_static_conform": false
+      "test_env":
+        "ixit_id": "11111"
+        "test_method": "test_method"
+        "spec_name": "STA-010"
+        "spec_version": "3.0"
+        "test_period_start": "ENTER CURRENT DATE"
+        "test_period_end": "ENTER CURRENT DATE"
+        "log_ref": "00001"
+        "log_ret_date": "ENTER CURRENT DATE"
+    "log":
+      "level": "DEBUG"
+      "output_file": "results/ESRP_DEBUG.log"
+      "dev_mode": false
+    "comments":
+    - "author": "ENTER AUTHOR NAME"
+      "comment": "THIS IS A TEST RUN ONLY, RESULTS ARE NOT VALID!"
+  "tests":
+  - "name": "ESRP_CS00001"
+    "requirements":
+    - "name": "RQ_ESRP_208"
+      "variations":
+      - "Watcher_info_two_subscribers"
+    "variations":
+    - "name": "Watcher_info_two_subscribers"
+      "description": "Verify watcher information support as per RFC 3857"
+      "interfaces":
+      - "name": "IF_BCF_ESRP"
+        "port_names": []
+      - "name": "IF_CHFE_ESRP"
+        "port_names": []
+      - "name": "IF_ESRP-2_ESRP"
+        "port_names": []
+      "mode": "pcap"
+      "pcap_file": "test_suite/pcaps/ESRP_023/TC_ESRP_023_var_1_pass_Watcher_info_two_subscribers.pcap"
+      "ssl_keys_file_path": ""
+      "params":
+        "messages":
+        - "action": "receive"
+          "id": "receive_bcf_watcher"
+          "if_name": "IF_BCF_ESRP"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "api"
+            "save_result_as": "var.esrp_api"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.esrp_api"
+              "extract_field": "queue_sip_uri"
+            "save_result_as": "var.queue_sip_uri"
+          - "method_name": "replace_string_in_file"
+            "kwargs":
+              "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_QueueState_watcher_info.xml"
+              "param_name": "[QUEUE_SIP_URI]"
+              "value": "var.queue_sip_uri"
+              "output_file": "file./tmp/ESRP_023/SIP_SUBSCRIBE_QueueState_watcher_info.xml"
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "sipp_scenario":
+            "scenario_file_path": "file./tmp/ESRP_023/SIP_SUBSCRIBE_QueueState_watcher_info.xml"
+            "kwargs": {}
+            "save_response_as": "ESRP_023_BCF_response.log"
+            "save_log_as": "ESRP_023_BCF.log"
+          "run_in_background": "True"
+          "next_action": "receive_chfe"
+        - "action": "receive"
+          "id": "receive_chfe"
+          "if_name": "IF_CHFE_ESRP"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "api"
+            "save_result_as": "var.esrp_api"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.esrp_api"
+              "extract_field": "queue_sip_uri"
+            "save_result_as": "var.queue_sip_uri"
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_SUBSCRIBE/SIP_SUBSCRIBE_QueueState_terminate.xml"
+            "kwargs":
+              "set":
+                "QUEUE_SIP_URI": "var.queue_sip_uri"
+                "PAUSE_MS": "5000"
+            "save_response_as": "ESRP_023_CHFE_response.log"
+            "save_log_as": "ESRP_023_CHFE.log"
+          "run_in_background": "True"
+          "next_action": "send_esrp_2"
+        - "action": "send"
+          "id": "send_esrp_2"
+          "if_name": "IF_ESRP-2_ESRP"
+          "if_port_name": ""
+          "prep_steps":
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "lab_config['lab_config']['entities']"
+              "where_field": "name"
+              "where_value": "ESRP"
+              "extract_field": "api"
+            "save_result_as": "var.esrp_api"
+          - "method_name": "extract_from_config"
+            "kwargs":
+              "config_part": "var.esrp_api"
+              "extract_field": "queue_sip_uri"
+            "save_result_as": "var.queue_sip_uri"
+          "type": "SIP"
+          "method": "SUBSCRIBE"
+          "sipp_scenario":
+            "scenario_file_path": "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_SUBSCRIBE/SIP_SUBSCRIBE_QueueState_terminate.xml"
+            "kwargs":
+              "set":
+                "QUEUE_SIP_URI": "var.queue_sip_uri"
+                "PAUSE_MS": "3000"
+            "save_response_as": "ESRP_023_ESRP-2_response.log"
+            "save_log_as": "ESRP_023_ESRP-2.log"
+          "run_in_background": "False"
+          "next_action": "manual_delay"
+        - "action": "manual"
+          "id": "manual_delay"
+          "if_name": ""
+          "instead": ""
+          "type": "SIP"
+          "method": ""
+          "timeout": 5
+          "prompt": "Waiting 5 seconds for all messages to be exchanged..."
+      "filtering_options":
+      - "message_type": "stimulus"
+        "src_interface": "IF_BCF_ESRP"
+        "dst_interface": "IF_ESRP_BCF"
+        "sip_method": "SUBSCRIBE"
+        "sip_response_method": "NOTIFY"
+        "http_request_method": ""
+        "response_status_code": ""
+        "body_contains": ""
+        "header_contains": "emergency-QueueState.winfo"
+    "preamble_list": []
+    "postamble_list": []

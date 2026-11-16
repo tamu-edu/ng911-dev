@@ -1,0 +1,222 @@
+name: PR Code Security Scan
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-code-security-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  BANDIT_VERSION: "1.9.4"
+  ARTIFACT_RETENTION_DAYS: "14"
+
+jobs:
+  bandit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install Bandit
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install "bandit==${BANDIT_VERSION}"
+
+      - name: Run Bandit
+        id: bandit
+        run: |
+          set +e
+          bandit -c bandit.yaml -r . -f json -o bandit.json
+          EXIT_CODE=$?
+          set -e
+
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
+
+          # Bandit returns 1 when findings are present. Exit codes >1 represent execution errors.
+          if [ "$EXIT_CODE" -gt 1 ]; then
+            echo "Bandit failed to execute correctly."
+            exit 1
+          fi
+
+      - name: Validate and summarize Bandit report
+        id: summary
+        if: always()
+        run: |
+          python <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report_path = Path("bandit.json")
+          output = Path(os.environ["GITHUB_OUTPUT"])
+
+          def fail(reason: str) -> None:
+              print(reason)
+              with output.open("a", encoding="utf-8") as f:
+                  f.write("valid=false\n")
+                  f.write("high=0\nmedium=0\nlow=0\ntotal=0\n")
+              raise SystemExit(1)
+
+          if not report_path.exists() or report_path.stat().st_size == 0:
+              fail("Bandit assessment incomplete: report was not produced.")
+
+          try:
+              data = json.loads(report_path.read_text(encoding="utf-8"))
+          except (OSError, json.JSONDecodeError) as exc:
+              fail(f"Bandit assessment incomplete: invalid JSON report: {exc}")
+
+          if not isinstance(data, dict) or not isinstance(data.get("results", []), list):
+              fail("Bandit assessment incomplete: unexpected report structure.")
+
+          results = data.get("results", []) or []
+          counts = {"LOW": 0, "MEDIUM": 0, "HIGH": 0}
+
+          for result in results:
+              severity = str(result.get("issue_severity") or "").upper()
+              if severity in counts:
+                  counts[severity] += 1
+
+          total = sum(counts.values())
+
+          Path("bandit_summary.txt").write_text(
+              "\n".join(
+                  [
+                      "Bandit results summary",
+                      f"Total findings: {total}",
+                      f"HIGH: {counts['HIGH']}",
+                      f"MEDIUM: {counts['MEDIUM']}",
+                      f"LOW: {counts['LOW']}",
+                  ]
+              )
+              + "\n",
+              encoding="utf-8",
+          )
+
+          with output.open("a", encoding="utf-8") as f:
+              f.write("valid=true\n")
+              f.write(f"high={counts['HIGH']}\n")
+              f.write(f"medium={counts['MEDIUM']}\n")
+              f.write(f"low={counts['LOW']}\n")
+              f.write(f"total={total}\n")
+
+          print(f"Bandit report valid. Total findings: {total}")
+          PY
+
+      - name: Write workflow summary
+        if: always()
+        run: |
+          {
+            echo "## PR Code Security — Bandit"
+            echo
+            if [ "${{ steps.summary.outputs.valid }}" = "true" ]; then
+              echo "| Severity | Findings |"
+              echo "| --- | ---: |"
+              echo "| HIGH | ${{ steps.summary.outputs.high }} |"
+              echo "| MEDIUM | ${{ steps.summary.outputs.medium }} |"
+              echo "| LOW | ${{ steps.summary.outputs.low }} |"
+              echo "| **Total** | **${{ steps.summary.outputs.total }}** |"
+              echo
+              echo "Current policy blocks MEDIUM and HIGH findings."
+            else
+              echo "**Assessment incomplete.** Bandit execution or report validation failed."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Bandit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-security-bandit-report
+          path: |
+            bandit.json
+            bandit_summary.txt
+          if-no-files-found: warn
+          retention-days: ${{ fromJSON(env.ARTIFACT_RETENTION_DAYS) }}
+
+      - name: Comment PR with security summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const marker = "<!-- BANDIT_SECURITY_COMMENT -->";
+
+            const valid = "${{ steps.summary.outputs.valid }}" === "true";
+            const high = Number("${{ steps.summary.outputs.high }}" || 0);
+            const medium = Number("${{ steps.summary.outputs.medium }}" || 0);
+            const low = Number("${{ steps.summary.outputs.low }}" || 0);
+            const total = Number("${{ steps.summary.outputs.total }}" || 0);
+            const blocked = high > 0 || medium > 0;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner, repo, issue_number, per_page: 100
+            });
+
+            for (const comment of comments) {
+              if (comment.body && comment.body.includes(marker)) {
+                await github.rest.issues.deleteComment({
+                  owner, repo, comment_id: comment.id
+                });
+              }
+            }
+
+            if (valid && !blocked) {
+              console.log("No blocking Bandit findings — skipping comment.");
+              return;
+            }
+
+            let body;
+
+            if (!valid) {
+              body = "## ⚠️ Code Security Assessment Incomplete\n\n";
+              body += "Bandit did not complete correctly or did not produce a valid report. ";
+              body += "The assessment is treated as failed rather than as zero findings.\n\n";
+            } else {
+              body = "## ❌ Code Security Scan Failed (Bandit)\n\n";
+              body += `**Total findings:** ${total}\n\n`;
+              body += `- HIGH: ${high}\n`;
+              body += `- MEDIUM: ${medium}\n`;
+              body += `- LOW: ${low}\n\n`;
+              body += "Current policy blocks **MEDIUM or HIGH severity findings**.\n\n";
+            }
+
+            body += `📎 Full report and logs: ${runUrl}\n\n`;
+            body += marker;
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number, body
+            });
+
+      - name: Enforce Bandit gate
+        if: always()
+        run: |
+          if [ "${{ steps.summary.outputs.valid }}" != "true" ]; then
+            echo "Bandit assessment incomplete."
+            exit 1
+          fi
+
+          if [ "${{ steps.summary.outputs.high }}" -gt 0 ] || \
+             [ "${{ steps.summary.outputs.medium }}" -gt 0 ]; then
+            echo "Bandit gate failed due to MEDIUM/HIGH findings."
+            exit 1
+          fi
+
+          echo "Bandit gate passed."

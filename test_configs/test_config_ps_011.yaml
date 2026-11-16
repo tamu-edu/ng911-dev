@@ -1,0 +1,49 @@
+test_config:
+  conformance:
+    tests:
+      - name: "PS_011"
+        variations:
+          - name: "HTTPS_SHA256"
+            description: "Verify SHA-256 support for HTTPS communication with Policy Store"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: ["IF_ESRP_PS_HTTPS_443_TLSv1.2"]
+            params:
+              messages:
+                - action: "send"
+                  id: "send_request"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: "IF_ESRP_PS_HTTPS_443_TLSv1.2"
+                  prep_steps: []
+                  type: "HTTPS"
+                  method: "GET"
+                  response_code: ""
+                  http_url: "/Policies"
+                  body: ""
+                  ssl_config_file: "test_suite/services/stub_server/http/config/http_service_ssl_sha256.yaml"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+                  next_action: "manual_delay"
+
+                - action: "manual"
+                  id: "manual_delay"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  timeout: 2
+                  prompt: "Waiting 2 seconds for IUT..."
+
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: ""
+                http_request_method: "GET"
+                response_status_code: ""
+                header_contains: "/Policies"
+                body_contains: ""
+
+        requirements:
+          - name: "RQ_PS_112"
+            variations: ["all"]

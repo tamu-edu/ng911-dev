@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<findService
+ xmlns="urn:ietf:params:xml:ns:lost1"
+ xmlns:p2="http://www.opengis.net/gml"
+ serviceBoundary="value"
+ recursive="true">
+ <location id="123456789" profile="geodetic-2d">
+   <p2:Polygon id="polygon1" srsName="urn:ogc:def:crs:EPSG::4326">
+      <p2:exterior>
+        <p2:LinearRing>
+          <p2:pos>42.516841, -78.325070</p2:pos>
+          <p2:pos>42.534407, -78.176446</p2:pos>
+          <p2:pos>42.452733, -78.193271</p2:pos>
+          <p2:pos>42.448594, -78.326473</p2:pos>
+        </p2:LinearRing>
+      </p2:exterior>
+   </p2:Polygon>
+ </location>
+ <service>urn:service:sos.police</service>
+</findService>

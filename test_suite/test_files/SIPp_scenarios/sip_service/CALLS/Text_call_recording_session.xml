@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+  TEST FILE INFO:
+  Version:   010.3d.5.0.1
+  Date:      20260305
+-->
+<scenario name="Text_call_recording_session">
+  <Global variables="LOG_SRS_username, SIP_call_id, Call_ID, Incident_ID, Text_host1, Text_host2"/>
+  <send>
+    <![CDATA[
+      INVITE sip:[$LOG_SRS_username]@[remote_ip]:[remote_port] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      From: "NG911 Test" <sip:ng911_test_system@[local_ip]:[local_port]>
+      To: sip:[$LOG_SRS_username]@[remote_ip]:[remote_port]
+      Call-ID: [$SIP_call_id]
+      Cseq: 1 INVITE
+      Contact: sip:ng911_test_system@[local_ip]:[local_port]
+      Max-Forwards: 70
+      Require: siprec
+      Accept: application/sdp, application/rs-metadata
+      Content-Type: multipart/mixed;boundary=next-content
+      Call-Info: [$Call_ID];purpose=emergency-CallId
+      Call-Info: [$Incident_ID];purpose=emergency-IncidentId
+      Resource-Priority: esnet.1
+      Content-Length: [len]
+
+      --next-content
+      Content-Type: application/sdp
+      Content-ID: <participant1_sdp@[local_ip]>
+
+      v=0
+      o=SRS 2890844526 2890844526 IN IP[local_ip_type] [local_ip]
+      s=-
+      c=IN IP[media_ip_type] [media_ip]
+      t=0 0
+      m=text 12240 RTP/AVP 98
+      a=rtpmap:98 t140/1000
+      a=sendonly
+      a=label:1
+
+      --next-content
+      Content-Type: application/sdp
+      Content-ID: <participant2_sdp@[local_ip]>
+
+      v=0
+      o=SRS 2890844526 2890844526 IN IP[local_ip_type] [local_ip]
+      s=-
+      c=IN IP[media_ip_type] [media_ip]
+      t=0 0
+      m=text 12242 RTP/AVP 98
+      a=rtpmap:98 t140/1000
+      a=sendonly
+      a=label:2
+
+      --next-content--
+    ]]>
+  </send>
+  <recv response="100" optional="true"> </recv>
+  <recv response="180" optional="true"> </recv>
+  <recv response="183" optional="true"> </recv>
+  <recv response="200"> </recv>
+  <send>
+    <![CDATA[
+      ACK sip:[$LOG_SRS_username]@[remote_ip]:[remote_port] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      From: "NG911 Test" <sip:ng911_test_system@[local_ip]:[local_port]>
+      To: sip:[$LOG_SRS_username]@[remote_ip]:[remote_port]
+      Call-ID: [$SIP_call_id]
+      Cseq: 1 ACK
+      Contact: sip:ng911_test_system@[local_ip]:[local_port]
+      Content-Length: 0
+    ]]>
+  </send>
+  <media
+            type="rtp_send_text"
+            src_ip="[local_ip]"
+            dst_ip="[remote_ip]"
+            dst_port="12240"
+            ssrc="1"
+            csrc="1, 2"
+            ts_step="500"
+            split="true"
+            text="[$Text_host1]"
+  />
+  <media
+            type="rtp_send_text"
+            src_ip="[local_ip]"
+            dst_ip="[remote_ip]"
+            dst_port="12242"
+            ssrc="2"
+            csrc="1, 2"
+            ts_step="500"
+            split="true"
+            text="[$Text_host2]"
+  />
+  <pause milliseconds="5000"/>
+  <send>
+    <![CDATA[
+      BYE sip:[$LOG_SRS_username]@[remote_ip]:[remote_port] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      From: "NG911 Test" <sip:ng911_test_system@[local_ip]:[local_port]>
+      To: sip:[$LOG_SRS_username]@[remote_ip]:[remote_port]
+      Call-ID: [$SIP_call_id]
+      Cseq: 1 BYE
+      Contact: sip:ng911_test_system@[local_ip]:[local_port]
+      Content-Length: 0
+    ]]>
+  </send>
+  <recv response="200"> </recv>
+</scenario>

@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+  
+  Version:   010.3d.5.0.4
+  Date:      20260415
+
+-->
+
+<scenario name="CHFE_BRIDGE_003">
+    <Global variables="conference_id, OSP_tel, CHFE_tel, INVITE_from_OSP_Call_ID, IF_OSP_CHFE, IF_CHFE_OSP, IF_CHFE_OSP,
+                        IF_TS-CA_CHFE, IF_CHFE_BRIDGE, IF_BRIDGE_CHFE, IF_OSP_BRIDGE" />
+    <recv request="INVITE">
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="Call-ID:"
+            ctx_key="INVITE_from_OSP_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <pause milliseconds="1000"/>
+    <send>
+        <![CDATA[
+
+          SIP/2.0 200 OK
+          [$last_Via]
+          [$last_From]
+          [$last_To]
+          [$last_Call-ID]
+          [$last_CSeq]
+          Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+          Content-Type: application/sdp
+          Content-Length: [len]
+
+          v=0
+          o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+          s=-
+          t=0 0
+          c=IN IP[media_ip_type] [media_ip]
+          m=text 49170 RTP/AVP 98
+          a=rtpmap:98 t140/1000
+
+        ]]>
+    </send>
+    <recv request="ACK"> </recv>
+    <media
+        type="rtp"
+        src_ip="[$IF_BCF_CHFE]"
+        dst_ip="[$IF_CHFE_BCF]"
+        dst_port="49170"
+    />
+    <pause milliseconds="1000"/>
+    <send to="[$IF_TS-CA_CHFE]:[local_port]">
+        <![CDATA[
+
+          INVITE urn:service:sos SIP/2.0
+          Via: SIP/2.0/[transport] [$IF_CHFE_BRIDGE]:[local_port]
+          From: <sip:[$CHFE_tel]@[IF_CHFE_BRIDGE]:[local_port]>;tag=chfebridge
+          To: urn:service:sos
+          Call-ID: chfeconference@[$IF_CHFE_BRIDGE]:[local_port]
+          Cseq: 2 INVITE
+          Contact: sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]
+          Max-Forwards: 70
+          Content-Type: application/sdp
+          Content-Length: [len]
+
+          v=0
+          o=user1 53655765 2353687637 IN IP[local_ip_type] [$IF_CHFE_BRIDGE]
+          s=-
+          t=0 0
+          c=IN IP[media_ip_type] [media_ip]
+          m=text 49172 RTP/AVP 98
+          a=rtpmap:98 t140/1000
+
+        ]]>
+    </send>
+    <recv response="302">
+        <operate
+            method_name="save_header_field_value"
+            header_field_name="Contact:"
+            ctx_key="conference_id"
+        />
+    </recv>
+    <send to="[$IF_TS-CA_CHFE]:[local_port]">
+        <![CDATA[
+
+          ACK urn:service:sos SIP/2.0
+          Via: SIP/2.0/[transport] [$IF_CHFE_OSP]:[local_port]
+          From: <sip:[$OSP_tel]@[IF_OSP_BCF]:[local_port]>;tag=ospcall
+          To: urn:service:sos
+          Call-ID: chfeconference@[$IF_CHFE_BRIDGE]:[local_port]
+          Cseq: 1 ACK
+          Contact: sip:[$CHFE_tel]@[local_ip]:[local_port]
+          Content-Length: 0
+
+        ]]>
+    </send>
+    <send to="[$IF_BRIDGE_CHFE]:[local_port]">
+        <![CDATA[
+
+          INVITE sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port] SIP/2.0
+          Via: SIP/2.0/[transport] [$IF_CHFE_OSP]:[local_port]
+          From: <sip:[$CHFE_tel]@[IF_CHFE_BRIDGE]:[local_port]>;tag=chfebridge
+          To: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>
+          Call-ID: chfeconference@[$IF_CHFE_BRIDGE]:[local_port]
+          Cseq: 1 INVITE
+          Contact: sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]
+          Max-Forwards: 70
+          Content-Type: application/sdp
+          Content-Length: [len]
+
+          v=0
+          o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+          s=-
+          t=0 0
+          c=IN IP[media_ip_type] [media_ip]
+          m=text 49172 RTP/AVP 98
+          a=rtpmap:98 t140/1000
+
+        ]]>
+    </send>
+    <recv response="100" optional="true"> </recv>
+    <recv response="180" optional="true"> </recv>
+    <recv response="200"> </recv>
+    <send to="[$IF_BRIDGE_CHFE]:[local_port]">
+        <![CDATA[
+
+          ACK sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port] SIP/2.0
+          Via: SIP/2.0/[transport] [$IF_CHFE_OSP]:[local_port]
+          From: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>;tag=chfebridge
+          To: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>
+          Call-ID: chfeconference@[$IF_CHFE_BRIDGE]:[local_port]
+          Cseq: 1 ACK
+          Contact: sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]
+          Content-Length: 0
+
+        ]]>
+    </send>
+    <media
+            type="rtp"
+            src_ip="[$IF_BRIDGE_CHFE]"
+            dst_ip="[$IF_CHFE_BRIDGE]"
+            dst_port="49172"
+    />
+    <send to="[$IF_BRIDGE_CHFE]:[local_port]">
+        <![CDATA[
+
+          SUBSCRIBE sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port] SIP/2.0
+          Via: SIP/2.0/[transport] [$IF_CHFE_OSP]:[local_port]
+          To: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>
+          From: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+          Call-ID: CHFEsubscribeconference@[$IF_CHFE_BRIDGE]:[local_port]
+          CSeq: 1 SUBSCRIBE
+          Max-Forwards: 70
+          Event: conference
+          Accept: application/conference-info+xml
+          Contact: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+          Expires: 600
+          Content-Length: 0
+
+        ]]>
+    </send>
+    <recv response="200"> </recv>
+    <recv request="NOTIFY">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_BRIDGE_CHFE]:[local_port]">
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [$last_Via]
+        [$last_From]
+        [$last_To]
+        [$last_Call-ID]
+        [$last_CSeq]
+        Contact: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+        Content-Length:0
+
+      ]]>
+    </send>
+    <pause milliseconds="1000"/>
+    <send to="[$IF_BRIDGE_CHFE]:[local_port]">
+        <![CDATA[
+
+          REFER sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port] SIP/2.0
+          Via: SIP/2.0/[transport] [$IF_CHFE_OSP]:[local_port]
+          From: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+          To: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>
+          Call-ID: chfeconference@[$IF_CHFE_BRIDGE]:[local_port]
+          Cseq: 1 REFER
+          Refer-To: sip:[$OSP_tel]@[$IF_OSP_BRIDGE]:[local_port]
+          Replaces: [$INVITE_from_OSP_Call_ID];to-tag=chfe;from-tag=osp
+          Contact: sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]
+          Max-Forwards: 70
+          Content-Type: application/sdp
+          Content-Length: [len]
+
+          v=0
+          o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+          s=-
+          t=0 0
+          c=IN IP[media_ip_type] [media_ip]
+          m=text 49172 RTP/AVP 98
+          a=rtpmap:98 t140/1000
+
+        ]]>
+    </send>
+    <recv response="200"> </recv>
+    <recv request="NOTIFY">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_BRIDGE_CHFE]:[local_port]">
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [$last_Via]
+        [$last_From]
+        [$last_To]
+        [$last_Call-ID]
+        [$last_CSeq]
+        Contact: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+        Content-Length:0
+
+      ]]>
+    </send>
+    <recv request="NOTIFY">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_BRIDGE_CHFE]:[local_port]">
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [$last_Via]
+        [$last_From]
+        [$last_To]
+        [$last_Call-ID]
+        [$last_CSeq]
+        Contact: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+        Content-Length:0
+
+      ]]>
+    </send>
+    <recv request="NOTIFY">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_BRIDGE_CHFE]:[local_port]">
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [$last_Via]
+        [$last_From]
+        [$last_To]
+        [$last_Call-ID]
+        [$last_CSeq]
+        Contact: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+        Content-Length:0
+
+      ]]>
+    </send>
+
+    <stop_media
+            type="rtp"
+            src_ip="[$IF_BRIDGE_CHFE]"
+            dst_ip="[$IF_CHFE_BRIDGE]"
+            dst_port="49172"
+    />
+    <media
+            type="rtp_send_text"
+            src_ip="[$IF_CHFE_BRIDGE]"
+            dst_ip="[$IF_BRIDGE_CHFE]"
+            dst_port="49172"
+            ssrc="600"
+            ts_step="500"
+            split="true"
+            text="Test message from CHFE"
+    />
+
+    <recv request="NOTIFY">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call-ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+    </recv>
+    <send to="[$IF_BRIDGE_CHFE]:[local_port]">
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [$last_Via]
+        [$last_From]
+        [$last_To]
+        [$last_Call-ID]
+        [$last_CSeq]
+        Contact: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>
+        Content-Length:0
+
+      ]]>
+    </send>
+    <send to="[$IF_BRIDGE_CHFE]:[local_ip]">
+        <![CDATA[
+
+          BYE sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port] SIP/2.0
+          Via: SIP/2.0/[transport] [$IF_CHFE_OSP]:[local_port]
+          From: <sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]>;tag=chfebridge
+          To: <sip:[$conference_id]@[$IF_BRIDGE_CHFE]:[local_port]>
+          Call-ID: chfeconference@[$IF_CHFE_BRIDGE]:[local_port]
+          CSeq: 1 BYE
+          Contact: sip:[$CHFE_tel]@[$IF_CHFE_BRIDGE]:[local_port]
+          Max-Forwards: 70
+          Content-Length: 0
+
+        ]]>
+    </send>
+    <recv response="200"> </recv>
+    <stop_media
+            type="rtp"
+            src_ip="[$IF_BRIDGE_CHFE]"
+            dst_ip="[$IF_CHFE_BRIDGE]"
+            dst_port="49172"
+    />
+    <stop_media
+        type="rtp"
+        src_ip="[$IF_BCF_CHFE]"
+        dst_ip="[$IF_CHFE_BCF]"
+        dst_port="49170"
+    />
+</scenario>

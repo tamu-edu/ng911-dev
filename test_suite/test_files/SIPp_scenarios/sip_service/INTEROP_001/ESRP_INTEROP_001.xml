@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+  TEST FILE INFO:
+
+  Version:   010.3d.6.0.1
+  Date:      20260922
+
+-->
+<scenario name="ESRP_INTEROP_001">
+    <Global variables="CHFE_tel, IF_CHFE_ESRP, IF_BCF_ESRP"/>
+  <send>
+    <![CDATA[
+
+      SUBSCRIBE sip:[$CHFE_tel]@[$IF_CHFE_ESRP]:[remote_port] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port]
+      To: <sip:[$CHFE_tel]@[$IF_CHFE_ESRP]:[remote_port]>
+      From: SENDER <sip:ESRP@[local_ip]:[local_port]>;tag=[call_number]
+      Call-ID: [call_id]
+      CSeq: 1 SUBSCRIBE
+      Max-Forwards: 70
+      Event: emergency-QueueState; min-rate=1
+      Contact: sip:ESRP@[local_ip]:[local_port]
+      Expires: 600
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <recv response="200"> </recv>
+  <recv request="NOTIFY">
+        <operate
+            method_name="save_header_field"
+            header_field_name="Via"
+            ctx_key="last_Via"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="From"
+            ctx_key="last_From"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="To"
+            ctx_key="last_To"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Call-ID"
+            ctx_key="last_Call_ID"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="CSeq"
+            ctx_key="last_CSeq"
+        />
+        <operate
+            method_name="save_header_field"
+            header_field_name="Contact"
+            ctx_key="last_Contact"
+        />
+  </recv>
+  <send>
+      <![CDATA[
+
+        SIP/2.0 200 OK
+        [$last_Via]
+        [$last_From]
+        [$last_To]
+        [$last_Call_ID]
+        [$last_CSeq]
+        [$last_Contact]
+        Content-Length:0
+
+      ]]>
+    </send>
+    <recv request="INVITE">
+        <operate
+                method_name="rewrite_invite_for_esrp"
+                src_ip="[$IF_BCF_ESRP]"
+                dst_ip="[$IF_CHFE_ESRP]"
+                dst_port="[local_port]"
+        />
+    </recv>
+    <recv response="100" optional="true">
+        <operate
+                method_name="forward_message"
+                src_ip="[$IF_CHFE_ESRP]"
+                dst_ip="[$IF_BCF_ESRP]"
+                dst_port="[local_port]"
+        />
+    </recv>
+    <recv response="180" optional="true">
+        <operate
+                method_name="forward_message"
+                src_ip="[$IF_CHFE_ESRP]"
+                dst_ip="[$IF_BCF_ESRP]"
+                dst_port="[local_port]"
+        />
+    </recv>
+    <recv response="200">
+        <operate
+                method_name="forward_message"
+                src_ip="[$IF_CHFE_ESRP]"
+                dst_ip="[$IF_BCF_ESRP]"
+                dst_port="[local_port]"
+        />
+    </recv>
+    <recv request="ACK">
+        <operate
+                method_name="forward_message"
+                src_ip="[$IF_BCF_ESRP]"
+                dst_ip="[$IF_CHFE_ESRP]"
+                dst_port="[local_port]"
+        />
+    </recv>
+    <recv request="BYE">
+        <operate
+                method_name="forward_message"
+                src_ip="[$IF_CHFE_ESRP]"
+                dst_ip="[$IF_BCF_ESRP]"
+                dst_port="[local_port]"
+        />
+    </recv>
+    <recv response="200">
+        <operate
+                method_name="forward_message"
+                src_ip="[$IF_BCF_ESRP]"
+                dst_ip="[$IF_CHFE_ESRP]"
+                dst_port="[local_port]"
+        />
+    </recv>
+</scenario>

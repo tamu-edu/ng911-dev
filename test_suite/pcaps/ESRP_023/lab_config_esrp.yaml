@@ -1,0 +1,113 @@
+lab_config:
+  pca_certificate_file: ""
+  pca_certificate_key: ""
+  test_suite_host_ip: "10.140.140.253"
+  entities:
+    # Test System BCF
+    - name: "BCF"
+      mode: "STUB_SERVER"
+      function: "BCF"
+      role: ["OTHER", "SENDER"]
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_BCF_ESRP"
+          fqdn: ""
+          ip: "10.140.140.132"
+          mask: "255.255.255.128"
+          gateway: ""
+          dns: [ ]
+          port_mapping:
+            - name: "IF_BCF_ESRP_SIP_5060_TCP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+
+    # ESRP Implementation Under Test
+    - name: "ESRP"
+      mode: "REAL_DEVICE"
+      function: "ESRP"
+      role: ["IUT"]
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      api:
+        # PCAP fixture only; the actual IUT URI must come from supplier IXIT.
+        queue_sip_uri: "sip:queue@192.168.49.103"
+      interfaces:
+        - name: "IF_ESRP_BCF"
+          fqdn: ""
+          ip: "192.168.49.103"
+          mask: "255.255.255.0"
+          gateway: ""
+          dns: [ ]
+          port_mapping:
+            - name: "IF_ESRP_BCF_SIP_5060_TCP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_ESRP_CHFE"
+          fqdn: ""
+          ip: "192.168.49.103"
+          mask: "255.255.255.0"
+          gateway: ""
+          dns: [ ]
+          port_mapping:
+            - name: "IF_ESRP_CHFE_SIP_5060_TCP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+        - name: "IF_ESRP_ESRP-2"
+          fqdn: ""
+          ip: "192.168.49.103"
+          mask: "255.255.255.0"
+          gateway: ""
+          dns: [ ]
+          port_mapping:
+            - name: "IF_ESRP_ESRP-2_SIP_5060_TCP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+
+    # Test System CHFE
+    - name: "CHFE"
+      mode: "STUB_SERVER"
+      function: "CHFE"
+      role: ["SENDER", "RECEIVER"]
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_CHFE_ESRP"
+          fqdn: ""
+          ip: "10.140.140.135"
+          mask: "255.255.255.128"
+          gateway: ""
+          dns: [ ]
+          port_mapping:
+            - name: "IF_CHFE_ESRP_SIP_5060_TCP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"
+
+    # Test System downstream ESRP
+    - name: "ESRP-2"
+      mode: "STUB_SERVER"
+      function: "ESRP"
+      role: ["SENDER", "RECEIVER"]
+      fqdn: ""
+      certificate_file: ""
+      certificate_key: ""
+      interfaces:
+        - name: "IF_ESRP-2_ESRP"
+          fqdn: ""
+          ip: "10.140.140.144"
+          mask: "255.255.255.128"
+          gateway: ""
+          dns: [ ]
+          port_mapping:
+            - name: "IF_ESRP-2_ESRP_SIP_5060_TCP"
+              protocol: "SIP"
+              port: 5060
+              transport_protocol: "TCP"

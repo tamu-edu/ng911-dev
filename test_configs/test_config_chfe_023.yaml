@@ -1,0 +1,298 @@
+test_config:
+  conformance:
+    tests:
+      - name: "CHFE_023"
+        variations:
+          # Variation 1:
+          - name: "ACK_for_2XX_Response"
+            description: "Validate SIP ACK handling for the 2XX SIP INVITE/BYE responses"
+            interfaces:
+              - name: "IF_ESRP_CHFE"
+                port_names: []
+              - name: "IF_BRIDGE_CHFE"
+                port_names: []
+            params:
+              messages:
+                  # Test System BRIDGE
+                - action: "receive"
+                  if_name: "IF_BRIDGE_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "BRIDGE"
+                        extract_field: "api"
+                      "save_result_as": "var.api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.api"
+                        extract_field: "conference_id"
+                      "save_result_as": "var.conference_id"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/CHFE_023/BRIDGE_CHFE_023_var_1.xml",
+                    kwargs: {
+                        set: {
+                          conference_id: "var.conference_id",
+                        }
+                      },
+                    save_response_as: "BRIDGE_CHFE_023_var_1_response.log",
+                    save_log_as: "BRIDGE_CHFE_023_var_1.log"
+                  }
+                  run_in_background: "True"
+
+                  # Test System ESRP
+                - action: "send"
+                  if_name: "IF_ESRP_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_CHFE"
+                      "save_result_as": "var.IF_ESRP_CHFE"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_CHFE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_CHFE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call_with_RTP_and_receive_BYE.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/SIP_basic_call_with_RTP_and_receive_BYE.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/SIP_basic_call_with_RTP_and_receive_BYE.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/SIP_basic_call_with_RTP_and_receive_BYE.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/SIP_basic_call_with_RTP_and_receive_BYE.xml",
+                    dependencies: [ "file.test_suite/test_files/SIPp_scenarios/CALLS/g711ulaw_rtp_stream.pcap" ],
+                    kwargs: {},
+                    save_response_as: "ESRP_CHFE_023_var_1_response.log",
+                    save_log_as: "ESRP_CHFE_023_var_1.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "manual_chfe"
+
+                - action: "manual"
+                  id: "manual_chfe"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "Answer incoming call on the CHFE and trigger call transfer to any target. Press any key to continue when done..."
+                  next_action: "manual_chfe_2"
+
+                - action: "manual"
+                  id: "manual_chfe_2"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "End all ongoing calls on the CHFE. Press any key to continue when done..."
+
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_CHFE"
+                  dst_interface: "IF_CHFE_ESRP"
+                  sip_method: "INVITE" #
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_BRIDGE_CHFE"
+                  dst_interface: "IF_CHFE_BRIDGE"
+                  sip_method: "" #
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_CHFE_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE"
+                  sip_method: "ACK" #  (ACK for 200 OK)
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+
+          # Variation 2:
+          - name: "ACK_for_non_2XX_Responses"
+            description: "Validate SIP ACK handling for non 2XX SIP INVITE responses and 2xx for SIP BYE"
+            interfaces:
+              - name: "IF_ESRP_CHFE"
+                port_names: []
+              - name: "IF_BRIDGE_CHFE"
+                port_names: []
+            params:
+              messages:
+                  # Test System BRIDGE
+                - action: "receive"
+                  if_name: "IF_BRIDGE_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "BRIDGE"
+                        extract_field: "api"
+                      "save_result_as": "var.api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.api"
+                        extract_field: "conference_id"
+                      "save_result_as": "var.conference_id"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/CHFE_023/BRIDGE_CHFE_023_var_2.xml",
+                    kwargs: {
+                        set: {
+                          conference_id: "var.conference_id",
+                        }
+                      },
+                    save_response_as: "BRIDGE_CHFE_023_var_2_response.log",
+                    save_log_as: "BRIDGE_CHFE_023_var_2.log"
+                  }
+                  run_in_background: "True"
+
+                  # Test System ESRP
+                - action: "send"
+                  if_name: "IF_ESRP_CHFE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_CHFE"
+                      "save_result_as": "var.IF_ESRP_CHFE"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_ESRP_CHFE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_ESRP_CHFE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/CALLS/SIP_basic_call_with_RTP_and_receive_BYE.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/SIP_basic_call_with_RTP_and_receive_BYE.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/SIP_basic_call_with_RTP_and_receive_BYE.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/SIP_basic_call_with_RTP_and_receive_BYE.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/SIP_basic_call_with_RTP_and_receive_BYE.xml",
+                    dependencies: [ "file.test_suite/test_files/SIPp_scenarios/CALLS/g711ulaw_rtp_stream.pcap" ],
+                    kwargs: {},
+                    save_response_as: "ESRP_CHFE_023_var_2_response.log",
+                    save_log_as: "ESRP_CHFE_023_var_2.log"
+                  }
+                  run_in_background: "False"
+                  next_action: "manual_chfe"
+
+                - action: "manual"
+                  id: "manual_chfe"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "Answer incoming call on the CHFE and trigger call transfer to any target. Press any key to continue when done..."
+                  next_action: "manual_chfe_2"
+
+                - action: "manual"
+                  id: "manual_chfe_2"
+                  if_name: ""
+                  instead: ""
+                  type: "SIP"
+                  method: ""
+                  prompt: "End all ongoing calls on the CHFE. Press any key to continue when done..."
+
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_ESRP_CHFE"
+                  dst_interface: "IF_CHFE_ESRP"
+                  sip_method: "INVITE" #
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_BRIDGE_CHFE"
+                  dst_interface: "IF_CHFE_BRIDGE"
+                  sip_method: "" #
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "302" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_CHFE_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE"
+                  sip_method: "ACK" #  (ACK for 200 OK)
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_BRIDGE_CHFE"
+                  dst_interface: "IF_CHFE_BRIDGE"
+                  sip_method: "" #
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "486" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_CHFE_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE"
+                  sip_method: "ACK" #  (ACK for 200 OK)
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+
+        requirements:
+          - name: "RQ_CHFE_393"
+            variations: ["all"]

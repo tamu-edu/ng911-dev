@@ -1,0 +1,433 @@
+test_config:
+  conformance:
+    tests:
+      - name: "BRIDGE_010"
+        variations:
+          - name: "Adding_participant_to_the_conference_with_200_OK_response"
+            description: "Validate that BRIDGE generates ACK for 200 OK response for SIP INVITE sent"
+            interfaces:
+              - name: "IF_CHFE_BRIDGE"
+                port_names: []
+              - name: "IF_CHFE-2_BRIDGE"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_CHFE-2_BRIDGE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "CHFE-2"
+                        "extract_field": "api"
+                      "save_result_as": "var.CHFE2_api"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.CHFE2_api"
+                        "extract_field": "tel_number"
+                      "save_result_as": "var.CHFE2_tel"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/BRIDGE_010/CHFE-2_BRIDGE_010_var_1.xml",
+                    kwargs: {
+                      set: {
+                             CHFE2_tel: "var.CHFE2_tel",
+                      }
+                    },
+                    save_response_as: "CHFE-2_BRIDGE_010_var_1_response.log",
+                    save_log_as: "CHFE-2_BRIDGE_010_var_1.log"
+                  }
+                  run_in_background: "True"
+
+                  # Test System CHFE
+                - action: "send"
+                  if_name: "IF_CHFE_BRIDGE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "CHFE"
+                        "extract_field": "api"
+                      "save_result_as": "var.api"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.api"
+                        "extract_field": "tel_number"
+                      "save_result_as": "var.CHFE_tel"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BRIDGE_CHFE"
+                      "save_result_as": "var.IF_BRIDGE_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE-2_BRIDGE"
+                      "save_result_as": "var.IF_CHFE-2_BRIDGE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_BRIDGE"
+                      "save_result_as": "var.IF_CHFE_BRIDGE"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_CHFE_BRIDGE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_CHFE_BRIDGE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/sip_service/BRIDGE_010/CHFE_BRIDGE_010_var_1_var_2.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_1_var_2.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_1_var_2.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_1_var_2.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_1_var_2.xml",
+                    kwargs: {
+                      set: {
+                             CHFE_tel: "var.CHFE_tel",
+                             IF_CHFE2_BRIDGE: "var.IF_CHFE-2_BRIDGE",
+                      }
+                    },
+                    save_response_as: "CHFE_BRIDGE_010_var_1_response.log",
+                    save_log_as: "CHFE_BRIDGE_010_var_1.log"
+                  }
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_CHFE_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE"
+                  sip_method: "REFER" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_CHFE-2_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE-2"
+                  sip_method: ""
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_BRIDGE_CHFE-2"
+                  dst_interface: "IF_CHFE-2_BRIDGE"
+                  sip_method: "ACK"
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+
+          - name: "Adding_participant_to_the_conference_with_486_Busy_Here_response"
+            description: "Validate that BRIDGE generates ACK for 486 Busy Here response for SIP INVITE sent"
+            interfaces:
+              - name: "IF_CHFE_BRIDGE"
+                port_names: []
+              - name: "IF_CHFE-2_BRIDGE"
+                port_names: []
+            params:
+              messages:
+                - action: "receive"
+                  if_name: "IF_CHFE-2_BRIDGE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "CHFE-2"
+                        "extract_field": "api"
+                      "save_result_as": "var.CHFE2_api"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.CHFE2_api"
+                        "extract_field": "tel_number"
+                      "save_result_as": "var.CHFE2_tel"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/BRIDGE_010/CHFE-2_BRIDGE_010_var_2.xml",
+                    kwargs: {
+                      set: {
+                             CHFE2_tel: "var.CHFE2_tel",
+                      }
+                    },
+                    save_response_as: "CHFE-2_BRIDGE_010_var_2_response.log",
+                    save_log_as: "CHFE-2_BRIDGE_010_var_2.log"
+                  }
+                  run_in_background: "True"
+
+                  # Test System CHFE
+                - action: "send"
+                  if_name: "IF_CHFE_BRIDGE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "CHFE"
+                        "extract_field": "api"
+                      "save_result_as": "var.api"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.api"
+                        "extract_field": "tel_number"
+                      "save_result_as": "var.CHFE_tel"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BRIDGE_CHFE"
+                      "save_result_as": "var.IF_BRIDGE_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE-2_BRIDGE"
+                      "save_result_as": "var.IF_CHFE-2_BRIDGE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_BRIDGE"
+                      "save_result_as": "var.IF_CHFE_BRIDGE"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_CHFE_BRIDGE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_CHFE_BRIDGE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/sip_service/BRIDGE_010/CHFE_BRIDGE_010_var_1_var_2.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_1_var_2.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_1_var_2.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_1_var_2.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_1_var_2.xml",
+                    kwargs: {
+                      set: {
+                             CHFE_tel: "var.CHFE_tel",
+                             IF_CHFE2_BRIDGE: "var.IF_CHFE-2_BRIDGE",
+                      }
+                    },
+                    save_response_as: "CHFE_BRIDGE_010_var_2_response.log",
+                    save_log_as: "CHFE_BRIDGE_010_var_2.log"
+                  }
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_CHFE_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE"
+                  sip_method: "REFER" #  leave empty if not needed
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_CHFE-2_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE-2"
+                  sip_method: ""
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "486" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_BRIDGE_CHFE-2"
+                  dst_interface: "IF_CHFE-2_BRIDGE"
+                  sip_method: "ACK"
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+
+          - name: "Conference_media_Update"
+            description: "Validate that BRIDGE generates ACK for the 200 OK to the re-INVITE that requests SDP media change"
+            interfaces:
+              - name: "IF_CHFE_BRIDGE"
+                port_names: []
+              - name: "IF_CHFE-2_BRIDGE"
+                port_names: []
+            params:
+              messages:
+                  # CHFE-2 (initiates the re-INVITE adding m=text)
+                - action: "receive"
+                  if_name: "IF_CHFE-2_BRIDGE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "CHFE-2"
+                        "extract_field": "api"
+                      "save_result_as": "var.CHFE2_api"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.CHFE2_api"
+                        "extract_field": "tel_number"
+                      "save_result_as": "var.CHFE2_tel"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE-2_BRIDGE"
+                      "save_result_as": "var.IF_CHFE-2_BRIDGE"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: ""
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/BRIDGE_010/CHFE-2_BRIDGE_010_var_3.xml",
+                    kwargs: {
+                      set: {
+                             CHFE2_tel: "var.CHFE2_tel",
+                             IF_CHFE2_BRIDGE: "var.IF_CHFE-2_BRIDGE",
+                      }
+                    },
+                    save_response_as: "CHFE-2_BRIDGE_010_var_3_response.log",
+                    save_log_as: "CHFE-2_BRIDGE_010_var_3.log"
+                  }
+                  run_in_background: "True"
+
+                - action: "send"
+                  if_name: "IF_CHFE_BRIDGE"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "lab_config['lab_config']['entities']"
+                        "where_field": "name"
+                        "where_value": "CHFE"
+                        "extract_field": "api"
+                      "save_result_as": "var.api"
+                    - "method_name": "extract_from_config"
+                      "kwargs":
+                        "config_part": "var.api"
+                        "extract_field": "tel_number"
+                      "save_result_as": "var.CHFE_tel"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_BRIDGE_CHFE"
+                      "save_result_as": "var.IF_BRIDGE_CHFE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE-2_BRIDGE"
+                      "save_result_as": "var.IF_CHFE-2_BRIDGE"
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_CHFE_BRIDGE"
+                      "save_result_as": "var.IF_CHFE_BRIDGE"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "callid",
+                        fqdn: "var.IF_CHFE_BRIDGE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.callid"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "incidentid",
+                        fqdn: "var.IF_CHFE_BRIDGE",
+                        set_default: "True"
+                      }
+                      save_result_as: "var.incidentid"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/sip_service/BRIDGE_010/CHFE_BRIDGE_010_var_3.xml"
+                        "param_name": "urn:emergency:uid:callid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.callid"
+                        "output_file": "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_3.xml"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_3.xml"
+                        "param_name": "urn:emergency:uid:incidentid:123ABCdefg123ABCdefg123ABCdefg12:test.com"
+                        "value": "var.incidentid"
+                        "output_file": "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_3.xml"
+                  type: "SIP"
+                  method: "INVITE"
+                  response_code: "200"
+                  http_url: ""  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {
+                    scenario_file_path: "file./tmp/SIPp_scenarios/sip_service/CHFE_BRIDGE_010_var_3.xml",
+                    kwargs: {
+                      set: {
+                             CHFE_tel: "var.CHFE_tel",
+                             IF_BRIDGE_CHFE: "var.IF_BRIDGE_CHFE",
+                             IF_CHFE2_BRIDGE: "var.IF_CHFE-2_BRIDGE",
+                      }
+                    },
+                    save_response_as: "CHFE_BRIDGE_010_var_3_response.log",
+                    save_log_as: "CHFE_BRIDGE_010_var_3.log"
+                  }
+                  run_in_background: "False"
+            filtering_options: # optional
+                - message_type: "stimulus" # stimulus/output/other
+                  src_interface: "IF_CHFE-2_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE-2"
+                  sip_method: "INVITE" #  re-INVITE from CHFE-2 adding RTT
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: "m=text"
+                - message_type: "other" # stimulus/output/other
+                  src_interface: "IF_CHFE_BRIDGE"
+                  dst_interface: "IF_BRIDGE_CHFE"
+                  sip_method: ""
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "200" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+                - message_type: "output" # stimulus/output/other
+                  src_interface: "IF_BRIDGE_CHFE"
+                  dst_interface: "IF_CHFE_BRIDGE"
+                  sip_method: "ACK" #  CHECK 3 (ACK for re-INVITE 200 OK)
+                  http_request_method: "" #  leave empty if not needed
+                  response_status_code: "" #  leave empty if not needed
+                  header_contains: ""
+                  body_contains: ""
+        requirements:
+          - name: "RQ_BRG_147"
+            variations: ["all"]

@@ -1,0 +1,20 @@
+name: Security Pipeline
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: security-pipeline-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency_hygiene:
+    uses: ./.github/workflows/dependency_hygiene_check.yml
+
+  dependency_security:
+    uses: ./.github/workflows/dependency_security.yml

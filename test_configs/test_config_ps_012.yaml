@@ -1,0 +1,203 @@
+test_config:
+  conformance:
+    tests:
+      - name: "PS_012"
+        variations:
+          - name: "LogEvents_POST_parameters"
+            description: "Validate Policy Store LogEvents POST request properties"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+              - name: "IF_LOG_PS"
+                port_names: []
+            params:
+              messages:
+                # Logging Service receiver
+                - action: "receive"
+                  if_name: "IF_LOG_PS"
+                  if_port_name: ""
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "lab_config['lab_config']['entities']",
+                        where_field: "name",
+                        where_value: "LOG",
+                        extract_field: "interfaces"
+                      }
+                      save_result_as: "var.log_interfaces"
+                    - method_name: "extract_from_config"
+                      kwargs: {
+                        config_part: "var.log_interfaces",
+                        where_field: "name",
+                        where_value: "IF_LOG_PS",
+                        extract_field: "fqdn"
+                      }
+                      save_result_as: "var.log_fqdn"
+                    - method_name: "generate_identifier"
+                      kwargs: {
+                        identifier_type: "logid",
+                        fqdn: "var.log_fqdn"
+                      }
+                      save_result_as: "var.logid"
+                    - method_name: "save_to_file"
+                      kwargs:
+                        input_str: '{"logEventId": "test"}'
+                        filename: "/tmp/ps_012/logeventid.json"
+                    - method_name: "modify_json_file"
+                      kwargs:
+                        json_input_file: "file./tmp/ps_012/logeventid.json"
+                        param_name: "logEventId"
+                        value: "var.logid"
+                        output_file: "file./tmp/ps_012/logeventid.json"
+                  type: "HTTP"
+                  method: ["POST", "GET"]
+                  response_code: ["201", "200"]
+                  http_url: ["/LogEvents", "/Versions"]
+                  body:
+                    - "file./tmp/ps_012/logeventid.json"
+                    - "file.test_suite/test_files/JSON/versions/Logging_Service_Versions_object_example_v010.3f.5.0.0.json"
+                  sipp_scenario: {}
+                  run_in_background: "True"
+
+                  # HTTP POST with the initial policy
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      "save_result_as": "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "queue1@{0}"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.esrp_queue"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_LostServiceUrnCondition.json"
+                        "param_name": "POLICY_QUEUE_NAME"
+                        "value": "var.esrp_queue"
+                        "output_file": "file./tmp/ps_012/Policy_object_OriginationRoutePolicy_LostServiceUrnCondition.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ps_012/Policy_object_OriginationRoutePolicy_LostServiceUrnCondition.json"
+                        "param_name": "sip:DOWNSTREAM_SIP_URI"
+                        "value": "sip:test@ng911.test:5060"
+                        "output_file": "file./tmp/ps_012/Policy_object_OriginationRoutePolicy_LostServiceUrnCondition.json"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_file"
+                      "save_result_as": "var.esrp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_key"
+                      "save_result_as": "var.esrp_certificate_key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        payload_source: "file./tmp/ps_012/Policy_object_OriginationRoutePolicy_LostServiceUrnCondition.json"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        output_file: "file./tmp/ps_012/policy1.json"
+                  type: "HTTP"
+                  method: "POST"
+                  response_code: "201"
+                  http_url: "/Policies"
+                  body: "file./tmp/ps_012/policy1.json"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+                  next_action: "send_put"
+
+                  # HTTP PUT updating the policy
+                - action: "send"
+                  id: "send_put"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      "save_result_as": "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "queue1@{0}"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.esrp_queue"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/JSON/policy_object/Policy_object_OriginationRoutePolicy_LostServiceUrnCondition.json"
+                        "param_name": "POLICY_QUEUE_NAME"
+                        "value": "var.esrp_queue"
+                        "output_file": "file./tmp/ps_012/Policy_object_OriginationRoutePolicy_LostServiceUrnCondition.json"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file./tmp/ps_012/Policy_object_OriginationRoutePolicy_LostServiceUrnCondition.json"
+                        "param_name": "sip:DOWNSTREAM_SIP_URI"
+                        "value": "sip:test_update@ng911.test:5060"
+                        "output_file": "file./tmp/ps_012/Policy_object_OriginationRoutePolicy_LostServiceUrnCondition.json"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_file"
+                      "save_result_as": "var.esrp_certificate_file"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "certificate_key"
+                      "save_result_as": "var.esrp_certificate_key"
+                    - method_name: "generate_jws"
+                      kwargs:
+                        payload_source: "file./tmp/ps_012/Policy_object_OriginationRoutePolicy_LostServiceUrnCondition.json"
+                        cert_path: "var.esrp_certificate_file"
+                        key_path: "var.esrp_certificate_key"
+                        output_file: "file./tmp/ps_012/policy2.json"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/Policies?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName={0}"
+                        variables: "list.[var.esrp_queue,]"
+                      save_result_as: "var.http_put_url"
+                  type: "HTTP"
+                  method: "PUT"
+                  response_code: "200"
+                  http_url: "var.http_put_url"
+                  body: "file./tmp/ps_012/policy2.json"
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options:
+              - message_type: "other"
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: "201"
+                header_contains: "/Policies"
+                body_contains: ""
+              - message_type: "stimulus"
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: ""
+                http_request_method: "PUT"
+                response_status_code: "200"
+                header_contains: "/Policies?policyOwner=agency.test.example&policyType=OriginationRoutePolicy"
+                body_contains: ""
+              - message_type: "output"
+                src_interface: "IF_PS_LOG"
+                dst_interface: "IF_LOG_PS"
+                sip_method: ""
+                http_request_method: "POST"
+                response_status_code: ""
+                header_contains: "/LogEvents"
+                body_contains: ""
+        requirements:
+          - name: "RQ_PS_121"
+            variations: ["all"]

@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: validate-pcap-naming
+        name: Validate PCAP naming
+        entry: python3 .github/scripts/validate_pcap_naming.py
+        language: system
+        files: ^test_suite/pcaps/.*\.pcap$

@@ -1,0 +1,139 @@
+# Replace example SIP URIs with the test queue and authorized Test System identities from IXIT.
+test_config:
+  conformance:
+    tests:
+      - name: "ESRP_023"
+        variations:
+          - name: "Watcher_info_two_subscribers"
+            description: "Verify watcher information support as per RFC 3857"
+            interfaces:
+              - name: "IF_BCF_ESRP"
+                port_names: []
+              - name: "IF_CHFE_ESRP"
+                port_names: []
+              - name: "IF_ESRP-2_ESRP"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  id: "send_bcf_watcher"
+                  if_name: "IF_BCF_ESRP"
+                  if_port_name: ""
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "api"
+                      "save_result_as": "var.esrp_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.esrp_api"
+                        extract_field: "queue_sip_uri"
+                      "save_result_as": "var.queue_sip_uri"
+                    - "method_name": "replace_string_in_file"
+                      "kwargs":
+                        "input_file": "file.test_suite/test_files/SIPp_scenarios/SIP_SUBSCRIBE/SIP_SUBSCRIBE_QueueState_watcher_info.xml"
+                        "param_name": "[QUEUE_SIP_URI]"
+                        "value": "var.queue_sip_uri"
+                        "output_file": "file./tmp/ESRP_023/SIP_SUBSCRIBE_QueueState_watcher_info.xml"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  sipp_scenario:
+                    scenario_file_path: "file./tmp/ESRP_023/SIP_SUBSCRIBE_QueueState_watcher_info.xml"
+                    kwargs: {}
+                    save_response_as: "ESRP_023_BCF_response.log"
+                    save_log_as: "ESRP_023_BCF.log"
+                  run_in_background: "True"
+                - action: "send"
+                  id: "send_chfe"
+                  if_name: "IF_CHFE_ESRP"
+                  if_port_name: ""
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "api"
+                      "save_result_as": "var.esrp_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.esrp_api"
+                        extract_field: "queue_sip_uri"
+                      "save_result_as": "var.queue_sip_uri"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  sipp_scenario:
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_SUBSCRIBE/SIP_SUBSCRIBE_QueueState_terminate.xml"
+                    kwargs: {
+                              set: {
+                                     QUEUE_SIP_URI: "var.queue_sip_uri",
+                                     PAUSE_MS: "20000"
+                              }
+                    }
+                    save_response_as: "ESRP_023_CHFE_response.log"
+                    save_log_as: "ESRP_023_CHFE.log"
+                  run_in_background: "True"
+                - action: "send"
+                  id: "send_esrp_2"
+                  if_name: "IF_ESRP-2_ESRP"
+                  if_port_name: ""
+                  prep_steps:
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "lab_config['lab_config']['entities']"
+                        where_field: "name"
+                        where_value: "ESRP"
+                        extract_field: "api"
+                      "save_result_as": "var.esrp_api"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.esrp_api"
+                        extract_field: "queue_sip_uri"
+                      "save_result_as": "var.queue_sip_uri"
+                  type: "SIP"
+                  method: "SUBSCRIBE"
+                  sipp_scenario:
+                    scenario_file_path: "file.test_suite/test_files/SIPp_scenarios/sip_service/SIP_SUBSCRIBE/SIP_SUBSCRIBE_QueueState_terminate.xml"
+                    kwargs: {
+                              set: {
+                                     QUEUE_SIP_URI: "var.queue_sip_uri",
+                                     PAUSE_MS: "20000"
+                              }
+                    }
+                    save_response_as: "ESRP_023_ESRP-2_response.log"
+                    save_log_as: "ESRP_023_ESRP-2.log"
+                  run_in_background: "True"
+            filtering_options:
+              - message_type: "stimulus"
+                src_interface: "IF_BCF_ESRP"
+                dst_interface: "IF_ESRP_BCF"
+                sip_method: "SUBSCRIBE"
+                sip_response_method: "NOTIFY"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: "emergency-QueueState.winfo"
+                body_contains: ""
+              - message_type: "other"
+                src_interface: "IF_CHFE_ESRP"
+                dst_interface: "IF_ESRP_CHFE"
+                sip_method: "SUBSCRIBE"
+                sip_response_method: "NOTIFY"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: "emergency-QueueState"
+                body_contains: ""
+              - message_type: "other"
+                src_interface: "IF_ESRP-2_ESRP"
+                dst_interface: "IF_ESRP_ESRP-2"
+                sip_method: "SUBSCRIBE"
+                sip_response_method: "NOTIFY"
+                http_request_method: ""
+                response_status_code: ""
+                header_contains: "emergency-QueueState"
+                body_contains: ""    
+        requirements:
+          - name: "RQ_ESRP_208"
+            variations: ["all"]

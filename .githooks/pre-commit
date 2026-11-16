@@ -1,0 +1,10 @@
+#!/bin/sh
+# Local-only: validates PCAP filenames on staged files before commit.
+
+files=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '^test_suite/pcaps/.*\.pcap$')
+
+if [ -z "$files" ]; then
+    exit 0
+fi
+
+python3 .github/scripts/validate_pcap_naming.py $files

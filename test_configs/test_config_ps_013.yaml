@@ -1,0 +1,1130 @@
+test_config:
+  conformance:
+    tests:
+      - name: "PS_013"
+        preamble_list:
+          - method_name: "prepare_jws_procedures"
+            required_for: [ "RQ_PS_023" ]
+            prep_steps:
+              - method_name: "get_interface_address"
+                kwargs:
+                  interface_name: "IF_ESRP_PS"
+                save_result_as: "var.IF_ESRP_PS"
+              - method_name: "generate_str"
+                kwargs:
+                  string_to_modify: "queue1@{0}"
+                  variables: "list.[var.IF_ESRP_PS, ]"
+                save_result_as: "var.POLICY_QUEUE_NAME"
+              - method_name: "get_interface_address"
+                kwargs:
+                  interface_name: "IF_LOG_PS"
+                save_result_as: "var.IF_LOG_PS"
+              - method_name: "generate_str"
+                kwargs:
+                  string_to_modify: "sip:chfe@{0}"
+                  variables: "list.[var.IF_LOG_PS, ]"
+                save_result_as: "var.DOWNSTREAM_SIP_URI"
+            kwargs:
+              list_of_procedures:
+                - "Policy_object_RoutePolicy_Origination_v010.3f.5.0.0.json"
+                - "Policy_object_RoutePolicy_NormalNextHop_v010.3f.5.0.0.json"
+                - "Policy_object_RoutePolicy_Other_v010.3f.5.0.0.json"
+              config_vars:
+                policyOwner: "agency.test.example"
+                policyQueueName: "var.POLICY_QUEUE_NAME"
+                policyRules_0_actions_0_recipientUri: "var.DOWNSTREAM_SIP_URI"
+              url: "/Policies"
+              expected_response_code: "201"
+              if_name: "IF_ESRP_PS"
+        variations:
+          - name: "Valid_request_with_all_filtering_parameters"
+            description: "Validate 200 OK response and PolicyEnumArray JSON object for request with correct parameters"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "200"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "200" #  leave empty if not needed
+                header_contains: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1"
+                body_contains: ""
+          - name: "No_query_parameters_at_all"
+            description: "Validate 4xx error response for request without query parameters"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/PolicyEnums"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums"
+                body_contains: ""
+          - name: "Incorrect_limit_parameter_send_string"
+            description: "Validate 4xx error response for request with incorrect limit parameter (string value)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?limit=test&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?limit=test&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_limit_parameter_send_empty"
+            description: "Validate 4xx error response for request with incorrect limit parameter (empty value)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?limit=&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS, ]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?limit=&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_limit_parameter_send_space"
+            description: "Validate 4xx error response for request with incorrect limit parameter (space value)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?limit=%20&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?limit=%20&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_limit_parameter_send_value_exceeding_64bit_unsigned_int"
+            description: "Validate 4xx error response for request with incorrect limit parameter (value exceeding 64bit unsigned int)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?limit=18446744073709551616&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?limit=18446744073709551616&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_limit_parameter_send_negative_value_exceeding_64bit_int"
+            description: "Validate 4xx error response for request with incorrect limit parameter (negative value exceeding 64bit int)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "extract_from_config"
+                      kwargs:
+                        config_part: "var.ps_port_mapping"
+                        where_field: "protocol"
+                        where_value: "HTTP"
+                        extract_field: "port"
+                      save_result_as: "var.ps_http_port"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?limit=-9223372036854775809&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?limit=-9223372036854775809&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_start_parameter_send_string"
+            description: "Validate 4xx error response for request with incorrect start parameter (string value)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?limit=10&start=test&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?limit=10&start=test&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_start_parameter_send_empty"
+            description: "Validate 4xx error response for request with incorrect start parameter (empty value)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?limit=10&start=&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?limit=10&start=&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_start_parameter_send_space"
+            description: "Validate 4xx error response for request with incorrect start parameter (space value)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?limit=10&start=%20&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?limit=10&start=%20&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_start_parameter_send_value_exceeding_64bit_unsigned_int"
+            description: "Validate 4xx error response for request with incorrect start parameter (value exceeding 64bit unsigned int)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?limit=10&start=18446744073709551616&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?limit=10&start=18446744073709551616&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_start_parameter_send_value_less_than_1"
+            description: "Validate 4xx error response for request with incorrect start parameter (value less than 1)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?limit=10&start=0&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?limit=10&start=0&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_policyOwner_parameter_special_characters_not_allowed_in_FQDN"
+            description: "Validate 4xx error response for request with incorrect policyOwner parameter (special characters not allowed in FQDN)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=te$t.failed&limit=10&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?policyOwner=te$t.failed&limit=10&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_policyOwner_parameter_leading_period"
+            description: "Validate 4xx error response for request with incorrect policyOwner parameter (leading period)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=.test.example&limit=10&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?policyOwner=.test.example&limit=10&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_policyOwner_parameter_FQDN_length_exceeded"
+            description: "Validate 4xx error response for request with incorrect policyOwner parameter (FQDN length exceeded)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.examplecomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcom&limit=10&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?policyOwner=agency.test.examplecomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcomcom&limit=10&start=1&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_policyType_parameter"
+            description: "Validate 4xx error response for request with incorrect policyType parameter (unknown value)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicyy&policyQueueName=sip%3Aqueue1@{0}&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicyy&policyQueueName=sip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_policyQueueName_parameter_send_without_username"
+            description: "Validate 4xx error response for request with incorrect policyQueueName parameter (without username)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName={0}&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName="
+                body_contains: ""
+          - name: "Incorrect_policyQueueName_parameter_send_without_domain"
+            description: "Validate 4xx error response for request with incorrect policyQueueName parameter (without domain)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                body_contains: ""
+          - name: "Incorrect_policyQueueName_parameter_send_with_not_allowed_characters"
+            description: "Validate 4xx error response for request with incorrect policyQueueName parameter (not allowed characters)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@${0}&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@$"
+                body_contains: ""
+          - name: "Incorrect_policyQueueName_parameter_send_invalid_port"
+            description: "Validate 4xx error response for request with incorrect policyQueueName parameter (invalid port)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}%3A65536&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "%3A65536&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                body_contains: ""
+          - name: "Incorrect_policyQueueName_parameter_send_invalid_scheme"
+            description: "Validate 4xx error response for request with incorrect policyQueueName parameter (invalid scheme)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=zip%3Aqueue1@{0}&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=zip%3Aqueue1@"
+                body_contains: ""
+          - name: "Incorrect_policyId_parameter_send_empty"
+            description: "Validate 4xx error response for request with incorrect policyId parameter (empty value)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                      save_result_as: "/PolicyEnums?policyOwner=agency.test.example&policyType=OtherRoutePolicy&policyId=&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?policyOwner=agency.test.example&policyType=OtherRoutePolicy&policyId=&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                body_contains: ""
+          - name: "Incorrect_policyId_parameter_send_space"
+            description: "Validate 4xx error response for request with incorrect policyId parameter (space value)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps: [ ]
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "/PolicyEnums?policyOwner=agency.test.example&policyType=OtherRoutePolicy&policyId=%20&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "/PolicyEnums?policyOwner=agency.test.example&policyType=OtherRoutePolicy&policyId=%20&start=1&limit=50&policiesUpdatedSince=2020-03-10T10%3A00%3A00-05%3A00"
+                body_contains: ""
+          - name: "Incorrect_policiesUpdatedSince_parameter_incorrect_year"
+            description: "Validate 4xx error response for request with incorrect policiesUpdatedSince parameter (incorrect year)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&start=1&limit=50&policiesUpdatedSince=21155-08-21T12%3A58%3A03.01-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "&start=1&limit=50&policiesUpdatedSince=21155-08-21T12%3A58%3A03.01-05%3A00"
+                body_contains: ""
+          - name: "Incorrect_policiesUpdatedSince_parameter_incorrect_month"
+            description: "Validate 4xx error response for request with incorrect policiesUpdatedSince parameter (incorrect month)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&start=1&limit=50&policiesUpdatedSince=2115-13-21T12%3A58%3A03.01-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "&start=1&limit=50&policiesUpdatedSince=2115-13-21T12%3A58%3A03.01-05%3A00"
+                body_contains: ""
+          - name: "Incorrect_policiesUpdatedSince_parameter_incorrect_day"
+            description: "Validate 4xx error response for request with incorrect policiesUpdatedSince parameter (incorrect day)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&start=1&limit=50&policiesUpdatedSince=2115-12-32T12%3A58%3A03.01-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "&start=1&limit=50&policiesUpdatedSince=2115-12-32T12%3A58%3A03.01-05%3A00"
+                body_contains: ""
+          - name: "Incorrect_policiesUpdatedSince_parameter_incorrect_hour"
+            description: "Validate 4xx error response for request with incorrect policiesUpdatedSince parameter (incorrect hour)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&start=1&limit=50&policiesUpdatedSince=2115-12-21T24%3A58%3A03.01-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "&start=1&limit=50&policiesUpdatedSince=2115-12-21T24%3A58%3A03.01-05%3A00"
+                body_contains: ""
+          - name: "Incorrect_policiesUpdatedSince_parameter_incorrect_minute"
+            description: "Validate 4xx error response for request with incorrect policiesUpdatedSince parameter (incorrect minute)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&start=1&limit=50&policiesUpdatedSince=2115-12-21T12%3A60%3A03.01-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "limit=50&policiesUpdatedSince=2115-12-21T12%3A60%3A03.01-05%3A00"
+                body_contains: ""
+          - name: "Incorrect_policiesUpdatedSince_parameter_incorrect_second"
+            description: "Validate 4xx error response for request with incorrect policiesUpdatedSince parameter (incorrect second)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&start=1&limit=50&policiesUpdatedSince=2115-12-21T12%3A58%3A61.01-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "&start=1&limit=50&policiesUpdatedSince=2115-12-21T12%3A58%3A61.01-05%3A00"
+                body_contains: ""
+          - name: "Incorrect_policiesUpdatedSince_parameter_incorrect_time_offset"
+            description: "Validate 4xx error response for request with incorrect policiesUpdatedSince parameter (incorrect time offset)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&start=1&limit=50&policiesUpdatedSince=2115-12-21T12%3A58%3A03.01-24%3A60"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "&start=1&limit=50&policiesUpdatedSince=2115-12-21T12%3A58%3A03.01-24%3A60"
+                body_contains: ""
+          - name: "Incorrect_policiesUpdatedSince_parameter_incorrect_day_in_February"
+            description: "Validate 4xx error response for request with incorrect policiesUpdatedSince parameter (incorrect day in February)"
+            interfaces:
+              - name: "IF_ESRP_PS"
+                port_names: []
+            params:
+              messages:
+                - action: "send"
+                  if_name: "IF_ESRP_PS"
+                  if_port_name: ""  # Optional
+                  prep_steps:
+                    - method_name: "get_interface_address"
+                      kwargs:
+                        interface_name: "IF_ESRP_PS"
+                      save_result_as: "var.IF_ESRP_PS"
+                    - method_name: "generate_str"
+                      kwargs:
+                        string_to_modify: "/PolicyEnums?policyOwner=agency.test.example&policyType=OriginationRoutePolicy&policyQueueName=sip%3Aqueue1@{0}&start=1&limit=50&policiesUpdatedSince=2115-02-30T12%3A58%3A03.01-05%3A00"
+                        variables: "list.[var.IF_ESRP_PS,]"
+                      save_result_as: "var.url"
+                  type: "HTTP"
+                  method: "GET"
+                  response_code: "4xx"
+                  http_url: "var.url"  # part after f.e. http://IP:PORT
+                  body: ""
+                  sipp_scenario: {}
+                  run_in_background: "False"
+            filtering_options: # optional
+              - message_type: "stimulus" # stimulus/output/other
+                src_interface: "IF_ESRP_PS"
+                dst_interface: "IF_PS_ESRP"
+                sip_method: "" #  leave empty if not needed
+                http_request_method: "GET" #  leave empty if not needed
+                response_status_code: "4xx" #  leave empty if not needed
+                header_contains: "&start=1&limit=50&policiesUpdatedSince=2115-02-30T12%3A58%3A03.01-05%3A00"
+                body_contains: ""
+        requirements:
+          - name: "RQ_PS_023"
+            variations: [ "all" ]

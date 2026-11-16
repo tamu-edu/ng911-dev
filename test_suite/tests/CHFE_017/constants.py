@@ -1,0 +1,40 @@
+QUERY_EVENT_NAME = "LocationQueryLogEvent"
+RESPONSE_EVENT_NAME = "LocationResponseLogEvent"
+
+NOT_RUN = "NOT RUN -> No stimulus message found."
+
+RESPONSE_CODES = [
+    "333",
+    "432",
+    "433",
+    "434",
+    "436",
+    "437",
+    "438",
+    "441",
+    "442",
+    "451",
+    "452",
+    "453",
+    "454",
+    "456",
+    "457",
+    "458",
+    "459",
+    "460",
+    "461",
+    "462",
+    "463",
+    "464",
+    "465",
+    "466",
+    "467",
+    "468",
+    "469",
+    "470",
+    "471",
+    "472",
+    "473",
+    "474",
+    "475",
+]
