@@ -1,5 +1,0 @@
-NOT_RUN = "NOT RUN -> No stimulus message found."
-NOT_RUN_NO_PS_RESPONSE = "NOT RUN -> No Policy Store response was found."
-EVENT_TYPE = "CallSignalingMessageLogEvent"
-SUBSCRIBE_SIP_EVENT = "emergency-ServiceState"
-POLICY_QUERY = "Policies?policyType=ServiceState"
